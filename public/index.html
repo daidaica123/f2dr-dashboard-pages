@@ -3840,7 +3840,7 @@ strong button.f2-ref{ font-weight:inherit }
 
   <div class="f2-conlai" id="f2-conlai"></div>
 </div>
-<script>window.F2_CAU_HINH = {"khoaAPI": [], "proxy": "/api/gemini", "soKhoa": 5};</script>
+<script>window.F2_CAU_HINH = {"khoaAPI": [], "proxy": "/api/gemini", "soKhoa": 1};</script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
    TRI THỨC — bản JavaScript của tầng dữ liệu.
@@ -5123,10 +5123,31 @@ window.F2BoNao = (function () {
   function diaChiProxy() {
     return (window.F2_CAU_HINH && window.F2_CAU_HINH.proxy) || "";
   }
+  /* Số khoá máy chủ đang giữ.
+
+     Con số dựng sẵn lúc build chỉ là ước lượng — đổi khoá bên Cloudflare
+     là nó sai ngay, mà sai thì bot dò tới khoá không tồn tại rồi báo hết
+     lượt oan. Nên hỏi thẳng máy chủ một lần rồi nhớ lại. */
+  var SO_KHOA_THAT = null;
+
   function soKhoaProxy() {
+    if (SO_KHOA_THAT !== null) return SO_KHOA_THAT;
     var n = window.F2_CAU_HINH && window.F2_CAU_HINH.soKhoa;
     return typeof n === "number" && n > 0 ? n : 0;
   }
+
+  function hoiSoKhoa() {
+    if (SO_KHOA_THAT !== null || !diaChiProxy()) return Promise.resolve();
+    return fetch(diaChiProxy())
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j && typeof j.so_khoa === "number" && j.so_khoa > 0) {
+          SO_KHOA_THAT = j.so_khoa;
+        }
+      })
+      .catch(function () { /* hỏi không được thì dùng số dựng sẵn */ });
+  }
+
   function dungProxy() { return !dsKhoa().length && !!diaChiProxy(); }
 
   /* Số "khoá" dùng được, tính chung cho cả hai chế độ. Phần xoay khoá bên
@@ -5746,6 +5767,15 @@ window.F2BoNao = (function () {
      hạn mức. Với 5 khoá x 5 model dùng được, sức chứa là ~500 lượt/ngày,
      tức khoảng 125-250 câu hỏi. */
   function goiLLM(prompt, opt) {
+    /* Chế độ proxy: hỏi máy chủ xem đang giữ mấy khoá trước đã, không thì
+       dò theo con số dựng sẵn có thể đã cũ. Chỉ tốn một lượt cho cả phiên. */
+    if (dungProxy() && SO_KHOA_THAT === null) {
+      return hoiSoKhoa().then(function () { return _goiLLM(prompt, opt); });
+    }
+    return _goiLLM(prompt, opt);
+  }
+
+  function _goiLLM(prompt, opt) {
     opt = opt || {};
     var ks = dsKhoa();
     var nK = soKhoa();            // khoá trong trang, hoặc khoá máy chủ giữ hộ
