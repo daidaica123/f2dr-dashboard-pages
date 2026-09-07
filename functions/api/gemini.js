@@ -48,21 +48,26 @@ const MODEL_CHO_PHEP = new Set([
   "gemini-2.0-flash-lite",
 ]);
 
-/* Tên model bên OpenRouter khác tên Google. Model nào chưa có bản tương
-   ứng thì rơi về bản miễn phí gần nhất — thà chậm hơn một chút còn hơn
-   báo lỗi model không tồn tại. */
-const DU_PHONG_OR = "google/gemini-2.0-flash-exp:free";
+/* Tên model bên OpenRouter khác hẳn tên Google, và bậc miễn phí KHÔNG
+   còn model Gemini nào (đo 07/09/2026: 21 model giá 0, không cái nào là
+   Gemini). Nên ánh xạ sang các model miễn phí đã thử chạy được thật.
+
+   Bốn model dưới đây đều đã kiểm: gọi được, sinh JSON đúng khuôn mà bộ
+   não yêu cầu. Xếp theo tốc độ đo được. Bên trình duyệt xoay qua 7 tên
+   Gemini, ở đây trải chúng lên 4 model này — hết lượt cái đầu thì cơ chế
+   xoay khoá tự đẩy sang tên sau, tức là sang model khác. */
+const DU_PHONG_OR = "google/gemma-4-26b-a4b-it:free";
 const TEN_OPENROUTER = {
-  "gemini-3.1-flash-lite": "google/gemini-2.0-flash-exp:free",
-  "gemini-3.8-flash": "google/gemini-2.0-flash-exp:free",
-  "gemini-3.5-flash": "google/gemini-2.0-flash-exp:free",
-  "gemini-3-flash-preview": "google/gemini-2.0-flash-exp:free",
-  "gemini-flash-latest": "google/gemini-2.0-flash-exp:free",
-  "gemini-3.7-flash": "google/gemini-2.0-flash-exp:free",
-  "gemini-2.5-flash": "google/gemini-2.0-flash-exp:free",
-  "gemini-2.5-flash-lite": "google/gemini-2.0-flash-exp:free",
-  "gemini-2.0-flash": "google/gemini-2.0-flash-exp:free",
-  "gemini-2.0-flash-lite": "google/gemini-2.0-flash-exp:free",
+  "gemini-3.1-flash-lite": "google/gemma-4-26b-a4b-it:free",       // 1,5s
+  "gemini-3.8-flash": "inclusionai/ling-3.0-flash-sante:free",     // 1,7s
+  "gemini-3.5-flash": "minimax/minimax-m2.7:free",                 // 7,7s
+  "gemini-3-flash-preview": "nvidia/nemotron-3.5-lightning:free",  // 7,9s
+  "gemini-flash-latest": "google/gemma-4-26b-a4b-it:free",
+  "gemini-3.7-flash": "inclusionai/ling-3.0-flash-sante:free",
+  "gemini-2.5-flash": "minimax/minimax-m2.7:free",
+  "gemini-2.5-flash-lite": "google/gemma-4-26b-a4b-it:free",
+  "gemini-2.0-flash": "minimax/minimax-m2.7:free",
+  "gemini-2.0-flash-lite": "google/gemma-4-26b-a4b-it:free",
 };
 
 const CO_THAN_THIEN = {
