@@ -56,19 +56,31 @@ const MODEL_CHO_PHEP = new Set([
    não yêu cầu. Xếp theo tốc độ đo được. Bên trình duyệt xoay qua 7 tên
    Gemini, ở đây trải chúng lên 4 model này — hết lượt cái đầu thì cơ chế
    xoay khoá tự đẩy sang tên sau, tức là sang model khác. */
-const DU_PHONG_OR = "google/gemma-4-26b-a4b-it:free";
+const DU_PHONG_OR = "inclusionai/ling-3.0-flash-sante:free";
 const TEN_OPENROUTER = {
-  "gemini-3.1-flash-lite": "google/gemma-4-26b-a4b-it:free",       // 1,5s
-  "gemini-3.8-flash": "inclusionai/ling-3.0-flash-sante:free",     // 1,7s
-  "gemini-3.5-flash": "minimax/minimax-m2.7:free",                 // 7,7s
-  "gemini-3-flash-preview": "nvidia/nemotron-3.5-lightning:free",  // 7,9s
-  "gemini-flash-latest": "google/gemma-4-26b-a4b-it:free",
-  "gemini-3.7-flash": "inclusionai/ling-3.0-flash-sante:free",
+  "gemini-3.1-flash-lite": "inclusionai/ling-3.0-flash-sante:free", // 1,7s
+  "gemini-3.8-flash": "google/gemma-4-26b-a4b-it:free",             // 1,5s
+  "gemini-3.5-flash": "minimax/minimax-m2.7:free",                  // 7,7s
+  "gemini-3-flash-preview": "nvidia/nemotron-3.5-lightning:free",   // 7,9s
+  "gemini-flash-latest": "inclusionai/ling-3.0-flash-sante:free",
+  "gemini-3.7-flash": "google/gemma-4-26b-a4b-it:free",
   "gemini-2.5-flash": "minimax/minimax-m2.7:free",
-  "gemini-2.5-flash-lite": "google/gemma-4-26b-a4b-it:free",
+  "gemini-2.5-flash-lite": "nvidia/nemotron-3.5-lightning:free",
   "gemini-2.0-flash": "minimax/minimax-m2.7:free",
-  "gemini-2.0-flash-lite": "google/gemma-4-26b-a4b-it:free",
+  "gemini-2.0-flash-lite": "inclusionai/ling-3.0-flash-sante:free",
 };
+
+/* Thu tu thu khi model dau bi nghen. Model mien phi hay bi chan toc do
+   theo gio ("temporarily rate-limited upstream") — do that 07/09: gemma-4
+   nghen trong khi ling-3.0 van chay. Doi ngay trong ham nay thay vi bat
+   ben trinh duyet cho vong sau, vi doi o day chi ton them mot giay con
+   de ben kia doi thi nguoi dung da thay bao loi roi. */
+const XEP_HANG_OR = [
+  "inclusionai/ling-3.0-flash-sante:free",
+  "google/gemma-4-26b-a4b-it:free",
+  "minimax/minimax-m2.7:free",
+  "nvidia/nemotron-3.5-lightning:free",
+];
 
 const CO_THAN_THIEN = {
   "Access-Control-Allow-Origin": "*",
@@ -132,14 +144,9 @@ export function onRequestGet({ env }) {
    OpenRouter nói giọng OpenAI, còn phần còn lại của hệ thống nói giọng
    Gemini. Dịch hai chiều ở đây để bên trình duyệt không phải biết mình
    đang đi đường nào. */
-async function quaOpenRouter(model, than, khoa, url) {
-  const phan = (than.contents || [])
-    .flatMap((c) => (c.parts || []).map((p) => p.text || ""))
-    .join("\n");
-  const cfg = than.generationConfig || {};
-
+async function motLanOR(tenOR, phan, cfg, khoa, url) {
   const yc = {
-    model: TEN_OPENROUTER[model] || DU_PHONG_OR,
+    model: tenOR,
     messages: [{ role: "user", content: phan }],
     temperature: cfg.temperature == null ? 0 : cfg.temperature,
   };
@@ -158,23 +165,65 @@ async function quaOpenRouter(model, than, khoa, url) {
     body: JSON.stringify(yc),
   });
 
-  const j = await r.json();
-  if (!r.ok || j.error) {
-    /* Giữ nguyên chữ "RESOURCE_EXHAUSTED" khi hết hạn mức: bên gọi dựa
-       vào chuỗi đó để quyết định đổi khoá hay đổi model. */
+  let j;
+  try {
+    j = await r.json();
+  } catch (e) {
+    j = { error: { message: "HTTP " + r.status } };
+  }
+  return { r, j };
+}
+
+async function quaOpenRouter(model, than, khoa, url) {
+  const phan = (than.contents || [])
+    .flatMap((c) => (c.parts || []).map((p) => p.text || ""))
+    .join("\n");
+  const cfg = than.generationConfig || {};
+
+  /* Model được chỉ định trước, rồi tới các model còn lại theo thứ hạng.
+     Model miễn phí hay nghẽn theo giờ nên phải có đường lui, không thì
+     một model bận là cả trợ lý chết. */
+  const dau = TEN_OPENROUTER[model] || DU_PHONG_OR;
+  const thu = [dau].concat(XEP_HANG_OR.filter((x) => x !== dau));
+
+  let cuoi = null;
+  for (let i = 0; i < thu.length; i++) {
+    const { r, j } = await motLanOR(thu[i], phan, cfg, khoa, url);
+
+    if (r.ok && !j.error) {
+      /* Dịch ngược sang dạng Gemini để bên trình duyệt đọc như thường. */
+      const van =
+        (j.choices && j.choices[0] && j.choices[0].message &&
+          j.choices[0].message.content) || "";
+      return traLoi({ candidates: [{ content: { parts: [{ text: van }] } }] });
+    }
+
     const tin = (j.error && (j.error.message || j.error)) || "HTTP " + r.status;
-    const het = r.status === 429 || /quota|rate limit/i.test(String(tin));
-    return traLoi(
-      { error: { message: (het ? "RESOURCE_EXHAUSTED: " : "") + tin } },
-      r.status || 500
-    );
+    cuoi = { tin: String(tin), ma: r.status };
+
+    /* Nghẽn hoặc hết lượt thì thử model sau. Lỗi khác (thân sai, khoá
+       hỏng) thì đổi model cũng vô ích — báo ngay. */
+    const doi =
+      r.status === 429 || r.status === 402 || r.status === 404 ||
+      /rate.?limit|quota|temporarily|unavailable|no endpoints/i.test(String(tin));
+    if (!doi) break;
   }
 
-  /* Dịch ngược sang dạng Gemini để bên trình duyệt đọc như thường. */
-  const van =
-    (j.choices && j.choices[0] && j.choices[0].message &&
-      j.choices[0].message.content) || "";
-  return traLoi({ candidates: [{ content: { parts: [{ text: van }] } }] });
+  /* Hết đường: giữ nguyên chữ "RESOURCE_EXHAUSTED" để cơ chế xoay khoá
+     bên trình duyệt hiểu là hết lượt chứ không phải lỗi thật. */
+  const het =
+    cuoi &&
+    (cuoi.ma === 429 || /rate.?limit|quota|temporarily/i.test(cuoi.tin));
+  return traLoi(
+    {
+      error: {
+        message:
+          (het ? "RESOURCE_EXHAUSTED: " : "") +
+          (cuoi ? cuoi.tin : "không gọi được model nào"),
+      },
+    },
+    (cuoi && cuoi.ma) || 500
+  );
 }
 
 export async function onRequestPost({ request, env }) {
