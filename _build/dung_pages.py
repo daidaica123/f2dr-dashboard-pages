@@ -84,11 +84,16 @@ def main():
     ra = ra.replace(cu, moi, 1)
 
     # Chan chac: file ra tuyet doi khong duoc chua khoa API.
+    # Quet CA HAI dang khoa dang ton tai:
+    #   AIza…      khoa Google API kieu cu
+    #   AQ.Ab8RN6… khoa Gemini kieu moi (dang dung) — mau khac han, chi
+    #              quet AIza thi lot het, va do la loai dang dung THAT.
     import re
-    lo = re.findall(r"AIza[0-9A-Za-z_\-]{20,}", ra)
+    lo = (re.findall(r"AIza[0-9A-Za-z_\-]{20,}", ra) +
+          re.findall(r"AQ\.[0-9A-Za-z_\-]{30,}", ra))
     if lo:
         sys.exit("DUNG LAI: file ra co %d khoa API lot vao (%s…). "
-                 "Khong duoc deploy." % (len(lo), lo[0][:12]))
+                 "Khong duoc deploy." % (len(lo), lo[0][:14]))
 
     os.makedirs(PUBLIC, exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as f:
