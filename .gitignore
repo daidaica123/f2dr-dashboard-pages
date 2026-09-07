@@ -1,0 +1,27 @@
+# ══════════════════════════════════════════════════════════════════
+# Bản Cloudflare Pages là trang CÔNG KHAI — mọi thứ đẩy lên đây ai
+# cũng xem được. Cẩn thận gấp đôi bản Streamlit.
+# ══════════════════════════════════════════════════════════════════
+
+# Khoá API: nằm ở Environment variables của Cloudflare, KHÔNG BAO GIỜ trong repo
+.dev.vars
+.env
+*.key
+.streamlit/secrets.toml
+
+# Rác Python
+__pycache__/
+*.pyc
+
+# Rác hệ điều hành
+Thumbs.db
+.DS_Store
+~$*
+
+# Wrangler
+.wrangler/
+node_modules/
+
+# public/index.html được dựng bằng _build/dung_pages.py.
+# KHÔNG gitignore: Cloudflare Pages cần file này trong repo để phát hành
+# (không có bước build nào chạy trên máy chủ họ).
