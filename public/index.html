@@ -7157,11 +7157,7 @@ window.F2BoNao = (function () {
         return "  Bước " + (i + 1) + ": " + b.moTa + "\n    -> " + s;
       }).join("\n") : "";
 
-    var nc = (lichSu && lichSu.length)
-      ? "\n\nHỎI ĐÁP TRƯỚC ĐÓ (để hiểu 'nó', 'cái đó'):\n" +
-        lichSu.slice(-3).map(function (h) {
-          return "  Hỏi: " + h.hoi + "\n  Đáp: " + h.dap.slice(0, 200);
-        }).join("\n") : "";
+    var nc = nguCanhLichSu(lichSu);
 
     return "Bạn là trợ lý phân tích dữ liệu cảnh báo rủi ro F2DR (Viettel Money).\n" +
 "Nhiệm vụ: quyết định BƯỚC TIẾP THEO để trả lời câu hỏi.\n\n" +
@@ -7222,10 +7218,7 @@ TT.moTaKy() + "\n\n" + QUY_TAC + "\n\n" + GIOI_HAN + "\n\n" +
     var dk = JSON.stringify(duKien, null, 1);
     if (dk.length > 24000) dk = dk.slice(0, 24000) + "\n... (đã cắt bớt)";
 
-    var nc = (lichSu && lichSu.length)
-      ? "\n\nHỎI ĐÁP TRƯỚC ĐÓ:\n" + lichSu.slice(-2).map(function (h) {
-          return "  Hỏi: " + h.hoi + "\n  Đáp: " + h.dap.slice(0, 200);
-        }).join("\n") : "";
+    var nc = nguCanhLichSu(lichSu);
 
     var nhac = "";
     if (soLa && soLa.length) {
@@ -7393,6 +7386,57 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
     "nào — hai chuyện khác hẳn nhau.\n\n" +
     "GOI_Y: Kỳ dữ liệu hiện tại là gì | Ngày gần nhất có dữ liệu | " +
     "Đà alert những ngày cuối kỳ";
+
+  /* ═══════════ NGỮ CẢNH CHO CÂU NỐI TIẾP ═══════════
+     Trước đây lịch sử vào prompt dưới dạng `dap.slice(0, 200)` — cắt cụt
+     ở 200 ký tự. Danh sách sáu kịch bản dài hơn thế nhiều, nên khi người
+     dùng hỏi "cái thứ 2 trong danh sách đó", model KHÔNG hề nhìn thấy mục
+     số 2, và nó trả lời theo cách khác hẳn ý người hỏi.
+
+     Sửa: rút các mục thành danh sách đánh số rõ ràng đưa vào prompt. Model
+     thấy "2. TT_TK thanh toán…" thì mới trỏ đúng vào đó được. */
+  function rutMuc(van) {
+    var ds = [];
+    try {
+      String(van || "").split("\n").forEach(function (d) {
+        /* Nhận cả ba kiểu model hay dùng: "1. X", "- X", "**X**: 123" */
+        var m = d.match(/^\s*(?:\d+[.)]\s*|[-*•]\s*)(.+)$/);
+        var t = m ? m[1] : null;
+        if (!t) {
+          /* Dòng bắt đầu bằng tên in đậm cũng tính là một mục. */
+          var b = d.match(/^\s*\*\*([^*]{6,})\*\*\s*[:：]/);
+          if (b) t = b[1];
+        }
+        if (!t) return;
+        t = t.replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
+        /* Cắt phần mô tả sau dấu hai chấm — giữ lại đúng cái TÊN, vì đó
+           là thứ dùng để gọi hàm ở lượt sau. */
+        var i = t.indexOf(":");
+        if (i > 8) t = t.slice(0, i);
+        if (t.length >= 6 && t.length <= 90) ds.push(t.trim());
+      });
+    } catch (e) { /* rút không được thì thôi, vẫn còn văn bản gốc */ }
+    return ds.slice(0, 12);
+  }
+
+  function nguCanhLichSu(lichSu) {
+    if (!lichSu || !lichSu.length) return "";
+    return "\n\nHỎI ĐÁP TRƯỚC ĐÓ:\n" + lichSu.slice(-2).map(function (h) {
+      var muc = rutMuc(h.dap);
+      var s = "  Hỏi: " + h.hoi + "\n  Đáp: " + h.dap.slice(0, 260);
+      if (muc.length >= 2) {
+        /* Đánh số lại để câu "cái thứ N" trỏ được. Đây là phần model cần
+           nhất mà bản cũ cắt mất. */
+        s += "\n  → Các mục đã nêu trong câu trả lời đó:\n" +
+             muc.map(function (t, i) {
+               return "      " + (i + 1) + ". " + t;
+             }).join("\n") +
+             "\n     (người dùng hỏi \"cái thứ N\" / \"cái đó\" là trỏ vào " +
+             "danh sách này — dùng ĐÚNG tên ở trên để gọi hàm)";
+      }
+      return s;
+    }).join("\n");
+  }
 
   /* Chọn khuôn từ chối đúng loại. Bỏ dấu trước khi so vì người dùng gõ
      tắt rất nhiều ("tuan toi the nao"). */
