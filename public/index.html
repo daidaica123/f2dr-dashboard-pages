@@ -347,6 +347,30 @@ tbody tr:hover .nhbar i{opacity:1}
 .heat td.nm span.nm2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .heat td.nm .mk{flex:none}
 .heat tbody tr:hover td.nm{color:var(--accent)}
+/* Thu gọn cột ngày: bảng chỉ còn tên + Σ + xu hướng. Bỏ max-width:0 để tên
+   kịch bản duỗi hết cỡ — giấu 67 cột ngày mà vẫn cắt tên thì phí chỗ.
+   Σ to lên vì lúc này nó là thứ duy nhất người ta nhìn. */
+.heat.gon-ngay td.nm{max-width:none;padding-left:4px}
+.heat.gon-ngay td.nm span.nm2{white-space:normal;overflow:visible}
+.heat.gon-ngay tfoot td{font-size:12px}
+.heat.gon-ngay tbody td.c{font-size:12px}
+/* Các cột chỉ có khi thu gọn: lấp chỗ trống bằng thứ đọc được ngay thay vì
+   để trắng cả nghìn pixel giữa tên và Σ. */
+.heat th.gon-h{text-align:left;font-size:9px;color:var(--faint);font-weight:600;
+               padding:0 8px 4px;background:none;position:static;
+               letter-spacing:.04em;white-space:nowrap}
+.heat th.gon-h.n{text-align:right}
+.heat td.gon-b{padding:0 8px;border:0;vertical-align:middle}
+.heat span.gonbar{display:block;height:7px;border-radius:4px;
+  background:linear-gradient(90deg,rgba(46,232,255,.85),rgba(46,232,255,.3));
+  min-width:2px}
+.heat td.gon-n{text-align:right;font-family:var(--mono);font-size:11px;
+               color:var(--dim);padding:0 8px;border:0;white-space:nowrap}
+.heat td.gon-d{color:var(--faint)}
+.heat span.gon-m{color:var(--faint);font-size:9.5px}
+.heat tbody tr:hover span.gonbar{background:linear-gradient(90deg,
+  var(--orange),rgba(255,149,80,.35))}
+.heat tfoot td.gon-n{color:var(--text)}
 /* dòng ngăn nhóm nghiệp vụ — chỉ hiện khi sắp theo nhóm */
 .heat tr.grp td{background:none;border:0;padding:9px 2px 3px;font-size:10.5px;
                 font-weight:700;color:var(--accent);letter-spacing:.3px;
@@ -1155,6 +1179,12 @@ body.dangmo{overflow:hidden}
            Hai cách dùng chung một bảng, bấm nút để đổi qua lại. -->
       <span class="ndbox" id="matHopK" style="display:none"
             title="Chọn khoảng ngày bất kỳ trong kỳ">
+        <!-- Chọn nhanh: gõ tay hai mốc để lấy trọn một tháng thì vừa lâu vừa
+             dễ sai ngày cuối tháng. Danh sách này điền sẵn hai mốc đúng. -->
+        <select class="dmini" id="matNhanh" onchange="chonNhanh()"
+                title="Chọn nhanh trọn một tháng hoặc toàn bộ kỳ">
+          <option value="">— chọn nhanh —</option>
+        </select>
         <span class="ndlab">Từ</span>
         <input type="date" class="dmini" id="matTu" onchange="onKhoang()">
         <span class="ndlab">đến</span>
@@ -1162,6 +1192,11 @@ body.dangmo{overflow:hidden}
       </span>
       <button id="matDoiCach" onclick="doiCachNgay()"
         title="Đổi giữa 'N ngày gần nhất' và 'khoảng ngày tự chọn'">📅 Chọn khoảng</button>
+      <!-- Xem tổng cả kỳ thì 67 cột ngày chỉ tổ phải cuộn ngang, trong khi
+           thứ cần nhìn chỉ là cột Σ. Nút này giấu hết cột ngày, giữ nguyên
+           phạm vi đang chọn nên Σ vẫn là tổng của đúng đoạn đó. -->
+      <button id="matThuGon" onclick="doiThuGon()"
+        title="Ẩn các cột ngày, chỉ xem tổng — hợp khi chọn khoảng dài">⇔ Thu gọn ngày</button>
       <button id="matGom" onclick="doiGom()"
         title="Xếp các kịch bản cùng nghiệp vụ đứng liền nhau">⊞ Gom theo nhóm</button>
     </div>
@@ -1517,6 +1552,65 @@ function onKhoang(){
       $(id).value = gan;
     }
   });
+  /* Gõ tay hai mốc thì không còn khớp mục vừa chọn trong danh sách nhanh. */
+  $('matNhanh').value = '';
+  renderMat();
+}
+
+/* ───────── ⑤ chọn nhanh: trọn tháng / toàn kỳ ─────────
+   Dựng từ chính D.days nên chỉ hiện tháng CÓ dữ liệu, và mốc cuối là ngày
+   cuối cùng có thật của tháng đó — không phải 30/31 theo lịch, vì tháng
+   đang chạy dở thì dữ liệu dừng giữa chừng. */
+function dungChonNhanh(){
+  const s = $('matNhanh');
+  if(!s) return;
+  const thang = [];              // [{ma:'2026-08', tu, den}]
+  D.days.forEach(d=>{
+    const ma = d.slice(0,7);
+    const c = thang.find(x=>x.ma===ma);
+    if(c) c.den = d; else thang.push({ma, tu:d, den:d});
+  });
+  const ten = m => {
+    const [y,t] = m.split('-');
+    return `Tháng ${+t}/${y}`;
+  };
+  s.innerHTML = '<option value="">— chọn nhanh —</option>'
+    + `<option value="all">Toàn bộ ${D.tong.nd} ngày</option>`
+    + thang.map(x=>{
+        const sn = D.days.filter(d=>d.slice(0,7)===x.ma).length;
+        return `<option value="${x.tu}|${x.den}">${ten(x.ma)} (${sn} ngày)</option>`;
+      }).join('');
+}
+
+function chonNhanh(){
+  const v = $('matNhanh').value;
+  if(!v) return;
+  if(v === 'all'){
+    $('matTu').value  = D.days[0];
+    $('matDen').value = D.days[D.tong.nd - 1];
+  } else {
+    const [a,b] = v.split('|');
+    $('matTu').value = a; $('matDen').value = b;
+  }
+  /* Khoảng dài thì cột ngày nhiều tới mức không đọc nổi — tự thu gọn luôn,
+     người dùng chọn "toàn bộ 67 ngày" là để xem TỔNG chứ không phải để
+     cuộn ngang 67 cột. Vẫn mở lại được bằng nút. */
+  const soNgay = D.days.indexOf($('matDen').value) - D.days.indexOf($('matTu').value) + 1;
+  if(soNgay > 31 && !THU_GON) doiThuGon(); else renderMat();
+}
+
+/* ───────── ⑤ thu gọn cột ngày ─────────
+   Chọn cả kỳ thì bảng có 67 cột ngày, phải cuộn ngang mãi mới tới cột Σ —
+   trong khi thứ cần xem chỉ là Σ. Nút này giấu cột ngày, giữ nguyên phạm
+   vi đang chọn nên Σ vẫn đúng là tổng của đoạn đó. */
+let THU_GON = false;
+function doiThuGon(){
+  THU_GON = !THU_GON;
+  const b = $('matThuGon');
+  b.classList.toggle('on', THU_GON);
+  b.textContent = THU_GON ? '⇔ Hiện lại ngày' : '⇔ Thu gọn ngày';
+  b.title = THU_GON ? 'Hiện lại các cột ngày'
+                    : 'Ẩn các cột ngày, chỉ xem tổng — hợp khi chọn khoảng dài';
   renderMat();
 }
 
@@ -1647,6 +1741,7 @@ function render(){
         ` — đặt vạch vào giữa khe thì ngưỡng ổn định, xê dịch vài điểm không đổi kết quả.`
       : 'Phân bố liền mạch, không có khe trống rõ rệt.');
 
+  dungChonNhanh();          // danh sách tháng dựng từ D.days, phải có trước renderMat
   renderDay(); renderNhom(); renderMat(); renderTopKH(); renderGC();
   renderFx(); renderWarn(); foldSum();
 }
@@ -2174,6 +2269,10 @@ function renderMat(){
   }
   const n = NGi.length;
   const q = ($('qKB').value||'').toLowerCase();
+  /* Thu gọn: vẫn tính trên ĐỦ NGi (Σ và xu hướng phải đúng), chỉ không vẽ
+     cột ngày ra. Tách riêng danh sách cột để vẽ, phần tính không đụng tới. */
+  const NGv = THU_GON ? [] : NGi;
+  const nv = NGv.length;
 
   /* alert trong ĐÚNG đoạn ngày đang xem, không lấy tổng cả kỳ */
   let rows = D.kb.filter(k => !q || k.ten.toLowerCase().includes(q))
@@ -2216,7 +2315,9 @@ function renderMat(){
   /* tổng theo cột + cột nào là ngày cao nhất */
   const cot = NGi.map((_,j)=> rows.reduce((a,k)=>a+k.vv[j],0));
   const jMx = cot.indexOf(Math.max(...cot));
-  const dw  = `calc((100% - 320px - 96px - ${(n+2)*2}px) / ${n})`;
+  /* Thu gọn thì không có cột ngày nào, phép chia cho 0 ra Infinity làm vỡ
+     bảng — chỉ tính bề ngang cột khi thật sự có cột để vẽ. */
+  const dw  = nv ? `calc((100% - 320px - 96px - ${(nv+2)*2}px) / ${nv})` : '0';
 
   const o = (v) => v ? (0.13 + 0.87*Math.sqrt(v/mx)) : 0;
   const cell = (v, la) => v
@@ -2224,12 +2325,48 @@ function renderMat(){
          color:${o(v)>0.5?'#04121e':'var(--dim)'}">${v}</td>`
     : `<td class="c" style="background:#0a1020;color:#2a3f6b">·</td>`;
 
-  $('matBox').innerHTML = `<table class="heat">
-    <colgroup><col style="width:320px">${NGi.map(()=>
-      `<col class="dcol" style="width:${dw}">`).join('')}<col style="width:64px">
+  /* ── ô thay cho cột ngày khi THU GỌN ──
+     Giấu 67 cột ngày thì thừa ra cả nghìn pixel giữa tên và Σ. Lấp bằng
+     thứ đọc được ngay, không phải nhẩm:
+       Tỉ trọng   — thanh ngang, thấy liền kịch bản nào chiếm phần lớn
+       % tổng     — con số của chính thanh đó
+       Ngày nổ    — nổ rải đều hay dồn một hai ngày (rất khác nhau về bản chất)
+       TB/ngày nổ — chia cho số ngày CÓ nổ, không chia cho cả kỳ: kịch bản
+                    chỉ nổ 2/67 ngày mà chia 67 thì ra số vô nghĩa
+       Ngày đỉnh  — dồn vào ngày nào, dóng thẳng sang mục ③ */
+  const tongBang = rows.reduce((a,k)=>a+k.tong,0) || 1;
+  function oGon(k){
+    const pc   = k.tong / tongBang * 100;
+    const soNg = k.vv.filter(v=>v>0).length;
+    const tb   = soNg ? k.tong / soNg : 0;
+    const jD   = k.vv.indexOf(k.dinh2);
+    /* Thanh so với kịch bản nặng nhất chứ không so với tổng: so với tổng
+       thì mọi thanh đều tí xíu vì không cái nào chiếm quá 16%. */
+    const w = Math.max(1.5, k.tong / rows[0].tong * 100);
+    return `<td class="gon-b"><span class="gonbar" style="width:${w.toFixed(1)}%"></span></td>
+      <td class="gon-n">${pc >= 0.05 ? pc.toFixed(1)+'%' : '·'}</td>
+      <td class="gon-n">${soNg}<span class="gon-m">/${n}</span></td>
+      <td class="gon-n">${soNg ? fmt(Math.round(tb)) : '·'}</td>
+      <td class="gon-n gon-d">${k.dinh2 ? dLab(D.days[NGi[jD]])
+          + '<span class="gon-m"> · '+fmt(k.dinh2)+'</span>' : '·'}</td>`;
+  }
+
+  $('matBox').innerHTML = `<table class="heat${THU_GON?' gon-ngay':''}">
+    <colgroup><col style="width:${THU_GON?'34%':'320px'}">${
+      THU_GON ? `<col style="width:auto"><col style="width:66px">
+                 <col style="width:78px"><col style="width:88px">
+                 <col style="width:108px">` : ''}${NGv.map(()=>
+      `<col class="dcol" style="width:${dw}">`).join('')}<col style="width:${
+        THU_GON?'96px':'64px'}">
       <col style="width:96px"></colgroup>
     <thead><tr>${thS('sxMat','ten','Kịch bản','l',1,'background:none;position:static')}
-      ${NGi.map((i,j)=>{
+      ${THU_GON ? `
+        <th class="gon-h">Tỉ trọng</th>
+        <th class="gon-h n">% tổng</th>
+        <th class="gon-h n">Ngày nổ</th>
+        <th class="gon-h n">TB/ngày nổ</th>
+        <th class="gon-h n">Ngày đỉnh</th>` : ''}
+      ${NGv.map((i,j)=>{
         const on = (SX['sxMat']||{}).k === 'd'+i;
         return `<th class="sx gon d${cuoiTuan(D.days[i])?' we':''}${j===jMx?' hot':''}${
           on?' on':''}" data-d="${on?((SX['sxMat'].d>0)?'asc':'desc'):''}"
@@ -2254,13 +2391,14 @@ function renderMat(){
               >${esc(nhomNgan(k.nhom) || '(chưa phân nhóm)')}
               <span class="gn">${cua.length}${nhO && nhO.kbTong
                 ? '/'+nhO.kbTong : ''} kịch bản</span></td>
-            <td colspan="${n}"></td><td class="c">${fmt(tongNhom)}</td>
+            <td colspan="${nv || 5}"></td><td class="c">${fmt(tongNhom)}</td>
             <td></td></tr>`;
         }
         return dau + `<tr><td class="nm" title="${esc(k.ten)} — ${k.lv}, ${k.sc} điểm${
               k.nhom?' · '+esc(k.nhom):''}">
             <div><span class="nm2">${esc(k.ten)}</span></div></td>` +
-          k.vv.map((v,j)=>cell(v, v===k.dinh2 && v>=20 && k.dinh2 >= k.tong/n*2)).join('') +
+          (THU_GON ? oGon(k) :
+            k.vv.map((v,j)=>cell(v, v===k.dinh2 && v>=20 && k.dinh2 >= k.tong/n*2)).join('')) +
           `<td class="c" style="background:none;color:var(--text);font-weight:700">
              ${fmt(k.tong)}</td>` +
           /* Kịch bản quá ít alert thì % xu hướng nhảy loạn, để trống cho sạch */
@@ -2268,8 +2406,14 @@ function renderMat(){
              k.tong >= 20 ? nhanXu(xuHuong(k.vv)) : ''}</td></tr>`;
       }).join('');
     })() +
-    `</tbody><tfoot><tr><td class="l">TỔNG THEO NGÀY</td>` +
-      cot.map((v,j)=>`<td${j===jMx?' style="color:var(--orange)"':''}>${fmt(v)}</td>`).join('') +
+    `</tbody><tfoot><tr><td class="l">${THU_GON?'TỔNG':'TỔNG THEO NGÀY'}</td>` +
+      (THU_GON
+        ? `<td></td><td class="gon-n">100%</td>
+           <td class="gon-n">${n}<span class="gon-m"> ngày</span></td>
+           <td class="gon-n">${fmt(Math.round(cot.reduce((a,b)=>a+b,0)/n))}</td>
+           <td class="gon-n gon-d">${dLab(D.days[NGi[jMx]])
+             }<span class="gon-m"> · ${fmt(cot[jMx])}</span></td>`
+        : cot.map((v,j)=>`<td${j===jMx?' style="color:var(--orange)"':''}>${fmt(v)}</td>`).join('')) +
       `<td>${fmt(cot.reduce((a,b)=>a+b,0))}</td>
        <td class="xuhuong">${nhanXu(xuHuong(cot))}</td></tr></tfoot></table>`;
 
@@ -2280,8 +2424,10 @@ function renderMat(){
     `<b>${rows.length}</b>/${D.tong.kbCauHinh} kịch bản × <b>${n}</b> ngày` +
     (CACH_NGAY === 'khoang' ? '' : ' gần nhất') +
     ` (${dLab(D.days[NGi[0]])} – ${dLab(D.days[NGi[n-1]])})${
-       kbCam > 0 ? ` · <b>${kbCam}</b> rule chưa nổ lần nào cả kỳ nên không có dòng ở đây` : ''} ·
-     ô càng sáng càng nhiều alert · viền cam = ngày đỉnh của chính kịch bản đó`;
+       kbCam > 0 ? ` · <b>${kbCam}</b> rule chưa nổ lần nào cả kỳ nên không có dòng ở đây` : ''} · ` +
+    (THU_GON
+      ? `<b>đang thu gọn</b> — cột Σ là tổng alert của trọn ${n} ngày trên`
+      : `ô càng sáng càng nhiều alert · viền cam = ngày đỉnh của chính kịch bản đó`);
   $('matNote').innerHTML =
     `<b>Cách đọc:</b> thấy ngày nào lạ ở mục ③ thì dóng xuống cột ngày đó ở đây.
      Cột sáng đều từ trên xuống = cả hệ cùng tăng (thường do data về dồn).
@@ -3511,6 +3657,55 @@ theoHash();              /* #ngay-moi-nhat hoặc #ngay=YYYY-MM-DD */
 }
 .f2-nut-dau:hover{ border-color:var(--f2-ngoc, #2ee8ff); color:var(--f2-ngoc, #2ee8ff) }
 
+/* ───────── danh sách cuộc đã lưu ─────────
+   Xổ xuống ngay dưới thanh tiêu đề, đè lên vùng tin nhắn. Không làm ngăn
+   bên trái kiểu ChatGPT vì panel chỉ rộng 412px — cắt đôi ra thì cả hai
+   nửa đều chật. */
+.f2-sos{
+  flex:none; max-height:46%; overflow-y:auto; scrollbar-width:thin;
+  background:#0a1020; border-bottom:1px solid var(--f2-vien, #1c2a47);
+  scrollbar-color:var(--f2-vien, #1c2a47) transparent;
+}
+.f2-sos::-webkit-scrollbar{ width:7px }
+.f2-sos::-webkit-scrollbar-thumb{ background:var(--f2-vien, #1c2a47); border-radius:4px }
+.f2-sos-dau{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:7px 13px 5px; font-family:var(--f2-mono, ui-monospace, monospace);
+  font-size:9.5px; color:var(--f2-mo2, #5f6f8f); letter-spacing:.02em;
+  position:sticky; top:0; background:#0a1020;
+}
+.f2-sos-dau button{
+  background:none; border:0; color:var(--f2-mo2, #5f6f8f); cursor:pointer;
+  font-family:inherit; font-size:9.5px; padding:2px 5px; border-radius:4px;
+}
+.f2-sos-dau button:hover{ color:var(--f2-do, #ff6b6b); background:rgba(255,107,107,.09) }
+.f2-cuoc{
+  display:flex; align-items:center; gap:8px; padding:7px 13px; cursor:pointer;
+  border-left:2px solid transparent; transition:.12s;
+}
+.f2-cuoc:hover{ background:rgba(46,232,255,.055) }
+.f2-cuoc.dang{ border-left-color:var(--f2-ngoc, #2ee8ff); background:rgba(46,232,255,.08) }
+.f2-cuoc-ten{
+  flex:1; min-width:0; font-size:11.5px; color:var(--f2-dim, #b4c0d6);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.35;
+}
+.f2-cuoc.dang .f2-cuoc-ten{ color:var(--f2-ngoc, #2ee8ff) }
+.f2-cuoc-luc{
+  flex:none; font-family:var(--f2-mono, ui-monospace, monospace); font-size:9px;
+  color:var(--f2-mo2, #5f6f8f);
+}
+.f2-cuoc-xoa{
+  flex:none; background:none; border:0; color:#3d4d6f; cursor:pointer;
+  font-size:13px; line-height:1; padding:2px 4px; border-radius:4px; opacity:0;
+}
+.f2-cuoc:hover .f2-cuoc-xoa{ opacity:.55 }
+.f2-cuoc-xoa:hover{ opacity:1 !important; color:var(--f2-do, #ff6b6b);
+                    background:rgba(255,107,107,.12) }
+.f2-sos-trong{
+  padding:11px 13px 14px; font-size:11px; color:var(--f2-mo2, #5f6f8f);
+  line-height:1.5;
+}
+
 /* ───────── chip phạm vi đang lọc ───────── */
 .f2-chip{
   flex:none; margin:9px 14px 0; display:inline-flex; align-items:center;
@@ -3821,9 +4016,23 @@ strong button.f2-ref{ font-weight:inherit }
     </svg>
     <span class="f2-ten">Trợ lý F2DR<small id="f2-phu">đang nạp dữ liệu…</small></span>
     <span class="f2-cham" title="Sẵn sàng"></span>
+    <button class="f2-nut-dau" id="f2-moi" title="Cuộc trò chuyện mới"
+            aria-label="Cuộc trò chuyện mới">✚</button>
+    <button class="f2-nut-dau" id="f2-sos" title="Các cuộc đã lưu"
+            aria-label="Các cuộc đã lưu" aria-expanded="false">☰</button>
     <button class="f2-nut-dau" id="f2-phong" title="Phóng to khung chat"
             aria-label="Phóng to khung chat" aria-pressed="false">⤢</button>
     <button class="f2-nut-dau" id="f2-thu" title="Thu gọn" aria-label="Thu gọn">−</button>
+  </div>
+
+  <!-- Danh sách các cuộc đã lưu. Ẩn mặc định: mở panel ra là để hỏi, không
+       phải để duyệt lịch sử — bấm ☰ mới hiện. -->
+  <div class="f2-sos f2-an" id="f2-sosbox">
+    <div class="f2-sos-dau">
+      <span id="f2-sos-dem">Chưa có cuộc nào</span>
+      <button id="f2-xoahet" title="Xoá tất cả các cuộc đã lưu">Xoá hết</button>
+    </div>
+    <div id="f2-sos-ds"></div>
   </div>
 
   <div class="f2-chip f2-an" id="f2-chip"></div>
@@ -3945,10 +4154,25 @@ window.F2TriThuc = (function () {
   }
 
   function chiSoNgay(ngay) {
-    var d = duLieu(), i = d.days.indexOf(String(ngay).trim());
+    var d = duLieu(), s = String(ngay).trim();
+    var i = d.days.indexOf(s);
     if (i < 0) {
-      throw new Error("Ngày " + ngay + " không có trong kỳ dữ liệu (" +
-                      d.days[0] + " đến " + d.days[d.days.length - 1] + ")");
+      /* "Chưa có dữ liệu" KHÁC HẲN "có dữ liệu và bằng 0" — với dashboard
+         rủi ro, nhầm hai cái là nhầm giữa "hệ thống sạch" và "chưa biết
+         gì". Nói rõ ngày đó rơi vào đâu để model không trả lời thành 0. */
+      var d0 = d.days[0], d1 = d.days[d.days.length - 1], vi;
+      if (s < d0) {
+        vi = "TRƯỚC kỳ dữ liệu — kỳ này chỉ bắt đầu từ " + d0 + ".";
+      } else if (s > d1) {
+        vi = "SAU kỳ dữ liệu — dữ liệu mới nhất là " + d1 +
+             ". Ngày này CHƯA CÓ DỮ LIỆU, không phải bằng 0.";
+      } else {
+        vi = "nằm trong kỳ nhưng KHÔNG CÓ trong dữ liệu (ngày hụt). " +
+             "Đây là thiếu dữ liệu, KHÔNG phải ngày 0 alert.";
+      }
+      throw new Error("Ngày " + s + " " + vi +
+        " Kỳ dữ liệu: " + d0 + " đến " + d1 + " (" + d.days.length + " ngày). " +
+        "TUYỆT ĐỐI không trả lời là 0 alert — hãy nói rõ là chưa có dữ liệu.");
     }
     return i;
   }
@@ -4941,6 +5165,208 @@ window.F2TriThuc = (function () {
     };
   };
 
+  /* ══════════════════ ĐỒNG PHẠM GIỮA KỊCH BẢN ══════════════════
+     Hai kịch bản hay nổ cùng MỘT khách nói lên một trong hai điều, và cả
+     hai đều đáng biết:
+       · chúng bắt cùng một hành vi  -> trùng lặp, cân nhắc bỏ bớt một
+       · chúng là hai mặt của một thủ đoạn -> đây mới là đầu mối điều tra
+
+     Tính trên toàn bộ 126.616 lượt (khách × ngày) — dữ liệu giàu nhất của
+     dashboard mà trước nay không hàm nào chạm tới.
+
+     Đo bằng LIFT chứ không bằng số lượt trùng: hai kịch bản đông alert thì
+     đương nhiên hay gặp nhau, đếm thô sẽ luôn cho ra đúng mấy cặp to nhất.
+     Lift = (tỉ lệ gặp nhau thực tế) / (tỉ lệ nếu chúng độc lập). Lift 5
+     nghĩa là gặp nhau dày gấp 5 lần mức ngẫu nhiên. */
+  H.kich_ban_di_cung_nhau = function (ts) {
+    ts = ts || {};
+    var d = duLieu();
+    var n = Math.max(1, Math.min(+ts.n || 10, 25));
+    /* Sàn: cặp chỉ trùng vài lượt thì lift vọt lên rất cao mà vô nghĩa —
+       đúng cái bẫy đã mắc ở hanh_vi_theo_cum_diem. */
+    var san = Math.max(5, +ts.toi_thieu || 20);
+
+    var demKb = {}, demCap = {}, tong = d.picks.length;
+    d.picks.forEach(function (pk) {
+      var ids = [], da = {};
+      for (var w = 0; w < pk.length; w += 2) {
+        if (!da[pk[w]]) { da[pk[w]] = 1; ids.push(pk[w]); }
+      }
+      ids.forEach(function (a) { demKb[a] = (demKb[a] || 0) + 1; });
+      ids.sort(function (x, y) { return x - y; });
+      for (var i = 0; i < ids.length; i++)
+        for (var j = i + 1; j < ids.length; j++) {
+          var kh = ids[i] + "|" + ids[j];
+          demCap[kh] = (demCap[kh] || 0) + 1;
+        }
+    });
+
+    var ds = Object.keys(demCap).map(function (kh) {
+      var p = kh.split("|"), a = +p[0], b = +p[1], c = demCap[kh];
+      var pa = demKb[a] / tong, pb = demKb[b] / tong, pab = c / tong;
+      return {
+        kich_ban_a: d.kb[a].ten, kich_ban_b: d.kb[b].ten,
+        nhom_a: d.kb[a].nhom, nhom_b: d.kb[b].nhom,
+        so_luot_di_cung: c,
+        /* Tỉ lệ có điều kiện hai chiều: A nổ thì bao nhiêu % kèm B, và
+           ngược lại. Lệch nhau nhiều nghĩa là quan hệ một chiều — B gần
+           như luôn kèm A nhưng A thì không, đáng chú ý hơn hẳn. */
+        khi_co_a_thi_co_b: lam(c / demKb[a] * 100, 1),
+        khi_co_b_thi_co_a: lam(c / demKb[b] * 100, 1),
+        lift: lam(pab / (pa * pb), 1),
+        so_luot_a: demKb[a], so_luot_b: demKb[b]
+      };
+    }).filter(function (x) { return x.so_luot_di_cung >= san; });
+
+    ds.sort(function (x, y) { return y.lift - x.lift; });
+
+    return {
+      _mo_ta: "Cặp kịch bản hay nổ cùng một khách trong cùng ngày (toàn kỳ " +
+              tong.toLocaleString("vi") + " lượt)",
+      tong_luot: tong,
+      san_toi_thieu: san,
+      so_cap_dat_san: ds.length,
+      danh_sach: ds.slice(0, n),
+      _ghi_chu: "lift = gặp nhau dày gấp mấy lần mức ngẫu nhiên. " +
+        "lift > 3 là đáng soi: hoặc hai rule trùng nhau, hoặc đó là một " +
+        "thủ đoạn có cấu trúc. 'khi_co_a_thi_co_b' lệch hẳn " +
+        "'khi_co_b_thi_co_a' = quan hệ một chiều."
+    };
+  };
+
+  /* Alert của một kịch bản dồn vào ít khách hay rải đều?
+     Cùng 10.000 alert nhưng 500 khách với 10 khách là hai câu chuyện khác
+     hẳn: rải đều thường là rule quét rộng, dồn cục là vài đối tượng bắn
+     liên tục — cái sau mới đáng điều tra. */
+  H.do_tap_trung_kich_ban = function (ts) {
+    ts = ts || {};
+    var d = duLieu();
+    var ten = ts.kich_ban ? String(ts.kich_ban) : null;
+    var idx = {};
+    d.kb.forEach(function (k, i) { idx[i] = { ten: k.ten, nhom: k.nhom,
+      alert: 0, khach: {}, theoKhach: {} }; });
+
+    d.picks.forEach(function (pk, li) {
+      for (var w = 0; w < pk.length; w += 2) {
+        var o = idx[pk[w]], kh = d.luotKh[li];
+        o.alert += pk[w + 1];
+        o.khach[kh] = 1;
+        o.theoKhach[kh] = (o.theoKhach[kh] || 0) + pk[w + 1];
+      }
+    });
+
+    var ra = Object.keys(idx).map(function (i) {
+      var o = idx[i];
+      var ks = Object.keys(o.theoKhach);
+      if (!ks.length) return null;
+      var v = ks.map(function (t) { return o.theoKhach[t]; })
+                .sort(function (a, b) { return b - a; });
+      var tong = v.reduce(function (a, b) { return a + b; }, 0);
+      /* Bao nhiêu % alert đến từ 10% khách đông nhất — chỉ số dễ đọc hơn
+         hệ số Gini mà nói lên đúng điều cần biết. */
+      var top = Math.max(1, Math.round(v.length * 0.1));
+      var tongTop = v.slice(0, top).reduce(function (a, b) { return a + b; }, 0);
+      return {
+        kich_ban: o.ten, nhom: o.nhom,
+        tong_alert: tong, so_khach: v.length,
+        alert_moi_khach: lam(tong / v.length, 1),
+        khach_nang_nhat: v[0],
+        ty_le_alert_tu_10pc_khach_dong_nhat: lam(tongTop / tong * 100, 1)
+      };
+    }).filter(Boolean);
+
+    if (ten) {
+      var mot = ra.filter(function (x) {
+        return x.kich_ban.toLowerCase().indexOf(ten.toLowerCase()) >= 0;
+      });
+      return { _mo_ta: "Độ tập trung của kịch bản khớp '" + ten + "'",
+               danh_sach: mot };
+    }
+    ra.sort(function (a, b) {
+      return b.ty_le_alert_tu_10pc_khach_dong_nhat -
+             a.ty_le_alert_tu_10pc_khach_dong_nhat;
+    });
+    return {
+      _mo_ta: "Kịch bản nào dồn alert vào ít khách nhất (xếp giảm dần)",
+      danh_sach: ra.slice(0, Math.max(1, Math.min(+ts.n || 12, 38))),
+      _ghi_chu: "Tỉ lệ càng cao = alert càng dồn vào một nhúm khách. " +
+        "Trên 60% thường là vài đối tượng bắn liên tục, đáng điều tra hơn " +
+        "rule quét rộng."
+    };
+  };
+
+  /* ══════════════════ SO HAI KHOẢNG THỜI GIAN ══════════════════
+     "Tháng 8 khác tháng 7 chỗ nào" — trước phải gọi hai lần rồi tự trừ
+     nhẩm, vừa dễ sai vừa không nêu được cái gì đổi mạnh nhất. */
+  H.so_sanh_hai_ky = function (ts) {
+    ts = ts || {};
+    var d = duLieu();
+    var A = chiSoKhoang({ tu: ts.tu_a, den: ts.den_a });
+    var B = chiSoKhoang({ tu: ts.tu_b, den: ts.den_b });
+    if (!A || !A.length || !B || !B.length) {
+      return { _mo_ta: "Thiếu mốc thời gian",
+               _loi: "Cần đủ bốn tham số: tu_a, den_a, tu_b, den_b " +
+                     "(dạng YYYY-MM-DD hoặc DD/MM). Kỳ dữ liệu: " +
+                     d.days[0] + " đến " + d.days[d.days.length - 1] };
+    }
+
+    function gom(idx) {
+      var al = 0, kbo = {};
+      d.kb.forEach(function (k, i) {
+        var s = 0;
+        idx.forEach(function (j) { s += k.v[j]; });
+        al += s;
+        if (s) kbo[k.ten] = { alert: s, nhom: k.nhom };
+      });
+      return { alert: al, kb: kbo, so_ngay: idx.length };
+    }
+    var ga = gom(A), gb = gom(B);
+
+    var ten = {};
+    Object.keys(ga.kb).forEach(function (t) { ten[t] = 1; });
+    Object.keys(gb.kb).forEach(function (t) { ten[t] = 1; });
+
+    var doi = Object.keys(ten).map(function (t) {
+      var a = ga.kb[t] ? ga.kb[t].alert : 0;
+      var b = gb.kb[t] ? gb.kb[t].alert : 0;
+      /* So TRUNG BÌNH MỖI NGÀY, không so tổng: hai kỳ lệch số ngày thì so
+         tổng là sai hẳn (tháng 9 mới 5 ngày so với tháng 8 đủ 31 ngày). */
+      var ta = a / ga.so_ngay, tb = b / gb.so_ngay;
+      return {
+        kich_ban: t, nhom: (ga.kb[t] || gb.kb[t]).nhom,
+        alert_ky_a: a, alert_ky_b: b,
+        tb_ngay_ky_a: lam(ta, 1), tb_ngay_ky_b: lam(tb, 1),
+        thay_doi_pc: ta > 0 ? lam((tb - ta) / ta * 100, 1)
+                            : (tb > 0 ? null : 0),
+        trang_thai: ta === 0 && tb > 0 ? "MỚI XUẤT HIỆN"
+                  : tb === 0 && ta > 0 ? "TẮT HẲN" : ""
+      };
+    });
+
+    var co = doi.filter(function (x) { return x.thay_doi_pc !== null; });
+    co.sort(function (a, b) { return b.thay_doi_pc - a.thay_doi_pc; });
+    var moi = doi.filter(function (x) { return x.trang_thai === "MỚI XUẤT HIỆN"; });
+    var tat = doi.filter(function (x) { return x.trang_thai === "TẮT HẲN"; });
+
+    var tbA = ga.alert / ga.so_ngay, tbB = gb.alert / gb.so_ngay;
+    return {
+      _mo_ta: "So kỳ A (" + d.days[A[0]] + " – " + d.days[A[A.length-1]] +
+              ", " + ga.so_ngay + " ngày) với kỳ B (" + d.days[B[0]] + " – " +
+              d.days[B[B.length-1]] + ", " + gb.so_ngay + " ngày)",
+      ky_a: { tu: d.days[A[0]], den: d.days[A[A.length-1]],
+              so_ngay: ga.so_ngay, tong_alert: ga.alert, tb_ngay: lam(tbA, 1) },
+      ky_b: { tu: d.days[B[0]], den: d.days[B[B.length-1]],
+              so_ngay: gb.so_ngay, tong_alert: gb.alert, tb_ngay: lam(tbB, 1) },
+      thay_doi_chung_pc: tbA > 0 ? lam((tbB - tbA) / tbA * 100, 1) : null,
+      tang_manh_nhat: co.slice(0, 6),
+      giam_manh_nhat: co.slice(-6).reverse(),
+      moi_xuat_hien: moi,
+      tat_han: tat,
+      _ghi_chu: "Mọi so sánh theo TRUNG BÌNH MỖI NGÀY vì hai kỳ có thể " +
+        "lệch số ngày. Kỳ A là mốc so sánh, kỳ B là kỳ đang xét."
+    };
+  };
+
   /* ══════════════════ MÔ TẢ CHO LLM ══════════════════ */
   var MO_TA = {
     tong_quan: "Bức tranh chung cả kỳ: tổng alert, khách, kịch bản, ngày cao nhất",
@@ -4960,6 +5386,9 @@ window.F2TriThuc = (function () {
     thong_ke_nhom: "Alert/khách/kịch bản theo nhóm nghiệp vụ. Tham số: ngay (một ngày) hoặc tu + den (khoảng ngày). Không truyền = toàn kỳ",
     nhom_im_lang: "Nhóm nghiệp vụ không có alert nào",
     nhom_theo_ngay: "Một nhóm biến động qua các ngày. Tham số: nhom",
+    kich_ban_di_cung_nhau: "Cặp kịch bản nào hay nổ cùng MỘT khách trong cùng ngày. Dùng khi hỏi: hai rule có trùng nhau không, kịch bản nào đi kèm kịch bản nào, tổ hợp nào là thủ đoạn có cấu trúc. Xếp theo lift (dày gấp mấy lần mức ngẫu nhiên), KHÔNG phải theo số lượt — hai rule đông alert thì đương nhiên hay gặp nhau. Tham số: n (số cặp, mặc định 10), toi_thieu (sàn số lượt, mặc định 20).",
+    do_tap_trung_kich_ban: "Alert của kịch bản dồn vào ít khách hay rải đều. Dùng khi hỏi: rule nào bắn vào vài đối tượng, rule nào quét rộng, alert có tập trung không. Tham số: kich_ban (tên, để trống thì xếp hạng tất cả), n.",
+    so_sanh_hai_ky: "So HAI KHOẢNG THỜI GIAN với nhau: kịch bản nào tăng/giảm mạnh nhất, cái gì mới xuất hiện, cái gì tắt hẳn. Dùng khi hỏi 'tháng 8 so tháng 7', 'tuần này so tuần trước'. Tham số BẮT BUỘC đủ bốn: tu_a, den_a (kỳ mốc), tu_b, den_b (kỳ đang xét). Mọi so sánh theo trung bình mỗi ngày nên hai kỳ lệch số ngày vẫn đúng.",
     hanh_vi_theo_cum_diem: "Khách trong MỘT KHOẢNG ĐIỂM IMPACT thì hành vi ra sao: dính kịch bản nào, tổ hợp nào, lặp mấy lần, kịch bản nào đặc trưng cho khoảng đó. Tham số: tu + den (điểm của KHÁCH, 0-100) HOẶC muc ('Low'/'Medium'/'High'/'Very High'), thêm ngay nếu chỉ xét một ngày. LƯU Ý: 'điểm' ở đây là điểm Impact của KHÁCH trong một ngày — KHÁC hẳn 'điểm gốc' của kịch bản. Hỏi 'khách 80-82 điểm làm gì' thì dùng hàm này, đừng tra điểm gốc kịch bản.",
     top_khach_hang: "Khách bị bắn nhiều alert nhất. Tham số: n, ngay",
     ho_so_khach: "Hồ sơ một khách: từng ngày dính kịch bản gì. Tham số: ma",
@@ -6214,8 +6643,32 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
             hongLienTiep = 0;
           } catch (e) {
             hongLienTiep++;
-            var loi = { _mo_ta: "Bước này không chạy được", _loi: e.message,
-                        _huong_dan: "Đổi cách khác hoặc dừng lại nếu đã đủ." };
+            /* Báo lỗi trống rỗng thì model chỉ biết gọi lại y hệt rồi hỏng
+               tiếp. Nói rõ SAI Ở ĐÂU và gợi tên hàm gần đúng — sai tên hàm
+               và sai tên tham số là hai lỗi phổ biến nhất. */
+            var goiY = "";
+            try {
+              var dsH = TT.danhSachHam || [];
+              if (dsH.indexOf(qd.ham) < 0) {
+                var gan = dsH.filter(function (t) {
+                  var a = t.split("_"), b = String(qd.ham || "").split("_");
+                  return a.some(function (x) { return b.indexOf(x) >= 0; });
+                }).slice(0, 4);
+                goiY = "Hàm '" + qd.ham + "' KHÔNG tồn tại." +
+                  (gan.length ? " Có thể bạn định gọi: " + gan.join(", ") + "."
+                              : " Xem lại danh sách hàm được phép.");
+              } else {
+                goiY = "Hàm có thật nhưng tham số không hợp. Xem lại mô tả " +
+                       "của '" + qd.ham + "' để biết nó nhận tham số nào.";
+              }
+            } catch (e2) { /* gợi ý hỏng thì vẫn báo lỗi gốc */ }
+
+            var loi = { _mo_ta: "Bước này không chạy được",
+                        _loi: e.message,
+                        _sai_o_dau: goiY,
+                        _huong_dan: "Sửa lại lời gọi theo gợi ý trên rồi thử " +
+                          "MỘT lần nữa. Nếu vẫn không được thì trả lời bằng " +
+                          "dữ kiện đã có, đừng lặp lại lời gọi y hệt." };
             R.cacBuoc.push({ moTa: "bước thất bại", ketQua: loi });
             R.duKien.push(loi);
             ghiLog("   lỗi: " + e.message.slice(0, 80));
@@ -6440,6 +6893,175 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
 </script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
+   KHO HỘI THOẠI  —  lưu lại các cuộc chat, còn nguyên sau khi tải lại trang
+
+   Vì sao localStorage chứ không phải SQLite/database:
+     Dashboard này là một trang HTML tĩnh, mọi thứ chạy trong trình duyệt.
+     Không có backend nào lúc chạy để mà cắm database vào:
+       · bản HTML       — mở bằng file://, không có máy chủ
+       · bản Streamlit   — filesystem bị xoá sạch mỗi lần app ngủ dậy
+       · bản Cloudflare  — Pages không có đĩa ghi được
+     localStorage bền qua reload, qua tắt trình duyệt, và chạy giống nhau
+     ở cả ba bản. Đúng nhu cầu mà không phải dựng thêm hạ tầng.
+
+   Giới hạn cần biết: localStorage gắn với MỘT trình duyệt trên MỘT máy.
+   Đổi máy hay xoá dữ liệu duyệt web là mất. Với sổ tay hỏi đáp cá nhân thì
+   chấp nhận được; muốn đồng bộ nhiều máy mới cần tới máy chủ thật.
+   ══════════════════════════════════════════════════════════════════════ */
+window.F2Kho = (function () {
+  "use strict";
+
+  var KHOA = "f2dr_chat_v1";
+  var SO_CUOC_TOI_DA = 30;      // giữ 30 cuộc gần nhất, cũ hơn thì bỏ
+  var SO_TIN_MOI_CUOC = 60;     // một cuộc dài quá thì cắt bớt đầu
+
+  /* localStorage bị chặn ở chế độ riêng tư trên vài trình duyệt, và cũng
+     đầy được (thường ~5 MB). Hỏng chỗ này TUYỆT ĐỐI không được làm hỏng
+     chat — nên mọi lối vào đều bọc try và ngã về bộ nhớ tạm. */
+  var TAM = null;               // dùng khi localStorage không xài được
+
+  function doc() {
+    if (TAM) return TAM;
+    try {
+      var s = localStorage.getItem(KHOA);
+      if (!s) return { ds: [], hienTai: null };
+      var j = JSON.parse(s);
+      return j && j.ds ? j : { ds: [], hienTai: null };
+    } catch (e) {
+      TAM = { ds: [], hienTai: null };
+      return TAM;
+    }
+  }
+
+  function ghi(kho) {
+    if (TAM) { TAM = kho; return; }
+    try {
+      localStorage.setItem(KHOA, JSON.stringify(kho));
+    } catch (e) {
+      /* Đầy kho: bỏ dần cuộc cũ nhất rồi thử lại. Vẫn không được thì
+         chuyển hẳn sang bộ nhớ tạm — phiên này vẫn chat bình thường,
+         chỉ không giữ được sau khi tải lại. */
+      for (var i = 0; i < 6 && kho.ds.length > 1; i++) {
+        kho.ds.pop();
+        try { localStorage.setItem(KHOA, JSON.stringify(kho)); return; }
+        catch (e2) { /* thử tiếp */ }
+      }
+      TAM = kho;
+    }
+  }
+
+  function ma() {
+    return String(Date.now()) + "-" + Math.random().toString(36).slice(2, 7);
+  }
+
+  /* Tên cuộc chat lấy từ câu hỏi ĐẦU TIÊN — đó là thứ người ta nhớ khi
+     tìm lại. Cắt ngắn cho vừa danh sách bên cạnh. */
+  function datTen(cau) {
+    var s = String(cau || "").replace(/\s+/g, " ").trim();
+    if (s.length > 42) s = s.slice(0, 42).replace(/\s\S*$/, "") + "…";
+    return s || "Cuộc trò chuyện";
+  }
+
+  return {
+    /* Danh sách cuộc chat, mới nhất lên đầu. Chỉ trả phần tóm lược để vẽ
+       danh sách, không kéo cả nội dung ra cho nhẹ. */
+    danhSach: function () {
+      var k = doc();
+      return k.ds.map(function (c) {
+        return { ma: c.ma, ten: c.ten, luc: c.luc, soTin: (c.tin || []).length };
+      });
+    },
+
+    maHienTai: function () { return doc().hienTai; },
+
+    layCuoc: function (m) {
+      var k = doc(), i;
+      for (i = 0; i < k.ds.length; i++) if (k.ds[i].ma === m) return k.ds[i];
+      return null;
+    },
+
+    /* Mở một cuộc cũ: chỉ đánh dấu đang xem cuộc nào, nội dung do bên
+       giao diện tự đọc bằng layCuoc(). */
+    chon: function (m) {
+      var k = doc();
+      k.hienTai = m;
+      ghi(k);
+    },
+
+    /* Cuộc mới chỉ được tạo THẬT khi có câu hỏi đầu tiên (xem themTin).
+       Bấm "New Chat" mà tạo ngay thì danh sách đầy những cuộc rỗng. */
+    moiCuoc: function () {
+      var k = doc();
+      k.hienTai = null;
+      ghi(k);
+    },
+
+    /* Thêm một lượt hỏi–đáp. Trả về mã cuộc đang ghi vào, vì lượt đầu
+       tiên là lúc cuộc được sinh ra. */
+    themTin: function (hoiCau, dapVan, kem) {
+      var k = doc(), c = null, i;
+      for (i = 0; i < k.ds.length; i++) {
+        if (k.ds[i].ma === k.hienTai) { c = k.ds[i]; break; }
+      }
+      if (!c) {
+        c = { ma: ma(), ten: datTen(hoiCau), luc: Date.now(), tin: [] };
+        k.ds.unshift(c);
+        k.hienTai = c.ma;
+      }
+      c.luc = Date.now();
+      c.tin.push({ vai: "toi", van: hoiCau, luc: Date.now() });
+      c.tin.push({
+        vai: "bot", van: dapVan, luc: Date.now(),
+        /* Giữ nhãn kiểm chứng và nguồn số liệu: mở lại cuộc cũ mà mất
+           dấu "✓ n số đã đối chiếu" thì không còn biết câu trả lời đó
+           có được soát hay không. */
+        kem: kem || null
+      });
+      if (c.tin.length > SO_TIN_MOI_CUOC) {
+        c.tin = c.tin.slice(c.tin.length - SO_TIN_MOI_CUOC);
+      }
+      /* Cuộc vừa động phải lên đầu danh sách. */
+      k.ds = [c].concat(k.ds.filter(function (x) { return x.ma !== c.ma; }));
+      if (k.ds.length > SO_CUOC_TOI_DA) k.ds = k.ds.slice(0, SO_CUOC_TOI_DA);
+      ghi(k);
+      return c.ma;
+    },
+
+    xoa: function (m) {
+      var k = doc();
+      k.ds = k.ds.filter(function (x) { return x.ma !== m; });
+      if (k.hienTai === m) k.hienTai = null;
+      ghi(k);
+    },
+
+    xoaHet: function () {
+      ghi({ ds: [], hienTai: null });
+    },
+
+    /* Ngữ cảnh cho câu hỏi nối tiếp: vài lượt gần nhất của cuộc đang mở,
+       đúng dạng mà bộ não đang nhận ({hoi, dap}). Không gửi cả cuộc —
+       vừa tốn hạn mức vừa dễ vượt giới hạn. */
+    nganhCanh: function (soLuot) {
+      var c = this.layCuoc(doc().hienTai);
+      if (!c) return [];
+      var ra = [], t = c.tin, i;
+      for (i = 0; i + 1 < t.length; i += 2) {
+        if (t[i].vai === "toi" && t[i + 1].vai === "bot") {
+          ra.push({ hoi: t[i].van, dap: t[i + 1].van });
+        }
+      }
+      return ra.slice(-(soLuot || 6));
+    },
+
+    /* Có dùng được localStorage không — để giao diện nói thật với người
+       dùng thay vì hứa suông là đã lưu. */
+    ben: function () { return !TAM; }
+  };
+})();
+
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════
    PANEL CHAT — phần giao diện.
 
    Chỉ lo vẽ và nhận thao tác. Toàn bộ phần nghĩ nằm ở _chat_bo_nao.js:
@@ -6456,7 +7078,11 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
   var nut = $("f2-nut"), panel = $("f2-panel"), tin = $("f2-tin"),
       o = $("f2-o"), gui = $("f2-gui"), goiy = $("f2-goiy"),
       chip = $("f2-chip"), phu = $("f2-phu"), conlai = $("f2-conlai"),
-      thu = $("f2-thu"), phong = $("f2-phong");
+      thu = $("f2-thu"), phong = $("f2-phong"),
+      nutMoi = $("f2-moi"), nutSos = $("f2-sos"), sosBox = $("f2-sosbox"),
+      sosDs = $("f2-sos-ds"), sosDem = $("f2-sos-dem"), xoaHet = $("f2-xoahet");
+
+  var KHO = window.F2Kho || null;
 
   /* Dashboard đang nằm trong iframe của trang khác (bản deploy trên
      Streamlit) thì góc phải dưới không còn là của mình: huy hiệu Streamlit
@@ -6804,6 +7430,20 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
         veGoiY(t.goiY.length ? t.goiY : GOI_Y_DAU.slice(0, 3));
         lichSu.push({ hoi: cau, dap: t.van });
         if (lichSu.length > 6) lichSu.shift();
+        /* Lưu lại để tải trang vẫn còn. Giữ cả nhãn kiểm chứng, không thì
+           mở lại cuộc cũ mất dấu "đã đối chiếu n số". */
+        if (KHO) {
+          try {
+            /* Chỉ giữ đúng những trường veNhan() đọc — nhét cả R vào thì
+               kéo theo dữ liệu thô của từng bước, phình localStorage. */
+            KHO.themTin(cau, t.van, {
+              kiemChung: R.kiemChung, cacBuoc: R.cacBuoc, giay: R.giay,
+              boDienGiai: R.boDienGiai, piiDaCat: R.piiDaCat,
+              khongCanDoiChieu: R.khongCanDoiChieu, dap: t.van
+            });
+            veDanhSach();
+          } catch (e) { /* kho hỏng thì chat vẫn phải chạy */ }
+        }
         dangCho = false;
         gui.disabled = false;
         nut.classList.remove("f2-nghi");
@@ -6837,6 +7477,123 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
       conlai.textContent = "";
     }
   }
+
+  /* ═══════════════ CÁC CUỘC TRÒ CHUYỆN ═══════════════
+     Lưu vào localStorage (xem _chat_kho.js) nên tải lại trang vẫn còn.
+     Hỏng phần này không được làm hỏng chat: mọi chỗ đều kiểm KHO trước,
+     không có kho thì chat chạy như cũ, chỉ không nhớ được. */
+
+  function nhanLuc(t) {
+    var d = new Date(t), n = new Date();
+    var hn = d.getFullYear() === n.getFullYear() &&
+             d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+    var hh = ("0" + d.getHours()).slice(-2) + ":" +
+             ("0" + d.getMinutes()).slice(-2);
+    return hn ? hh : ("0" + d.getDate()).slice(-2) + "/" +
+                     ("0" + (d.getMonth() + 1)).slice(-2);
+  }
+
+  function veDanhSach() {
+    if (!KHO) return;
+    var ds = KHO.danhSach(), nay = KHO.maHienTai();
+
+    sosDem.textContent = ds.length
+      ? ds.length + " cuộc đã lưu" + (KHO.ben() ? "" : " (phiên này thôi)")
+      : "Chưa có cuộc nào";
+    xoaHet.style.display = ds.length ? "" : "none";
+
+    if (!ds.length) {
+      sosDs.innerHTML =
+        '<div class="f2-sos-trong">Các cuộc trò chuyện sẽ tự lưu lại ở đây. ' +
+        'Tải lại trang vẫn xem lại được.</div>';
+      return;
+    }
+
+    sosDs.innerHTML = ds.map(function (c) {
+      return '<div class="f2-cuoc' + (c.ma === nay ? " dang" : "") +
+             '" data-ma="' + c.ma + '">' +
+             '<span class="f2-cuoc-ten">' + thoat(c.ten) + "</span>" +
+             '<span class="f2-cuoc-luc">' + nhanLuc(c.luc) + "</span>" +
+             '<button class="f2-cuoc-xoa" data-xoa="' + c.ma +
+             '" title="Xoá cuộc này">×</button></div>';
+    }).join("");
+  }
+
+  /* Vẽ lại một cuộc cũ ra khung tin nhắn. Không gọi model — chỉ dựng lại
+     đúng những gì đã lưu. */
+  function moCuoc(m) {
+    if (!KHO) return;
+    var c = KHO.layCuoc(m);
+    if (!c) return;
+    KHO.chon(m);
+    tin.innerHTML = "";
+    lichSu = [];
+
+    c.tin.forEach(function (t) {
+      if (t.vai === "toi") {
+        themHang("toi", md(t.van));
+      } else {
+        var d = themHang("bot", md(t.van));
+        noiThamChieu(d.querySelector(".f2-bong"));
+        /* Dựng lại nhãn kiểm chứng — mất nó thì không còn biết câu trả
+           lời cũ đã được soát số hay chưa. */
+        if (t.kem) veNhan(t.kem);
+      }
+    });
+    /* Ngữ cảnh cho câu hỏi nối tiếp lấy từ chính cuộc vừa mở, nên hỏi
+       tiếp "cái đó" vẫn hiểu đúng thứ đang nói. */
+    lichSu = KHO.nganhCanh(6);
+    veGoiY(GOI_Y_DAU.slice(0, 3));
+    dongDanhSach();
+    cuonXuong();
+  }
+
+  function cuocMoi() {
+    if (KHO) KHO.moiCuoc();
+    tin.innerHTML = "";
+    lichSu = [];
+    themHang("bot", md(
+      "Cuộc mới. Hỏi gì cũng được — tôi vẫn đọc đúng dữ liệu của kỳ này."));
+    veGoiY(GOI_Y_DAU);
+    dongDanhSach();
+    veDanhSach();
+    o.focus();
+  }
+
+  function moDanhSach() {
+    veDanhSach();
+    sosBox.classList.remove("f2-an");
+    nutSos.classList.add("on");
+    nutSos.setAttribute("aria-expanded", "true");
+  }
+  function dongDanhSach() {
+    sosBox.classList.add("f2-an");
+    nutSos.classList.remove("on");
+    nutSos.setAttribute("aria-expanded", "false");
+  }
+
+  if (nutMoi) nutMoi.onclick = cuocMoi;
+  if (nutSos) nutSos.onclick = function () {
+    if (sosBox.classList.contains("f2-an")) moDanhSach(); else dongDanhSach();
+  };
+  if (xoaHet) xoaHet.onclick = function () {
+    if (!KHO) return;
+    KHO.xoaHet();
+    veDanhSach();
+    cuocMoi();
+  };
+  if (sosDs) sosDs.onclick = function (e) {
+    var x = e.target.closest ? e.target.closest("[data-xoa]") : null;
+    if (x) {                       /* bấm dấu × — xoá, không mở cuộc */
+      e.stopPropagation();
+      KHO.xoa(x.getAttribute("data-xoa"));
+      veDanhSach();
+      if (!KHO.maHienTai()) cuocMoi();
+      return;
+    }
+    var c = e.target.closest ? e.target.closest(".f2-cuoc") : null;
+    if (c) moCuoc(c.getAttribute("data-ma"));
+  };
 
   /* ───────── mở / thu ───────── */
   var hen_dong = null;
@@ -7060,12 +7817,20 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
           "`_build/xem_truoc.py`.\n\n") +
       "Dashboard và giao diện chat vẫn dùng bình thường."));
   } else {
-    themHang("bot", md(
-      "Chào bạn. Tôi đọc được dữ liệu alert của kỳ này và trả lời bằng số " +
-      "lấy thẳng từ đó — không đoán.\n\n" +
-      "Hỏi gì cũng được, hoặc bấm một câu gợi ý bên dưới."));
+    /* Có cuộc dở từ lần trước thì mở lại đúng chỗ đó, thay vì chào lại từ
+       đầu — đóng tab rồi mở ra mà mất cả mạch hỏi là bực nhất. */
+    var cuocCu = KHO && KHO.maHienTai() && KHO.layCuoc(KHO.maHienTai());
+    if (cuocCu && cuocCu.tin && cuocCu.tin.length) {
+      moCuoc(cuocCu.ma);
+    } else {
+      themHang("bot", md(
+        "Chào bạn. Tôi đọc được dữ liệu alert của kỳ này và trả lời bằng số " +
+        "lấy thẳng từ đó — không đoán.\n\n" +
+        "Hỏi gì cũng được, hoặc bấm một câu gợi ý bên dưới."));
+    }
   }
-  veGoiY(GOI_Y_DAU);
+  if (!tin.querySelector(".f2-hang")) veGoiY(GOI_Y_DAU);
+  veDanhSach();
   capNhatConLai();
 
   /* Mở ra vài hàm thuần để kiểm thử tự động dựng lại được câu trả lời mà
