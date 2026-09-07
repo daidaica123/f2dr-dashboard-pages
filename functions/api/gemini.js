@@ -144,13 +144,33 @@ export function onRequestGet({ env }) {
    OpenRouter nói giọng OpenAI, còn phần còn lại của hệ thống nói giọng
    Gemini. Dịch hai chiều ở đây để bên trình duyệt không phải biết mình
    đang đi đường nào. */
+/* Model nào nhận được response_format (structured outputs). Cái không
+   nhận mà vẫn gửi thì trả 400 "does not support feature: structured-
+   outputs" — đo được 07/09 với ling-3.0. */
+const NHAN_JSON = new Set([
+  "minimax/minimax-m2.7:free",
+  "nvidia/nemotron-3.5-lightning:free",
+]);
+
 async function motLanOR(tenOR, phan, cfg, khoa, url) {
+  const doiJson = cfg.responseMimeType === "application/json";
+
+  /* Model không nhận response_format thì dặn bằng lời. Bên trình duyệt
+     vốn đã có bộ gỡ ```json và tìm {…} khi model trả lệch khuôn, nên vẫn
+     đọc được — thà vậy còn hơn 400 cứng. */
+  const noiDung =
+    doiJson && !NHAN_JSON.has(tenOR)
+      ? phan +
+        "\n\nCHỈ trả về một đối tượng JSON hợp lệ. Không viết gì thêm, " +
+        "không rào đón, không bọc trong khối mã."
+      : phan;
+
   const yc = {
     model: tenOR,
-    messages: [{ role: "user", content: phan }],
+    messages: [{ role: "user", content: noiDung }],
     temperature: cfg.temperature == null ? 0 : cfg.temperature,
   };
-  if (cfg.responseMimeType === "application/json") {
+  if (doiJson && NHAN_JSON.has(tenOR)) {
     yc.response_format = { type: "json_object" };
   }
 
@@ -205,7 +225,9 @@ async function quaOpenRouter(model, than, khoa, url) {
        hỏng) thì đổi model cũng vô ích — báo ngay. */
     const doi =
       r.status === 429 || r.status === 402 || r.status === 404 ||
-      /rate.?limit|quota|temporarily|unavailable|no endpoints/i.test(String(tin));
+      r.status === 400 ||   // model tu choi tinh nang (structured outputs…)
+      /rate.?limit|quota|temporarily|unavailable|no endpoints|does not support/i
+        .test(String(tin));
     if (!doi) break;
   }
 
