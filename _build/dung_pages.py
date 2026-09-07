@@ -57,7 +57,7 @@ def main():
     import xem_truoc
 
     js = [xem_truoc.JS_TRI_THUC, xem_truoc.JS_BO_NAO,
-          xem_truoc.JS_KHO, xem_truoc.JS_UI]
+          xem_truoc.JS_KHO, xem_truoc.JS_LAI, xem_truoc.JS_UI]
     print("Soat cu phap JS:")
     if soat_js.main(js):
         sys.exit("Dung lai: sua loi JS o tren roi chay lai.")
