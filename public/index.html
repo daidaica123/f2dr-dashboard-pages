@@ -6429,8 +6429,12 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
 
   return { hoi: hoi, tachGoiY: tachGoiY, kiemCauHoi: kiemCauHoi,
            thuPhepTinh: hoiPhepTinh, thuXaGiao: xaGiao,
-           kiemSo: kiemSo, quetDauRa: quetDauRa, coKhoa: function () {
-             return !!khoa(); } };
+           kiemSo: kiemSo, quetDauRa: quetDauRa,
+           /* Có khoá dùng được không — tính cả chế độ proxy, nơi khoá nằm
+              ở máy chủ chứ không trong trang. Chỉ đếm khoá trong trang thì
+              bản Pages luôn bị báo "chưa có khoá" dù chat chạy tốt. */
+           coKhoa: function () { return !!khoa() || dungProxy(); },
+           hoiSoKhoa: hoiSoKhoa };
 })();
 
 </script>
@@ -7042,12 +7046,18 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
     o.disabled = true;
     gui.disabled = true;
   } else if (!BN.coKhoa()) {
+    /* Chỗ đặt khoá khác nhau theo bản đang chạy — chỉ đúng một nơi, nói
+       nhầm chỗ thì người dùng đi tìm mỏi mắt. */
+    var oProxy = !!(window.F2_CAU_HINH && window.F2_CAU_HINH.proxy);
     themHang("bot", md(
       "**Chưa có khoá API** nên tôi chưa trả lời được.\n\n" +
-      "Trên Streamlit: mở **Settings → Secrets** của app rồi dán vào\n\n" +
-      "```\nGEMINI_API_KEYS = [\"khoa1\", \"khoa2\"]\n```\n\n" +
-      "Tại máy: đặt khoá trong `.streamlit/secrets.toml` rồi chạy lại " +
-      "`_build/xem_truoc.py`.\n\n" +
+      (oProxy
+        ? "Trên Cloudflare: mở **Settings → Variables and Secrets** của " +
+          "project rồi thêm `OPENROUTER_API_KEY`.\n\n"
+        : "Trên Streamlit: mở **Settings → Secrets** của app rồi dán vào\n\n" +
+          "```\nGEMINI_API_KEYS = [\"khoa1\", \"khoa2\"]\n```\n\n" +
+          "Tại máy: đặt khoá trong `.streamlit/secrets.toml` rồi chạy lại " +
+          "`_build/xem_truoc.py`.\n\n") +
       "Dashboard và giao diện chat vẫn dùng bình thường."));
   } else {
     themHang("bot", md(
