@@ -617,26 +617,19 @@ html{scroll-behavior:smooth}
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
   overflow:hidden;min-height:29px}
 
-/* Hai biểu đồ phân bố nằm ngang */
-.khphan{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-@media(max-width:900px){ .khphan{grid-template-columns:1fr} }
-.khpb{background:var(--bg2);border:1px solid var(--border);
-      border-radius:9px;padding:10px 12px 9px}
-.khpb-t{font-size:10px;text-transform:uppercase;letter-spacing:.5px;
-        color:var(--faint);font-weight:600;margin-bottom:8px}
-.khpb-c{display:flex;align-items:flex-end;gap:8px;height:82px}
-.khpb-i{flex:1;display:flex;flex-direction:column;justify-content:flex-end;
-        height:100%;cursor:default}
-.khpb-v{font-family:var(--mono);font-size:11px;color:var(--text);
-        text-align:center;margin-bottom:3px;font-weight:700;min-height:14px}
-.khpb-i:has(.khpb-b[style*="height:2%"]) .khpb-v{color:var(--faint);font-weight:400}
-.khpb-b{border-radius:3px 3px 0 0;transition:filter .12s;min-height:0}
-.khpb-i:hover .khpb-b{filter:brightness(1.35)}
-.khpb-l{font-family:var(--mono);font-size:9.5px;color:var(--faint);
-        text-align:center;margin-top:5px;white-space:nowrap}
-.khpb-n{font-size:10px;color:var(--faint);line-height:1.45;margin-top:8px;
-        padding-top:7px;border-top:1px solid var(--border)}
-.khpb-n b{color:var(--dim)}
+/* ═══ Nhóm điều khiển KHÔNG đang nắm quyền ═══
+   Hai cách chọn phạm vi (N ngày gần nhất / khoảng từ–đến) luôn hiện cùng
+   lúc ở cả mục ⑤ và ⑥. Trước đây cách không dùng bị display:none — người
+   dùng mất dấu bộ lọc kia đang đặt gì, và không rõ quay lại bằng cách nào.
+   Nay chỉ mờ đi: vẫn đọc được giá trị, bấm vào là nắm quyền ngay. */
+.ndbox.tat{opacity:.42;border-color:var(--border);background:transparent}
+.ndbox.tat:hover{opacity:.72;border-color:var(--border-hi);cursor:pointer}
+.ndbox.tat input,.ndbox.tat select{color:var(--faint)}
+/* Nhóm đang nắm quyền: viền sáng màu chủ, thấy ngay cái nào đang lọc. */
+.ndbox:not(.tat){border-color:color-mix(in srgb,var(--accent) 45%,var(--border));
+  background:color-mix(in srgb,var(--accent) 7%,transparent)}
+
+
 /* Điểm rủi ro trên mỗi thẻ — cho biết vì sao thẻ này đứng trên thẻ kia,
    thay vì để người đọc đoán thứ tự là ngẫu nhiên hay có ý. */
 .cy-diem{
@@ -1277,7 +1270,14 @@ body.dangmo{overflow:hidden}
       <span class="card-sub" id="matSub"></span></div>
     <div class="filt">
       <input type="text" id="qKB" placeholder="Tìm tên kịch bản…" oninput="renderMat()">
-      <span class="ndbox" id="matHopN" title="Số ngày gần nhất muốn xem — gõ số rồi bấm Enter, hoặc dùng nút − +">
+      <!-- HAI cách chọn phạm vi LUÔN HIỆN CÙNG LÚC, không cái nào bị giấu.
+           Trước đây bấm "Chọn khoảng" thì ô "N ngày gần nhất" biến mất hẳn —
+           người dùng mất dấu bộ lọc vừa dùng và không biết quay lại kiểu gì.
+           Nay cả hai đứng cạnh nhau, cái đang KHÔNG điều khiển bảng thì mờ
+           đi (class .tat) chứ không mất. Bấm thẳng vào nhóm nào là nhóm đó
+           lên nắm quyền. -->
+      <span class="ndbox" id="matHopN" onclick="datCachNgay('cuoi')"
+            title="Số ngày gần nhất muốn xem — gõ số rồi bấm Enter, hoặc dùng nút − +">
         <span class="ndlab">Hiện</span>
         <button class="ndstep" onclick="stepNd(-1)">−</button>
         <input type="number" id="matNd" value="7" min="1" max="30" step="1"
@@ -1286,10 +1286,7 @@ body.dangmo{overflow:hidden}
         <span class="ndlab">ngày gần nhất</span>
         <button class="ndstep" onclick="stepNd(1)">+</button>
       </span>
-      <!-- Chọn KHOẢNG ngày bất kỳ. Ô "N ngày gần nhất" chỉ nhìn được phần
-           đuôi của kỳ; muốn soi một tuần giữa tháng 7 thì phải có hai mốc.
-           Hai cách dùng chung một bảng, bấm nút để đổi qua lại. -->
-      <span class="ndbox" id="matHopK" style="display:none"
+      <span class="ndbox tat" id="matHopK" onclick="datCachNgay('khoang')"
             title="Chọn khoảng ngày bất kỳ trong kỳ">
         <!-- Chọn nhanh: gõ tay hai mốc để lấy trọn một tháng thì vừa lâu vừa
              dễ sai ngày cuối tháng. Danh sách này điền sẵn hai mốc đúng. -->
@@ -1302,8 +1299,6 @@ body.dangmo{overflow:hidden}
         <span class="ndlab">đến</span>
         <input type="date" class="dmini" id="matDen" onchange="onKhoang()">
       </span>
-      <button id="matDoiCach" onclick="doiCachNgay()"
-        title="Đổi giữa 'N ngày gần nhất' và 'khoảng ngày tự chọn'">📅 Chọn khoảng</button>
       <!-- Xem tổng cả kỳ thì 67 cột ngày chỉ tổ phải cuộn ngang, trong khi
            thứ cần nhìn chỉ là cột Σ. Nút này giấu hết cột ngày, giữ nguyên
            phạm vi đang chọn nên Σ vẫn là tổng của đúng đoạn đó. -->
@@ -1334,33 +1329,31 @@ body.dangmo{overflow:hidden}
         <button class="ndstep" onclick="stepTop(5)">+</button>
       </span>
 
-      <!-- Chọn phạm vi ngày — cùng cơ chế với mục ⑤: một ngày, hoặc khoảng -->
-      <span id="khHopN"><span class="sub">Ngày</span>
-        <select id="khNgay" onchange="onKhNgay()"></select></span>
-      <span id="khHopK" style="display:none">
-        <select id="khNhanh" onchange="khChonNhanh()"
-                title="Chọn nhanh trọn một tháng hoặc toàn bộ kỳ"></select>
-        <span class="sub">Từ</span>
-        <input type="date" id="khTu" onchange="onKhKhoang()">
-        <span class="sub">đến</span>
-        <input type="date" id="khDen" onchange="onKhKhoang()">
+      <!-- Chọn phạm vi ngày — CÙNG MẪU với mục ⑤: hai nhóm luôn hiện cùng
+           lúc, nhóm không nắm quyền thì mờ đi chứ không bị giấu. -->
+      <span class="ndbox" id="khHopN" onclick="datKhCach('ngay')"
+            title="Xem một ngày cụ thể, hoặc mọi ngày trong kỳ">
+        <span class="ndlab">Ngày</span>
+        <select class="dmini" id="khNgay" onchange="onKhNgay()"></select>
       </span>
-      <button id="khDoiCach" onclick="khDoiCachNgay()"
-              title="Đổi giữa 'một ngày' và 'khoảng ngày tự chọn'">📅 Chọn khoảng</button>
+      <span class="ndbox tat" id="khHopK" onclick="datKhCach('khoang')"
+            title="Chọn khoảng ngày bất kỳ trong kỳ">
+        <select class="dmini" id="khNhanh" onchange="khChonNhanh()"
+                title="Chọn nhanh trọn một tháng hoặc toàn bộ kỳ">
+          <option value="">— chọn nhanh —</option>
+        </select>
+        <span class="ndlab">Từ</span>
+        <input type="date" class="dmini" id="khTu" onchange="onKhKhoang()">
+        <span class="ndlab">đến</span>
+        <input type="date" class="dmini" id="khDen" onchange="onKhKhoang()">
+      </span>
 
-      <button id="khAll" class="on" onclick="setKHF('all')">Tất cả</button>
-      <button id="khVH" onclick="setKHF('vh')">Chỉ Very High</button>
     </div>
   </div>
 
-  <!-- Bốn số tóm tắt của ĐÚNG phạm vi đang lọc. Đặt trên bảng vì đây là
+  <!-- Năm số tóm tắt của ĐÚNG phạm vi đang lọc. Đặt trên bảng vì đây là
        câu trả lời nhanh; bảng bên dưới là để đi tra từng người. -->
   <div class="kpis khkpi" id="khKpi"></div>
-
-  <!-- Hai biểu đồ nhỏ nằm ngang: phân bố số kịch bản dính, và phân bố số
-       ngày lên alert. Hai trục này trả lời hai câu khác hẳn nhau —
-       "bị nhiều rule bắt" và "bị bắt dai" — nên để cạnh nhau mới so được. -->
-  <div class="khphan" id="khPhan"></div>
 
   <div class="scroll"><table class="fix" id="khTbl"></table></div>
   <div class="note" id="khNote"></div>
@@ -1648,6 +1641,9 @@ function onNd(){
   if(v > ndMax()) v = ndMax();
   $('matNd').value = v;
   ND_CUR = v;
+  /* Gõ số ngày tức là muốn dùng cách "N ngày gần nhất" — tự chuyển sang,
+     khỏi bắt bấm thêm một nút nữa. */
+  if(CACH_NGAY !== 'cuoi'){ datCachNgay('cuoi'); return; }
   renderMat();
 }
 function stepNd(d){ $('matNd').value = (+$('matNd').value || ND_CUR) + d; onNd(); }
@@ -1658,13 +1654,17 @@ function stepNd(d){ $('matNd').value = (+$('matNd').value || ND_CUR) + d; onNd()
    điều tra lại mới cần soi một đoạn giữa. Đổi cách thì giữ nguyên đoạn đang
    xem làm giá trị khởi đầu, khỏi phải gõ lại từ đầu. */
 let CACH_NGAY = 'cuoi';
-function doiCachNgay(){
-  CACH_NGAY = CACH_NGAY === 'cuoi' ? 'khoang' : 'cuoi';
+/* Đặt THẲNG cách chọn ngày của mục ⑤ — không phải bật/tắt.
+   Đặt thẳng thì gọi lại nhiều lần vẫn ra đúng một trạng thái, nên chatbot
+   hay nút nào gọi cũng an toàn; bật/tắt thì gọi hai lần là quay về chỗ cũ.
+   'cuoi' = N ngày gần nhất | 'khoang' = hai mốc từ–đến */
+function datCachNgay(cach){
+  CACH_NGAY = cach === 'khoang' ? 'khoang' : 'cuoi';
   const kh = CACH_NGAY === 'khoang';
-  $('matHopN').style.display = kh ? 'none' : '';
-  $('matHopK').style.display = kh ? '' : 'none';
-  $('matDoiCach').classList.toggle('on', kh);
-  $('matDoiCach').textContent = kh ? '↩ N ngày gần nhất' : '📅 Chọn khoảng';
+  /* Hai nhóm LUÔN HIỆN. Nhóm không nắm quyền chỉ mờ đi — người dùng vẫn
+     thấy bộ lọc kia đang đặt gì và bấm vào là chuyển sang được ngay. */
+  $('matHopN').classList.toggle('tat', kh);
+  $('matHopK').classList.toggle('tat', !kh);
   if(kh && !$('matTu').value){
     /* mở lần đầu: điền sẵn đúng đoạn ô "N ngày gần nhất" đang hiện */
     const nd = Math.min(Math.max(1, ND_CUR), ndMax());
@@ -1672,6 +1672,10 @@ function doiCachNgay(){
     $('matDen').value = D.days[D.tong.nd - 1];
   }
   renderMat();
+}
+/* Giữ tên cũ cho mọi chỗ đang gọi (kể cả _chat_lai.js của trợ lý). */
+function doiCachNgay(){
+  datCachNgay(CACH_NGAY === 'cuoi' ? 'khoang' : 'cuoi');
 }
 function onKhoang(){
   /* Người dùng gõ ngày ngoài kỳ hoặc ngày không có dữ liệu thì kéo về mốc
@@ -1689,6 +1693,8 @@ function onKhoang(){
   });
   /* Gõ tay hai mốc thì không còn khớp mục vừa chọn trong danh sách nhanh. */
   $('matNhanh').value = '';
+  /* Đụng vào hai mốc ngày tức là muốn dùng khoảng — tự chuyển sang. */
+  if(CACH_NGAY !== 'khoang'){ datCachNgay('khoang'); return; }
   renderMat();
 }
 
@@ -1731,6 +1737,12 @@ function chonNhanh(){
      người dùng chọn "toàn bộ 67 ngày" là để xem TỔNG chứ không phải để
      cuộn ngang 67 cột. Vẫn mở lại được bằng nút. */
   const soNgay = D.days.indexOf($('matDen').value) - D.days.indexOf($('matTu').value) + 1;
+  /* Chọn nhanh một tháng tức là muốn xem khoảng đó — nắm quyền luôn. */
+  if(CACH_NGAY !== 'khoang'){
+    CACH_NGAY = 'khoang';
+    $('matHopN').classList.add('tat');
+    $('matHopK').classList.remove('tat');
+  }
   if(soNgay > 31 && !THU_GON) doiThuGon(); else renderMat();
 }
 
@@ -1773,13 +1785,13 @@ function stepTop(d){ $('khTop').value = (+$('khTop').value || KH_TOP) + d; onTop
    KH_CACH: 'ngay' = ô chọn một ngày | 'khoang' = hai mốc từ–đến */
 let KH_CACH = 'ngay';
 
-function khDoiCachNgay(){
-  KH_CACH = KH_CACH === 'ngay' ? 'khoang' : 'ngay';
+/* Đặt THẲNG cách chọn ngày của mục ⑥ — cùng mẫu với datCachNgay() của ⑤.
+   'ngay' = ô chọn một ngày | 'khoang' = hai mốc từ–đến */
+function datKhCach(cach){
+  KH_CACH = cach === 'khoang' ? 'khoang' : 'ngay';
   const kh = KH_CACH === 'khoang';
-  $('khHopN').style.display = kh ? 'none' : '';
-  $('khHopK').style.display = kh ? '' : 'none';
-  $('khDoiCach').classList.toggle('on', kh);
-  $('khDoiCach').textContent = kh ? '↩ Một ngày' : '📅 Chọn khoảng';
+  $('khHopN').classList.toggle('tat', kh);
+  $('khHopK').classList.toggle('tat', !kh);
   if(kh && !$('khTu').value){
     /* Mở lần đầu: điền sẵn TOÀN KỲ. Khác mục ⑤ (điền N ngày cuối) vì ở đây
        mặc định đang là "mọi ngày" — nhảy sang khoảng 7 ngày sẽ làm bảng đổi
@@ -1789,8 +1801,15 @@ function khDoiCachNgay(){
   }
   renderTopKH();
 }
+function khDoiCachNgay(){
+  datKhCach(KH_CACH === 'ngay' ? 'khoang' : 'ngay');
+}
 
-function onKhNgay(){ renderTopKH(); }
+function onKhNgay(){
+  /* Đụng vào ô chọn ngày tức là muốn xem theo ngày — nắm quyền luôn. */
+  if(KH_CACH !== 'ngay'){ datKhCach('ngay'); return; }
+  renderTopKH();
+}
 
 function onKhKhoang(){
   /* Gõ ngày ngoài kỳ thì kéo về mốc gần nhất CÓ dữ liệu — giống mục ⑤,
@@ -1807,6 +1826,8 @@ function onKhKhoang(){
     }
   });
   $('khNhanh').value = '';
+  /* Đụng vào hai mốc ngày tức là muốn dùng khoảng — tự chuyển sang. */
+  if(KH_CACH !== 'khoang'){ datKhCach('khoang'); return; }
   renderTopKH();
 }
 
@@ -1819,6 +1840,11 @@ function khChonNhanh(){
   } else {
     const [a,b] = v.split('|');
     $('khTu').value = a; $('khDen').value = b;
+  }
+  if(KH_CACH !== 'khoang'){
+    KH_CACH = 'khoang';
+    $('khHopN').classList.add('tat');
+    $('khHopK').classList.remove('tat');
   }
   renderTopKH();
 }
@@ -2907,81 +2933,14 @@ function veKhKpi(rows, PV, mucCua){
       (pcTop>=70 ? ' — dồn cục' : pcTop<45 ? ' — rải đều' : ''));
 }
 
-/* ───────── ⑥ hai biểu đồ phân bố ─────────
-   Hai trục trả lời hai câu KHÁC HẲN nhau, nên phải để cạnh nhau mới so được:
-     trái  — bị BAO NHIÊU RULE bắt   (1 rule = có thể do chống lặp;
-                                       ≥3 rule = hành vi có cấu trúc)
-     phải  — bị bắt BAO NHIÊU NGÀY   (1 ngày = sự vụ; nhiều ngày = dai dẳng)
-   Một người 500 alert do 1 rule trong 1 ngày rất khác một người 20 alert do
-   4 rule rải 15 ngày — cột "tổng alert" không phân biệt được hai ca đó. */
-function veKhPhanBo(rows, PV){
-  const box = $('khPhan');
-  if(!rows.length){ box.innerHTML = ''; return; }
-
-  const cot = (ds, nhan, mau, dv, chuThich) => {
-    const mx = Math.max(...ds.map(x=>x.n), 1);
-    return `<div class="khpb">
-      <div class="khpb-t">${nhan}</div>
-      <div class="khpb-c">${ds.map(x=>`
-        <div class="khpb-i" title="${fmt(x.n)} khách ${x.mo}">
-          <div class="khpb-v">${x.n ? fmt(x.n) : '·'}</div>
-          <!-- Nhóm rỗng vẫn để một vạch mảnh mờ: cột biến mất hẳn trông như
-               lỗi hiển thị, mà "không có ai" cũng là một thông tin. -->
-          <div class="khpb-b" style="height:${x.n ? Math.max(3, x.n/mx*100) : 2}%;
-               background:${x.n ? (x.hot ? 'var(--red)' : mau) : 'var(--border-hi)'}"></div>
-          <div class="khpb-l"${x.hot?' style="color:var(--red);font-weight:700"':''}>${x.l}</div>
-        </div>`).join('')}</div>
-      <div class="khpb-n">${chuThich}</div></div>`;
-  };
-
-  /* Nhóm theo số kịch bản: 1 / 2 / 3 / 4+ */
-  const bKb = [1,2,3,4].map(v=>({
-    l: v===4 ? '4+' : String(v),
-    n: rows.filter(x=> v===4 ? x.nkb>=4 : x.nkb===v).length,
-    mo: v===4 ? 'dính từ 4 kịch bản' : `dính đúng ${v} kịch bản`,
-    hot: v>=3}));
-
-  /* Nhóm theo số ngày — chia mốc theo độ dài phạm vi để luôn có nghĩa.
-     Phạm vi 1 ngày thì không có gì để chia, ẩn biểu đồ này đi. */
-  let bNg = null;
-  if(PV.soNgay >= 2){
-    /* Dựng mốc bằng CÁC ĐIỂM CẮT tăng dần, không nhân chia — chia kiểu
-       [2,q],[q+1,q*2] với phạm vi ngắn thì q=1 và sinh ra mốc vô nghĩa
-       ("2–1", ">2"). Đã mắc đúng lỗi này với phạm vi 5 ngày.
-       Phạm vi ngắn thì liệt kê thẳng từng ngày, dài mới gộp nhóm. */
-    let cat;
-    if(PV.soNgay <= 6){
-      cat = [];
-      for(let v=1; v<=PV.soNgay; v++) cat.push([v, v]);
-    } else {
-      const q1 = Math.max(2, Math.round(PV.soNgay*0.25));
-      const q2 = Math.max(q1+1, Math.round(PV.soNgay*0.5));
-      cat = [[1,1], [2,q1], [q1+1,q2], [q2+1,PV.soNgay]];
-    }
-    const nhan = m => m[0]===m[1]
-      ? (m[0]===1 ? '1 ngày' : String(m[0]))
-      : `${m[0]}–${m[1]}`;
-    /* Ngưỡng "dai dẳng" = từ nửa phạm vi trở lên, khớp với KPI "Bị bắt dai". */
-    const nguongDai = Math.max(2, Math.ceil(PV.soNgay/2));
-    bNg = cat.map(m=>({
-      l: nhan(m),
-      n: rows.filter(x=>x.nngay>=m[0] && x.nngay<=m[1]).length,
-      mo: `có alert ${m[0]===m[1]?m[0]:m[0]+'–'+m[1]} ngày`,
-      hot: m[0] >= nguongDai}));
-  }
-
-  box.innerHTML =
-    cot(bKb, 'Bị bao nhiêu kịch bản bắt', 'var(--accent)', 'kịch bản',
-        'Từ <b>3 kịch bản</b> trở lên (đỏ) là nhiều rule cùng bắt một người — hành vi có cấu trúc, đáng điều tra hơn bị một rule bắn lặp.') +
-    (bNg ? cot(bNg, `Bị bắt bao nhiêu ngày trong ${PV.soNgay} ngày`, 'var(--purple)', 'ngày',
-        'Càng về phải (đỏ) càng <b>dai dẳng</b>. Nhóm này khó đủ 30 ngày sạch để được ân xá.')
-         : '');
-}
-
+/* Lọc theo mức: 'all' = mọi khách | 'vh' = chỉ khách chạm Very High.
+   Hai nút bấm đã bỏ khỏi giao diện (KPI "Chạm Very High" đã cho biết con số,
+   không cần thêm một nút lọc chiếm chỗ). Hàm giữ lại để TRỢ LÝ gọi được —
+   hỏi "chỉ xem khách Very High" là chatbot gọi thẳng setKHF('vh'). */
 function setKHF(f){
-  KHF = f;
-  $('khAll').classList.toggle('on', f==='all');
-  $('khVH').classList.toggle('on', f==='vh');
+  KHF = f === 'vh' ? 'vh' : 'all';
+  const b = $('khAll');
+  if(b) b.classList.toggle('on', KHF==='all');
   renderTopKH();
 }
 /* điểm của một khách trong MỘT ngày, theo r,k đang kéo */
@@ -3038,7 +2997,6 @@ function renderTopKH(){
   /* ── KPI + hai biểu đồ: tính trên TOÀN BỘ kết quả lọc, trước khi cắt top.
         Cắt rồi mới tính thì mọi con số chỉ nói về 20 người đang hiện. ── */
   veKhKpi(rows, PV, mucCua);
-  veKhPhanBo(rows, PV);
 
   rows = rows.slice(0, Math.min(KH_TOP, topMax()));
   /* Cắt top vẫn theo ALERT — đó là định nghĩa của mục này ("top N nhiều alert
@@ -4017,6 +3975,141 @@ setTimeout(function(){ document.body.classList.remove('vao'); }, 1400);
 
 renderHdr(); tick(); setInterval(tick, 1000);
 buildCur(); render();
+/* ═══════════════ API ĐIỀU KHIỂN CHO TRỢ LÝ ═══════════════
+   Trợ lý cần đặt bộ lọc thay người dùng ("cho tôi xem 7 ngày gần nhất ở mục
+   ⑥"). Trước đây nó phải mò từng id ô rồi gọi đúng thứ tự hàm — sai một
+   bước là bảng và nhãn nút lệch nhau.
+
+   Gom thành một cửa duy nhất, mỗi việc một hàm ĐẶT THẲNG trạng thái (gọi
+   lại nhiều lần vẫn ra một kết quả), và trả về câu mô tả việc vừa làm để
+   trợ lý nói lại cho người dùng biết trang vừa đổi gì.
+
+   Dùng: window.F2DK.mucSau({soNgay:7})  →  "mục ⑥: 7 ngày gần nhất" */
+window.F2DK = (function(){
+  const nhan = d => d ? dLab(d) : '';
+  const chot = (a,b) => D.days[Math.max(0, Math.min(D.tong.nd-1, a))] ;
+
+  /* Đổi "N ngày gần nhất" thành cặp mốc thật — dùng chung cho cả hai mục. */
+  function docNgay(n){
+    const nd = Math.max(1, Math.min(n|0 || 7, D.tong.nd));
+    return [D.days[D.tong.nd - nd], D.days[D.tong.nd - 1], nd];
+  }
+  function cuon(id){
+    const e = $(id);
+    if(e) e.scrollIntoView({behavior:'smooth', block:'start'});
+    return !!e;
+  }
+
+  return {
+    /* ─── mục ⑤ ma trận kịch bản ─── */
+    mucNam(o){
+      o = o || {};
+      if(o.soNgay){
+        $('matNd').value = Math.max(1, Math.min(o.soNgay|0, ndMax()));
+        onNd();
+        cuon('m5');
+        return `mục ⑤: ${$('matNd').value} ngày gần nhất`;
+      }
+      if(o.tu || o.den){
+        if(o.tu)  $('matTu').value  = o.tu;
+        if(o.den) $('matDen').value = o.den;
+        $('matNhanh').value = '';
+        datCachNgay('khoang');
+        onKhoang();
+        cuon('m5');
+        return `mục ⑤: ${nhan($('matTu').value)} – ${nhan($('matDen').value)}`;
+      }
+      if(o.toanKy){
+        $('matTu').value = D.days[0];
+        $('matDen').value = D.days[D.tong.nd-1];
+        datCachNgay('khoang'); onKhoang(); cuon('m5');
+        return `mục ⑤: toàn kỳ ${D.tong.nd} ngày`;
+      }
+      if(o.timKichBan != null){
+        $('qKB').value = o.timKichBan; renderMat(); cuon('m5');
+        return o.timKichBan ? `mục ⑤: lọc "${o.timKichBan}"` : 'mục ⑤: bỏ lọc';
+      }
+      if(o.thuGon != null){
+        if(THU_GON !== !!o.thuGon) doiThuGon();
+        cuon('m5');
+        return `mục ⑤: ${o.thuGon ? 'thu gọn cột ngày' : 'hiện lại cột ngày'}`;
+      }
+      if(o.gomNhom != null){
+        if(GOM_NHOM !== !!o.gomNhom) doiGom();
+        cuon('m5');
+        return `mục ⑤: ${o.gomNhom ? 'gom theo nhóm' : 'bỏ gom nhóm'}`;
+      }
+      cuon('m5'); return 'cuộn tới mục ⑤';
+    },
+
+    /* ─── mục ⑥ khách hàng ─── */
+    mucSau(o){
+      o = o || {};
+      if(o.soNgay){
+        const [a,b,nd] = docNgay(o.soNgay);
+        $('khTu').value = a; $('khDen').value = b; $('khNhanh').value = '';
+        datKhCach('khoang');
+        cuon('m6');
+        return `mục ⑥: ${nd} ngày gần nhất (${nhan(a)} – ${nhan(b)})`;
+      }
+      if(o.tu || o.den){
+        if(o.tu)  $('khTu').value  = o.tu;
+        if(o.den) $('khDen').value = o.den;
+        $('khNhanh').value = '';
+        datKhCach('khoang'); onKhKhoang(); cuon('m6');
+        return `mục ⑥: ${nhan($('khTu').value)} – ${nhan($('khDen').value)}`;
+      }
+      if(o.ngay != null){
+        $('khNgay').value = o.ngay;
+        datKhCach('ngay'); cuon('m6');
+        return o.ngay ? `mục ⑥: ngày ${nhan(o.ngay)}` : 'mục ⑥: mọi ngày';
+      }
+      if(o.toanKy){
+        $('khTu').value = D.days[0];
+        $('khDen').value = D.days[D.tong.nd-1];
+        $('khNhanh').value = 'all';
+        datKhCach('khoang'); cuon('m6');
+        return `mục ⑥: toàn kỳ ${D.tong.nd} ngày`;
+      }
+      if(o.top){
+        $('khTop').value = o.top; onTop(); cuon('m6');
+        return `mục ⑥: hiện top ${$('khTop').value} khách`;
+      }
+      if(o.timKhach != null){
+        $('qKH').value = o.timKhach; renderTopKH(); cuon('m6');
+        return o.timKhach ? `mục ⑥: tìm "${String(o.timKhach).slice(0,14)}…"`
+                          : 'mục ⑥: bỏ lọc khách';
+      }
+      if(o.chiVeryHigh != null){
+        setKHF(o.chiVeryHigh ? 'vh' : 'all'); cuon('m6');
+        return `mục ⑥: ${o.chiVeryHigh ? 'chỉ khách Very High' : 'mọi khách'}`;
+      }
+      cuon('m6'); return 'cuộn tới mục ⑥';
+    },
+
+    /* ─── chung ─── */
+    cuonToi(muc){
+      const m = {'3':'m3','4':'m4','5':'m5','6':'m6','7':'m7','8':'m8',
+                 'congthuc':'m1c','phanbo':'m2c'};
+      return cuon(m[String(muc)] || 'm5') ? `cuộn tới mục ${muc}` : null;
+    },
+
+    /* Trạng thái hiện tại — trợ lý đọc để biết trang đang lọc gì, khỏi
+       phải đoán hay tự nhớ. */
+    trangThai(){
+      return {
+        ky: {tu: D.days[0], den: D.days[D.tong.nd-1], soNgay: D.tong.nd},
+        muc5: {cach: CACH_NGAY, soNgay: ND_CUR,
+               tu: $('matTu').value, den: $('matDen').value,
+               thuGon: THU_GON, gomNhom: GOM_NHOM, tim: $('qKB').value},
+        muc6: {cach: KH_CACH, ngay: $('khNgay').value,
+               tu: $('khTu').value, den: $('khDen').value,
+               top: KH_TOP, loc: KHF, tim: $('qKH').value}
+      };
+    }
+  };
+})();
+
 noiDieuHuong();          /* gọi SAU render: cần chiều cao thật của các mục */
 renderNgayBar();         /* thanh chọn ngày: cần trạng thái ghi chép */
 $('mdTruoc').onclick = ()=>moNgay(NGAY_MO-1);
@@ -7253,6 +7346,23 @@ window.F2BoNao = (function () {
 
       var lenh = [], sang = [], daKhoang = false;
 
+      /* Câu hỏi nói THẲNG muốn xem gì trên dashboard ("cho tôi xem 7 ngày
+         gần nhất ở mục ⑥") thì lái theo đúng câu chữ, không cần suy từ hàm
+         đã gọi. Bỏ dấu trước khi so vì người dùng gõ tắt rất nhiều. */
+      var ch = String(R._cauHoi || "").normalize("NFD")
+                 .replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase();
+      var mMuc6 = /(muc|tab|bang)\s*(6|⑥|khach)/.test(ch) ||
+                  /khach hang/.test(ch);
+      var mNgay = ch.match(/(\d{1,3})\s*ngay\s*(gan nhat|gan day|vua qua|qua)/);
+      if (mNgay) {
+        lenh.push({ viec: "n_ngay_gan_nhat",
+                    tham_so: { so_ngay: +mNgay[1], muc: mMuc6 ? 6 : 5 } });
+        daKhoang = true;
+      }
+      if (/(chi|rieng)\s*(khach\s*)?very high/.test(ch)) {
+        lenh.push({ viec: "chi_very_high", tham_so: { bat: true } });
+      }
+
       g.forEach(function (x) {
         var ts = x.tham_so || {}, kq = x.ketQua || {};
 
@@ -8121,6 +8231,7 @@ TT.moTaKy() + "\n\n" + GIOI_HAN + "\n\n" +
                            " chuỗi giống thông tin định danh khỏi câu trả lời");
             ghiLog("!! Cắt " + q.daCat.length + " chuỗi định danh ở đầu ra");
           }
+          R._cauHoi = cauHoi;      /* suyLenhLai đọc câu chữ để lái đúng mục */
           R.lai = suyLenhLai(R);
           R.giay = (Date.now() - t0) / 1000;
           return R;
@@ -8355,7 +8466,8 @@ window.F2Lai = (function () {
     try { return (0, eval)(ten); } catch (e) { return undefined; }
   }
   function co() {
-    return !!$("m5") && !!$("matTu") && typeof window.renderMat === "function";
+    /* Cửa điều khiển F2DK là thứ duy nhất cần — nó tự lo mọi ô bên trong. */
+    return !!window.F2DK && !!$("m5");
   }
 
   /* ───────── tô sáng ─────────
@@ -8472,67 +8584,78 @@ window.F2Lai = (function () {
   /* ───────── các hành động ─────────
      Mỗi hành động trả về một câu ngắn mô tả nó vừa làm gì, để hiện trong
      khung chat — người dùng phải biết trang vừa bị đổi cái gì. */
+  /* Dashboard mở sẵn cửa điều khiển ở window.F2DK — mỗi việc một hàm đặt
+     THẲNG trạng thái và trả về câu mô tả. Gọi qua đó thay vì tự mò từng id
+     ô rồi đoán thứ tự gọi hàm: sai một bước là bảng và nhãn nút lệch nhau. */
+  function dk() { return window.F2DK || null; }
+
   var VIEC = {
 
     /* Đặt khoảng ngày ở mục ⑤ rồi cuộn tới đó. */
     khoang_ngay: function (ts) {
       var tu = chuanNgay(ts.tu), den = chuanNgay(ts.den);
-      if (!tu || !den) return null;
-      if (bien("CACH_NGAY") !== "khoang" &&
-          typeof window.doiCachNgay === "function") window.doiCachNgay();
-      $("matTu").value = tu;
-      $("matDen").value = den;
-      if ($("matNhanh")) $("matNhanh").value = "";
-      if (typeof window.onKhoang === "function") window.onKhoang();
-      cuonToi("m5");
-      return "đặt khoảng " + nhan(tu) + " – " + nhan(den) + " ở mục ⑤";
+      if (!tu || !den || !dk()) return null;
+      return dk().mucNam({ tu: tu, den: den });
+    },
+
+    /* N ngày gần nhất — ở mục ⑤ hoặc ⑥ tuỳ câu hỏi. */
+    n_ngay_gan_nhat: function (ts) {
+      if (!dk()) return null;
+      var n = Math.max(1, +(ts.so_ngay || ts.n || 7));
+      return String(ts.muc) === "6" ? dk().mucSau({ soNgay: n })
+                                    : dk().mucNam({ soNgay: n });
+    },
+
+    /* Đặt khoảng ngày / số ngày ở mục ⑥ (bảng khách hàng). */
+    khach_theo_ngay: function (ts) {
+      if (!dk()) return null;
+      if (ts.so_ngay) return dk().mucSau({ soNgay: +ts.so_ngay });
+      var tu = chuanNgay(ts.tu), den = chuanNgay(ts.den);
+      if (tu || den) return dk().mucSau({ tu: tu, den: den });
+      if (ts.toan_ky) return dk().mucSau({ toanKy: true });
+      return null;
+    },
+
+    /* Chỉ xem khách chạm Very High. */
+    chi_very_high: function (ts) {
+      if (!dk()) return null;
+      return dk().mucSau({ chiVeryHigh: ts.bat !== false });
     },
 
     /* Lọc theo tên kịch bản ở mục ⑤. */
     loc_kich_ban: function (ts) {
-      if (!$("qKB")) return null;
-      $("qKB").value = ts.tu_khoa || "";
-      if (typeof window.renderMat === "function") window.renderMat();
-      cuonToi("m5");
-      return ts.tu_khoa ? 'lọc kịch bản chứa "' + ts.tu_khoa + '" ở mục ⑤'
-                        : "bỏ lọc kịch bản";
+      if (!dk()) return null;
+      return dk().mucNam({ timKichBan: ts.tu_khoa || "" });
     },
 
     /* Lọc theo mã khách ở mục ⑥. */
     loc_khach: function (ts) {
-      if (!$("qKH")) return null;
-      $("qKH").value = ts.tu_khoa || "";
-      if (typeof window.renderTopKH === "function") window.renderTopKH();
-      cuonToi("m6");
-      return ts.tu_khoa ? 'tìm khách "' + String(ts.tu_khoa).slice(0, 14) +
-                          '…" ở mục ⑥' : "bỏ lọc khách";
+      if (!dk()) return null;
+      return dk().mucSau({ timKhach: ts.tu_khoa || "" });
+    },
+
+    /* Hiện bao nhiêu khách ở mục ⑥. */
+    top_khach: function (ts) {
+      if (!dk() || !ts.n) return null;
+      return dk().mucSau({ top: +ts.n });
     },
 
     /* Thu gọn cột ngày — hợp khi vừa nói về tổng cả kỳ. */
     thu_gon: function (ts) {
-      if (typeof window.doiThuGon !== "function") return null;
-      var muon = ts.bat !== false;
-      if (bien("THU_GON") !== muon) window.doiThuGon();
-      cuonToi("m5");
-      return muon ? "thu gọn cột ngày, chỉ xem tổng" : "hiện lại các cột ngày";
+      if (!dk()) return null;
+      return dk().mucNam({ thuGon: ts.bat !== false });
     },
 
     /* Gom theo nhóm nghiệp vụ. */
     gom_nhom: function (ts) {
-      if (typeof window.doiGom !== "function") return null;
-      var muon = ts.bat !== false;
-      if (bien("GOM_NHOM") !== muon) window.doiGom();
-      cuonToi("m5");
-      return muon ? "gom kịch bản theo nhóm nghiệp vụ" : "bỏ gom nhóm";
+      if (!dk()) return null;
+      return dk().mucNam({ gomNhom: ts.bat !== false });
     },
 
     /* Chỉ cuộn, không đổi gì — dùng khi câu trả lời chỉ cần chỉ chỗ. */
     cuon: function (ts) {
-      var m = { "3": "m3", "4": "m4", "5": "m5", "6": "m6", "7": "m7",
-                "8": "m8", "cong_thuc": "m1c", "phan_bo": "m2c" };
-      var id = m[String(ts.muc)] || "m5";
-      if (!cuonToi(id)) return null;
-      return "cuộn tới mục " + (ts.muc || 5);
+      if (!dk()) return null;
+      return dk().cuonToi(ts.muc || 5);
     }
   };
 
