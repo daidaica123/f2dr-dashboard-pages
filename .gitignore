@@ -25,3 +25,11 @@ node_modules/
 # public/index.html được dựng bằng _build/dung_pages.py.
 # KHÔNG gitignore: Cloudflare Pages cần file này trong repo để phát hành
 # (không có bước build nào chạy trên máy chủ họ).
+
+# Script dựng — chạy ở MÁY, Cloudflare không cần và KHÔNG NÊN thấy.
+# Lý do bỏ ra khỏi repo: có .py ở gốc thì Cloudflare tự đoán đây là dự án
+# Python, cố chạy build, không có requirements.txt nên hỏng — lần phát hành
+# thất bại lặng lẽ và nó giữ nguyên bản cũ. Đã mắc đúng lỗi này 08/09/2026:
+# commit lên đủ mà trang vẫn chạy bản cũ suốt.
+# Bản gốc của hai script nằm ở "F2DR Van Hanh Pages\_build\" trên máy.
+_build/

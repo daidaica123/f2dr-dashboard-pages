@@ -596,6 +596,47 @@ html{scroll-behavior:smooth}
 .cy .cyt b{color:var(--fg);font-weight:600}
 .cy .cyd{font-size:10px;color:var(--faint);margin-top:1px}
 .cy-none{grid-column:1/-1;color:var(--dim);font-size:11.5px;padding:6px 2px}
+
+/* ═══ ⑥ KPI + phân bố ═══
+   Mục ⑥ trước đây chỉ có mỗi bảng, phần trên trống hẳn một dải. Năm ô số và
+   hai biểu đồ nhỏ lấp chỗ đó bằng thứ ĐỌC ĐƯỢC NGAY, không phải bảng phải dò. */
+.khkpi{grid-template-columns:repeat(5,1fr);margin:2px 0 11px}
+@media(max-width:1150px){ .khkpi{grid-template-columns:repeat(3,1fr)} }
+@media(max-width:820px){ .khkpi{grid-template-columns:repeat(2,1fr)} }
+.khkpi .kpi{
+  background:linear-gradient(160deg,var(--panel2),#0c1526);
+  border-color:color-mix(in srgb,var(--kc) 22%,var(--border));
+  position:relative;overflow:hidden;
+}
+.khkpi .kpi::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--kc);
+}
+.khkpi .kpi .v{color:var(--kc);font-size:20px;
+  text-shadow:0 0 18px color-mix(in srgb,var(--kc) 45%,transparent)}
+.khkpi .kpi .x{font-size:10px;line-height:1.45;color:var(--dim);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;min-height:29px}
+
+/* Hai biểu đồ phân bố nằm ngang */
+.khphan{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:900px){ .khphan{grid-template-columns:1fr} }
+.khpb{background:var(--bg2);border:1px solid var(--border);
+      border-radius:9px;padding:10px 12px 9px}
+.khpb-t{font-size:10px;text-transform:uppercase;letter-spacing:.5px;
+        color:var(--faint);font-weight:600;margin-bottom:8px}
+.khpb-c{display:flex;align-items:flex-end;gap:8px;height:82px}
+.khpb-i{flex:1;display:flex;flex-direction:column;justify-content:flex-end;
+        height:100%;cursor:default}
+.khpb-v{font-family:var(--mono);font-size:11px;color:var(--text);
+        text-align:center;margin-bottom:3px;font-weight:700;min-height:14px}
+.khpb-i:has(.khpb-b[style*="height:2%"]) .khpb-v{color:var(--faint);font-weight:400}
+.khpb-b{border-radius:3px 3px 0 0;transition:filter .12s;min-height:0}
+.khpb-i:hover .khpb-b{filter:brightness(1.35)}
+.khpb-l{font-family:var(--mono);font-size:9.5px;color:var(--faint);
+        text-align:center;margin-top:5px;white-space:nowrap}
+.khpb-n{font-size:10px;color:var(--faint);line-height:1.45;margin-top:8px;
+        padding-top:7px;border-top:1px solid var(--border)}
+.khpb-n b{color:var(--dim)}
 /* Điểm rủi ro trên mỗi thẻ — cho biết vì sao thẻ này đứng trên thẻ kia,
    thay vì để người đọc đoán thứ tự là ngẫu nhiên hay có ý. */
 .cy-diem{
@@ -1292,12 +1333,35 @@ body.dangmo{overflow:hidden}
         <span class="ndlab">khách</span>
         <button class="ndstep" onclick="stepTop(5)">+</button>
       </span>
-      <span class="sub">Ngày</span>
-      <select id="khNgay" onchange="renderTopKH()"></select>
+
+      <!-- Chọn phạm vi ngày — cùng cơ chế với mục ⑤: một ngày, hoặc khoảng -->
+      <span id="khHopN"><span class="sub">Ngày</span>
+        <select id="khNgay" onchange="onKhNgay()"></select></span>
+      <span id="khHopK" style="display:none">
+        <select id="khNhanh" onchange="khChonNhanh()"
+                title="Chọn nhanh trọn một tháng hoặc toàn bộ kỳ"></select>
+        <span class="sub">Từ</span>
+        <input type="date" id="khTu" onchange="onKhKhoang()">
+        <span class="sub">đến</span>
+        <input type="date" id="khDen" onchange="onKhKhoang()">
+      </span>
+      <button id="khDoiCach" onclick="khDoiCachNgay()"
+              title="Đổi giữa 'một ngày' và 'khoảng ngày tự chọn'">📅 Chọn khoảng</button>
+
       <button id="khAll" class="on" onclick="setKHF('all')">Tất cả</button>
       <button id="khVH" onclick="setKHF('vh')">Chỉ Very High</button>
     </div>
   </div>
+
+  <!-- Bốn số tóm tắt của ĐÚNG phạm vi đang lọc. Đặt trên bảng vì đây là
+       câu trả lời nhanh; bảng bên dưới là để đi tra từng người. -->
+  <div class="kpis khkpi" id="khKpi"></div>
+
+  <!-- Hai biểu đồ nhỏ nằm ngang: phân bố số kịch bản dính, và phân bố số
+       ngày lên alert. Hai trục này trả lời hai câu khác hẳn nhau —
+       "bị nhiều rule bắt" và "bị bắt dai" — nên để cạnh nhau mới so được. -->
+  <div class="khphan" id="khPhan"></div>
+
   <div class="scroll"><table class="fix" id="khTbl"></table></div>
   <div class="note" id="khNote"></div>
 </div>
@@ -1703,6 +1767,96 @@ function onTop(){
 }
 function stepTop(d){ $('khTop').value = (+$('khTop').value || KH_TOP) + d; onTop(); }
 
+/* ───────── ⑥ phạm vi ngày ─────────
+   Dùng lại đúng cơ chế của mục ⑤: hoặc một ngày, hoặc một khoảng. Người
+   dùng đã quen thao tác ở ⑤ rồi thì ở ⑥ không phải học lại.
+   KH_CACH: 'ngay' = ô chọn một ngày | 'khoang' = hai mốc từ–đến */
+let KH_CACH = 'ngay';
+
+function khDoiCachNgay(){
+  KH_CACH = KH_CACH === 'ngay' ? 'khoang' : 'ngay';
+  const kh = KH_CACH === 'khoang';
+  $('khHopN').style.display = kh ? 'none' : '';
+  $('khHopK').style.display = kh ? '' : 'none';
+  $('khDoiCach').classList.toggle('on', kh);
+  $('khDoiCach').textContent = kh ? '↩ Một ngày' : '📅 Chọn khoảng';
+  if(kh && !$('khTu').value){
+    /* Mở lần đầu: điền sẵn TOÀN KỲ. Khác mục ⑤ (điền N ngày cuối) vì ở đây
+       mặc định đang là "mọi ngày" — nhảy sang khoảng 7 ngày sẽ làm bảng đổi
+       nội dung đột ngột mà người dùng không hiểu vì sao. */
+    $('khTu').value  = D.days[0];
+    $('khDen').value = D.days[D.tong.nd - 1];
+  }
+  renderTopKH();
+}
+
+function onKhNgay(){ renderTopKH(); }
+
+function onKhKhoang(){
+  /* Gõ ngày ngoài kỳ thì kéo về mốc gần nhất CÓ dữ liệu — giống mục ⑤,
+     thay vì để bảng trống mà không nói vì sao. */
+  ['khTu','khDen'].forEach(id=>{
+    const v = $(id).value;
+    if(v && D.days.indexOf(v) < 0){
+      let gan = D.days[0], min = Infinity;
+      D.days.forEach(x=>{
+        const d = Math.abs(new Date(x) - new Date(v));
+        if(d < min){ min = d; gan = x; }
+      });
+      $(id).value = gan;
+    }
+  });
+  $('khNhanh').value = '';
+  renderTopKH();
+}
+
+function khChonNhanh(){
+  const v = $('khNhanh').value;
+  if(!v) return;
+  if(v === 'all'){
+    $('khTu').value  = D.days[0];
+    $('khDen').value = D.days[D.tong.nd - 1];
+  } else {
+    const [a,b] = v.split('|');
+    $('khTu').value = a; $('khDen').value = b;
+  }
+  renderTopKH();
+}
+
+/* Dựng ô chọn nhanh — dùng chung nguồn với mục ⑤ nên hai nơi luôn khớp. */
+function dungKhNhanh(){
+  const s = $('khNhanh'); if(!s) return;
+  const thang = {};
+  D.days.forEach(d=>{ (thang[d.slice(0,7)] ||= []).push(d); });
+  s.innerHTML = `<option value="">— chọn nhanh —</option>` +
+    Object.keys(thang).sort().map(t=>{
+      const v = thang[t];
+      return `<option value="${v[0]}|${v[v.length-1]}">Tháng ${
+        +t.slice(5,7)}/${t.slice(0,4)} (${v.length} ngày)</option>`;
+    }).join('') +
+    `<option value="all">Toàn bộ kỳ (${D.tong.nd} ngày)</option>`;
+}
+
+/* Trả về mảng CHỈ SỐ ngày đang lọc + nhãn mô tả, dùng chung cho bảng, KPI
+   và hai biểu đồ — ba nơi phải nhìn cùng một phạm vi, không thể lệch. */
+function khPhamVi(){
+  if(KH_CACH === 'khoang'){
+    const a = D.days.indexOf($('khTu').value);
+    const b = D.days.indexOf($('khDen').value);
+    if(a >= 0 && b >= 0){
+      const lo = Math.min(a,b), hi = Math.max(a,b), js = [];
+      for(let i=lo;i<=hi;i++) js.push(i);
+      return {js, nhan:`${dLab(D.days[lo])} – ${dLab(D.days[hi])}`, soNgay:js.length};
+    }
+  }
+  const dv = $('khNgay') ? $('khNgay').value : '';
+  if(dv){
+    const j = D.days.indexOf(dv);
+    return {js:[j], nhan:`ngày ${dLab(dv)}`, soNgay:1};
+  }
+  return {js:null, nhan:'toàn kỳ', soNgay:D.tong.nd};   // null = mọi ngày
+}
+
 /* ───────── histogram ───────── */
 function colorAt(s,t){ return s<t[0]?BAND[0].c : s<t[1]?BAND[1].c : s<t[2]?BAND[2].c : BAND[3].c; }
 function drawHist(H, t){
@@ -1813,6 +1967,7 @@ function render(){
       : 'Phân bố liền mạch, không có khe trống rõ rệt.');
 
   dungChonNhanh();          // danh sách tháng dựng từ D.days, phải có trước renderMat
+  dungKhNhanh();            // ô chọn nhanh của mục ⑥ — cùng nguồn, luôn khớp ⑤
   renderDay(); renderNhom(); renderMat(); renderTopKH(); renderGC();
   renderFx(); renderWarn(); foldSum();
 }
@@ -2711,6 +2866,118 @@ function renderMat(){
    Lọc được theo NGÀY. Chọn 1 ngày thì mọi con số (alert, KB, score) đều
    tính lại trong đúng ngày đó — vì điểm chấm theo từng ngày, không cộng dồn. */
 function toggleKH(i){ KHOPEN[i] = !KHOPEN[i]; renderTopKH(); }
+/* ───────── ⑥ bốn số tóm tắt ─────────
+   Bốn câu hỏi mà người vận hành hỏi đầu tiên khi mở mục này:
+     bao nhiêu người · nặng nhất mức nào · ai bị bắt DAI · ai bị NHIỀU rule
+   Không phải bốn ô cho đầy chỗ — mỗi ô trả lời một câu khác nhau. */
+function veKhKpi(rows, PV, mucCua){
+  const n = rows.length;
+  if(!n){ $('khKpi').innerHTML = ''; return; }
+
+  const tongAl = rows.reduce((a,x)=>a+x.alert,0);
+  const nVH    = rows.filter(x=>mucCua(x.sc)===3).length;
+  const nDaKB  = rows.filter(x=>x.nkb>=3).length;
+  /* "Bị bắt dai" = có alert từ nửa số ngày trong phạm vi trở lên. Đây là
+     nhóm không bao giờ đủ 30 ngày sạch để được ân xá. */
+  const nguongDai = Math.max(2, Math.ceil(PV.soNgay/2));
+  const nDai   = rows.filter(x=>x.nngay>=nguongDai).length;
+
+  /* Mức tập trung: 10% khách đông nhất gánh bao nhiêu phần alert. Cao nghĩa
+     là vài người bắn dày — có đầu mối; thấp nghĩa là rải đều — rule quét rộng. */
+  const sap = rows.map(x=>x.alert).sort((a,b)=>b-a);
+  const top = Math.max(1, Math.round(n*0.1));
+  const pcTop = tongAl ? sap.slice(0,top).reduce((a,b)=>a+b,0)/tongAl*100 : 0;
+
+  const O = (mau, nhan, so, phu) =>
+    `<div class="kpi" style="--kc:${mau}"><div class="k">${nhan}</div>
+       <div class="v">${so}</div><div class="x">${phu}</div></div>`;
+
+  $('khKpi').innerHTML =
+    O('var(--accent)', 'Khách trong phạm vi', fmt(n),
+      `${fmt(tongAl)} alert · ${(tongAl/n).toFixed(1)} alert mỗi khách`) +
+    O('var(--vh)', 'Chạm Very High', fmt(nVH),
+      n ? `${(nVH/n*100).toFixed(1)}% số khách · ngưỡng ≥ ${thr()[2]} điểm` : '—') +
+    O('var(--orange)', 'Bị bắt dai', fmt(nDai),
+      `có alert ≥ ${nguongDai}/${PV.soNgay} ngày — khó đủ 30 ngày sạch`) +
+    O('var(--red)', 'Dính ≥ 3 kịch bản', fmt(nDaKB),
+      nDaKB ? 'nhiều rule cùng bắt — hành vi có cấu trúc'
+            : 'không ai dính từ 3 kịch bản trở lên') +
+    O('var(--green)', 'Mức tập trung', pcTop.toFixed(0)+'%',
+      `10% khách đông nhất gánh ${pcTop.toFixed(0)}% alert` +
+      (pcTop>=70 ? ' — dồn cục' : pcTop<45 ? ' — rải đều' : ''));
+}
+
+/* ───────── ⑥ hai biểu đồ phân bố ─────────
+   Hai trục trả lời hai câu KHÁC HẲN nhau, nên phải để cạnh nhau mới so được:
+     trái  — bị BAO NHIÊU RULE bắt   (1 rule = có thể do chống lặp;
+                                       ≥3 rule = hành vi có cấu trúc)
+     phải  — bị bắt BAO NHIÊU NGÀY   (1 ngày = sự vụ; nhiều ngày = dai dẳng)
+   Một người 500 alert do 1 rule trong 1 ngày rất khác một người 20 alert do
+   4 rule rải 15 ngày — cột "tổng alert" không phân biệt được hai ca đó. */
+function veKhPhanBo(rows, PV){
+  const box = $('khPhan');
+  if(!rows.length){ box.innerHTML = ''; return; }
+
+  const cot = (ds, nhan, mau, dv, chuThich) => {
+    const mx = Math.max(...ds.map(x=>x.n), 1);
+    return `<div class="khpb">
+      <div class="khpb-t">${nhan}</div>
+      <div class="khpb-c">${ds.map(x=>`
+        <div class="khpb-i" title="${fmt(x.n)} khách ${x.mo}">
+          <div class="khpb-v">${x.n ? fmt(x.n) : '·'}</div>
+          <!-- Nhóm rỗng vẫn để một vạch mảnh mờ: cột biến mất hẳn trông như
+               lỗi hiển thị, mà "không có ai" cũng là một thông tin. -->
+          <div class="khpb-b" style="height:${x.n ? Math.max(3, x.n/mx*100) : 2}%;
+               background:${x.n ? (x.hot ? 'var(--red)' : mau) : 'var(--border-hi)'}"></div>
+          <div class="khpb-l"${x.hot?' style="color:var(--red);font-weight:700"':''}>${x.l}</div>
+        </div>`).join('')}</div>
+      <div class="khpb-n">${chuThich}</div></div>`;
+  };
+
+  /* Nhóm theo số kịch bản: 1 / 2 / 3 / 4+ */
+  const bKb = [1,2,3,4].map(v=>({
+    l: v===4 ? '4+' : String(v),
+    n: rows.filter(x=> v===4 ? x.nkb>=4 : x.nkb===v).length,
+    mo: v===4 ? 'dính từ 4 kịch bản' : `dính đúng ${v} kịch bản`,
+    hot: v>=3}));
+
+  /* Nhóm theo số ngày — chia mốc theo độ dài phạm vi để luôn có nghĩa.
+     Phạm vi 1 ngày thì không có gì để chia, ẩn biểu đồ này đi. */
+  let bNg = null;
+  if(PV.soNgay >= 2){
+    /* Dựng mốc bằng CÁC ĐIỂM CẮT tăng dần, không nhân chia — chia kiểu
+       [2,q],[q+1,q*2] với phạm vi ngắn thì q=1 và sinh ra mốc vô nghĩa
+       ("2–1", ">2"). Đã mắc đúng lỗi này với phạm vi 5 ngày.
+       Phạm vi ngắn thì liệt kê thẳng từng ngày, dài mới gộp nhóm. */
+    let cat;
+    if(PV.soNgay <= 6){
+      cat = [];
+      for(let v=1; v<=PV.soNgay; v++) cat.push([v, v]);
+    } else {
+      const q1 = Math.max(2, Math.round(PV.soNgay*0.25));
+      const q2 = Math.max(q1+1, Math.round(PV.soNgay*0.5));
+      cat = [[1,1], [2,q1], [q1+1,q2], [q2+1,PV.soNgay]];
+    }
+    const nhan = m => m[0]===m[1]
+      ? (m[0]===1 ? '1 ngày' : String(m[0]))
+      : `${m[0]}–${m[1]}`;
+    /* Ngưỡng "dai dẳng" = từ nửa phạm vi trở lên, khớp với KPI "Bị bắt dai". */
+    const nguongDai = Math.max(2, Math.ceil(PV.soNgay/2));
+    bNg = cat.map(m=>({
+      l: nhan(m),
+      n: rows.filter(x=>x.nngay>=m[0] && x.nngay<=m[1]).length,
+      mo: `có alert ${m[0]===m[1]?m[0]:m[0]+'–'+m[1]} ngày`,
+      hot: m[0] >= nguongDai}));
+  }
+
+  box.innerHTML =
+    cot(bKb, 'Bị bao nhiêu kịch bản bắt', 'var(--accent)', 'kịch bản',
+        'Từ <b>3 kịch bản</b> trở lên (đỏ) là nhiều rule cùng bắt một người — hành vi có cấu trúc, đáng điều tra hơn bị một rule bắn lặp.') +
+    (bNg ? cot(bNg, `Bị bắt bao nhiêu ngày trong ${PV.soNgay} ngày`, 'var(--purple)', 'ngày',
+        'Càng về phải (đỏ) càng <b>dai dẳng</b>. Nhóm này khó đủ 30 ngày sạch để được ân xá.')
+         : '');
+}
+
 function setKHF(f){
   KHF = f;
   $('khAll').classList.toggle('on', f==='all');
@@ -2725,7 +2992,8 @@ function diemNgay(picks, r, k){
 }
 function renderTopKH(){
   const q  = ($('qKH').value||'').toLowerCase();
-  const dv = $('khNgay').value;                        // '' = mọi ngày
+  /* Phạm vi ngày lấy qua khPhamVi() — xem PV bên dưới. Không đọc thẳng
+     #khNgay nữa vì giờ có hai chế độ (một ngày / khoảng). */
   const r  = +$('pR').value/100, k = +$('pK').value/100;
   const t  = thr();
   /* Xếp mức bằng ĐIỂM THẬT, không làm tròn trước. Lý do cũ của việc làm tròn
@@ -2735,9 +3003,12 @@ function renderTopKH(){
   const mucCua = s0 => { const s = chuanDiem(s0);
     return s<t[0]?0 : s<t[1]?1 : s<t[2]?2 : 3; };
 
-  /* dựng lại số liệu theo bộ lọc ngày */
+  /* dựng lại số liệu theo phạm vi ngày đang chọn (một ngày / khoảng / cả kỳ) */
+  const PV = khPhamVi();
   let rows = D.topkh.map((x,idx)=>{
-    const js = dv==='' ? Object.keys(x.ng).map(Number) : [D.days.indexOf(dv)];
+    /* PV.js === null nghĩa là "mọi ngày" — lấy hết ngày khách đó có alert.
+       Có phạm vi thì GIAO với ngày khách có alert, không lấy cả phạm vi. */
+    const js = PV.js === null ? Object.keys(x.ng).map(Number) : PV.js;
     let alert = 0; const gom = {}; const ngayCo = [];
     let dMax = 0, dNgay = null;
     js.forEach(j=>{
@@ -2748,7 +3019,11 @@ function renderTopKH(){
       if(s > dMax){ dMax = s; dNgay = j; }
     });
     return {idx, kh:x.kh, flag:x.flag, alert, nkb:Object.keys(gom).length,
-            nngay:ngayCo.length, gom, ngayCo, sc:dMax, scNg:dNgay};
+            nngay:ngayCo.length, gom, ngayCo, sc:dMax, scNg:dNgay,
+            /* TB alert mỗi NGÀY CÓ ALERT — không chia cho cả phạm vi.
+               Khách nổ 400 alert trong 2/67 ngày mà chia 67 thì ra 6/ngày,
+               che mất chính cái bất thường cần thấy. */
+            tbNgay: ngayCo.length ? alert/ngayCo.length : 0};
   }).filter(x => x.alert>0 && (!q || x.kh.toLowerCase().includes(q))
                  && (KHF==='all' || mucCua(x.sc)===3));
   rows.sort((a,b)=> b.alert-a.alert);
@@ -2759,16 +3034,23 @@ function renderTopKH(){
   const nLoc  = rows.length;
   const nVH   = rows.filter(x=>mucCua(x.sc)===3).length;
   const nDaKB = rows.filter(x=>x.nkb>=3).length;
+
+  /* ── KPI + hai biểu đồ: tính trên TOÀN BỘ kết quả lọc, trước khi cắt top.
+        Cắt rồi mới tính thì mọi con số chỉ nói về 20 người đang hiện. ── */
+  veKhKpi(rows, PV, mucCua);
+  veKhPhanBo(rows, PV);
+
   rows = rows.slice(0, Math.min(KH_TOP, topMax()));
   /* Cắt top vẫn theo ALERT — đó là định nghĩa của mục này ("top N nhiều alert
      nhất"). Sắp lại chỉ đổi thứ tự phần đang hiện, không đổi ai được vào bảng,
      nên cột "Alert" vẫn là mốc so sánh chung dù đang xếp theo cột khác. */
   rows = sxSap(rows, 'sxKH', k => ({kh:x=>x.kh, alert:x=>x.alert, nkb:x=>x.nkb,
-    nngay:x=>x.nngay, sc:x=>x.sc, nd:x=>x.scNg==null?-1:x.scNg})[k]);
+    nngay:x=>x.nngay, tb:x=>x.tbNgay, sc:x=>x.sc,
+    nd:x=>x.scNg==null?-1:x.scNg})[k]);
 
   $('khSub').innerHTML =
-    `Hiện <b>${rows.length}</b>/${nLoc} khách nhiều alert nhất` +
-    (dv ? ` trong ngày <b>${dLab(dv)}</b>` : ` toàn kỳ`) +
+    `Hiện <b>${rows.length}</b>/${nLoc} khách nhiều alert nhất · phạm vi ` +
+    `<b>${PV.nhan}</b> (${PV.soNgay} ngày)` +
     ` · <b>${nVH}</b> khách chạm Very High · <b>${nDaKB}</b> khách dính từ 3 kịch bản trở lên` +
     ` <span class="off">(đếm trên cả ${nLoc} khách, không chỉ phần đang hiện)</span>`;
 
@@ -2777,13 +3059,17 @@ function renderTopKH(){
   const aMax = Math.max(...rows.map(x=>x.alert), 1);
 
   $('khTbl').innerHTML =
-    `<thead><tr>${thS('sxKH','kh','Mã khách hàng','l w-ten',1)}
-      ${thS('sxKH','alert','Alert','w-num')}
-      ${thS('sxKH','nkb','Kịch bản','w-num-s')}
-      ${thS('sxKH','nngay','Ngày dính','w-num',-1,'width:104px')}
+    /* Tên cột nói thẳng cột đó ĐO GÌ. "Kịch bản"/"Ngày dính" quá mơ hồ —
+       người đọc phải đoán là số lượng hay là tên. Bề rộng chia lại theo độ
+       dài tiêu đề mới, cột mã khách vẫn rộng nhất vì là khoá để đi tra. */
+    `<thead><tr>${thS('sxKH','kh','Khách hàng','l w-ten',1)}
+      ${thS('sxKH','nkb','Số kịch bản vi phạm','w-num',-1,'width:150px')}
+      ${thS('sxKH','nngay','Số ngày lên alert','w-num',-1,'width:142px')}
+      ${thS('sxKH','tb','TB alert/ngày','w-num',-1,'width:118px')}
+      ${thS('sxKH','alert','Tổng alert','w-num',-1,'width:112px')}
       ${thS('sxKH','sc','Score','w-num-s')}
       <th class="l w-pill">Mức</th>
-      ${thS('sxKH','nd','Ngày điểm cao nhất','l',-1,'width:150px')}
+      ${thS('sxKH','nd','Ngày điểm cao nhất','l',-1,'width:140px')}
       </tr></thead><tbody>` +
     rows.map(x=>{
       const op = KHOPEN[x.idx], m = mucCua(x.sc);
@@ -2793,11 +3079,15 @@ function renderTopKH(){
       let h = `<tr class="kh-row${op?' op':''}" onclick="toggleKH(${x.idx})">
         <td class="l num ten" title="${esc(x.kh)}">
           <div class="tw"><span class="nm">${esc(x.kh)}</span></div></td>
+        <td class="num"${daKB?' style="color:var(--accent);font-weight:700"':''}>${x.nkb}</td>
+        <td class="num" style="color:var(--dim)"
+            title="Có alert ${x.nngay} ngày trên tổng ${PV.soNgay} ngày đang lọc">${x.nngay}<span
+            class="off" style="font-size:10px">/${PV.soNgay}</span></td>
+        <td class="num" style="color:var(--dim)"
+            title="Trung bình trên số ngày CÓ alert, không chia cho cả phạm vi">${
+            x.tbNgay.toFixed(1)}</td>
         <td class="num"><b>${fmt(x.alert)}</b>
           <div class="abar"><i style="width:${Math.max(2, x.alert/aMax*100)}%"></i></div></td>
-        <td class="num"${daKB?' style="color:var(--accent);font-weight:700"':''}>${x.nkb}</td>
-        <td class="num" style="color:var(--dim)">${x.nngay}
-          <span class="off" style="font-size:10px">· ${(x.alert/x.nngay).toFixed(1)}/ngày</span></td>
         <td class="num" style="color:${BAND[m].c};font-weight:700">${hienDiem(x.sc)}</td>
         <td class="l"><span class="pill ${PILL[m]}">${BAND[m].n}</span></td>
         <td class="l num" style="color:var(--dim)">${x.scNg!=null
@@ -2807,13 +3097,13 @@ function renderTopKH(){
         /* Mở ra: từng NGÀY một, mỗi ngày một bảng con các kịch bản đã dính.
            Level và điểm gốc của kịch bản hiện thành cột riêng — trước đây
            nằm trong tooltip nên phải rê chuột từng chip mới đọc được. */
-        const js = (dv==='' ? x.ngayCo : [D.days.indexOf(dv)]).sort((a,b)=>a-b);
+        const js = x.ngayCo.slice().sort((a,b)=>a-b);
         /* MỘT bảng cho cả khối, ô ngày dùng rowspan trải đúng số dòng kịch bản
            của nó. Trước đây mỗi ngày là một dải tiêu đề riêng nằm trên các
            dòng kịch bản — hai thứ nặng ngang nhau, ngày nào chỉ có một kịch
            bản thì chúng xen kẽ thành sọc đều, đọc xuống không biết dòng nào
            thuộc ngày nào. Gộp ô thì không thể nhầm: đường kẻ tự nói. */
-        h += `<tr class="det"><td colspan="7"><table class="kbtb">` +
+        h += `<tr class="det"><td colspan="8"><table class="kbtb">` +
           js.map(j=>{
             const p = D.topkh[x.idx].ng[j]; if(!p) return '';
             const s = diemNgay(p, r, k), mm = mucCua(s);

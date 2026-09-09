@@ -1,0 +1,15 @@
+# Khai báo rõ cho Cloudflare Pages: KHÔNG có bước build nào cả.
+#
+# Vì sao cần file này: repo có thư mục `_build/` chứa mấy file .py (script
+# dựng chạy ở MÁY, không phải trên Cloudflare). Cloudflare tự dò cấu trúc
+# repo, thấy .py thì đoán đây là dự án Python và cố chạy build — không có
+# requirements.txt nên bước build hỏng, lần phát hành thất bại và nó giữ
+# nguyên bản cũ. Trang vẫn chạy nên nhìn ngoài tưởng bình thường, nhưng
+# nội dung không bao giờ cập nhật.
+#
+# Khai tường minh ở đây thì Cloudflare bỏ qua bước dò, chỉ lấy thư mục
+# public/ đem phát hành.
+
+name = "f2dr-dashboard-pages"
+compatibility_date = "2026-09-08"
+pages_build_output_dir = "public"
