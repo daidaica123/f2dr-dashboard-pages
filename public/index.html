@@ -876,9 +876,13 @@ select#matKb{max-width:430px}
 .bcrow .thanh i{display:block;height:100%;border-radius:3px;
   transition:width .34s cubic-bezier(.22,1,.36,1),filter .12s}
 .bcrow:hover .thanh i{filter:brightness(1.35)}
-.bcrow .sn{font-family:var(--mono);text-align:right;font-weight:600;white-space:nowrap}
-.bcrow .sp{font-family:var(--mono);text-align:right;color:var(--faint);
-  font-size:10.5px;white-space:nowrap}
+/* Cột SỐ LƯỢNG (.sn) và % (.sp) PHẢI đồng nhất font/cỡ/màu — trước đây .sp
+   tự ý nhỏ hơn (10.5 vs kế thừa 11.5 từ .bcrow) và nhạt hơn (var(--faint) vs
+   màu chữ mặc định), khiến hai cột nhìn như hai kiểu khác hẳn nhau trên MỌI
+   bảng dùng chung .bcrow (mục ①②③ tab Báo cáo). User chốt 23/09: viết
+   chung 1 rule để không lệch tay ở chỗ nào nữa. */
+.bcrow .sn,.bcrow .sp{font-family:var(--mono);text-align:right;
+  font-weight:600;white-space:nowrap}
 /* Hàng bốn cột cho chế độ "Lệch TB": tên · TB/ngày phạm vi · TB/ngày cả kỳ ·
    độ lệch. Phải bày cả hai trung bình thì con số % mới kiểm chứng được bằng
    mắt; chỉ đưa tổng alert của phạm vi cạnh một % tính theo ngày là lệch đơn vị,
@@ -987,14 +991,13 @@ select#matKb{max-width:430px}
   display:flex;align-items:center;gap:7px}
 .bcrow.slacha .nhan:before{content:'';width:8px;height:8px;border-radius:2px;
   background:var(--mc,var(--faint));flex:none}
-.bcrow.slacha .sn{font-weight:700;font-size:13px}
+.bcrow.slacha .sn,.bcrow.slacha .sp{font-weight:700;font-size:13px}
 .bcrow.slacon{grid-template-columns:minmax(0,1fr) 52px 58px;
   padding:3px 8px 3px 24px}
 .bcrow.slacon .nhan{font-size:11px;color:var(--dim)}
 .bcrow.slacon .nhan:before{content:'└ ';color:var(--faint);margin-right:2px}
 .bcrow.slacon .thanh{height:3px;margin-top:3px;background:rgba(28,42,71,.55)}
-.bcrow.slacon .sn{font-size:11.5px}
-.bcrow.slacon .sp{font-size:10px}
+.bcrow.slacon .sn,.bcrow.slacon .sp{font-size:11.5px}
 .bcrow.slacha+.bcrow.slacon{border-top:0}
 .bchead .sn,.bchead .sp{font-family:var(--sans);font-weight:600;color:var(--faint)}
 /* Thanh xếp lớp nhiều màu (đúng·sai·chưa) — các lát nối liền, không bo giữa. */
@@ -4047,11 +4050,15 @@ function bcPhan1(iA, iB, dsNgay){
         lọc phía trên.</div>`
     : bcHangLech(lechTB(ds, nN, nKy).slice(0, n), nN, nKy);
 
+  /* Chế độ "Nhiều nhất": bỏ chữ "alert · % tổng" ở góc, thay bằng tiêu đề
+     cột SỐ LƯỢNG/% ngay trên bảng — cùng kiểu bcHead() đang dùng ở mục ②③
+     (user chốt 23/09). Chế độ "Lệch TB" cột khác nghĩa (alert/ngày lệch),
+     giữ nguyên chữ mô tả cũ, không có tiêu đề cột kiểu này. */
   $('bcAlNhom').innerHTML = SX_NHOM === 'lech'
     ? veLech(nhomDs, 99)
-    : bcHang(nhoms, 'var(--accent)', alert);
+    : bcHead() + bcHang(nhoms, 'var(--accent)', alert);
   $('bcNhomEm').textContent = SX_NHOM === 'lech'
-    ? 'alert/ngày · so với trung bình cả kỳ' : 'alert · % tổng';
+    ? 'alert/ngày · so với trung bình cả kỳ' : '';
 
   /* ── Mức rủi ro KHÁCH HÀNG ──
      Khác hẳn "mức kịch bản": đây là điểm của từng LƯỢT (một khách trong một
@@ -4094,13 +4101,13 @@ function bcPhan1(iA, iB, dsNgay){
   }
   $('bcAlKb').innerHTML = SX_KB === 'lech'
     ? veLech(kbDs, 10)
-    : bcHang(
+    : bcHead() + bcHang(
       /* Bỏ tiền tố [NEW]_NHÓM_ cho gọn — nhóm đã có ô riêng bên cạnh rồi. */
       kbs.slice(0,10).map(x=>({
         k: String(x.k.ten).replace(/^\[NEW\]_[A-Z0-9_]+_/, ''), n: x.a})),
       x=>'var(--accent)', alert);
   $('bcKbEm').textContent = SX_KB === 'lech'
-    ? '10 kịch bản lệch xa TB nhất' : '10 kịch bản nhiều alert nhất';
+    ? '10 kịch bản lệch xa TB nhất' : '';
 }
 
 /* ───────── ② kết quả xử lý alert ───────── */
@@ -8527,14 +8534,20 @@ theoHash();              /* #ngay-moi-nhat hoặc #ngay=YYYY-MM-DD */
    lúc mới mở nó chỉ cao vài dòng, trông cụt lủn. */
 .f2-panel{
   position:fixed; right:22px; top:76px; bottom:20px; z-index:2147483000;
-  width:412px; max-width:calc(100vw - 32px);
+  width:460px; max-width:calc(100vw - 32px);
   background:var(--f2-panel, #0d1524);
   border:1px solid var(--f2-vien2, #2a3f6b); border-radius:18px;
   box-shadow:0 20px 54px rgba(0,0,0,.64), 0 0 0 1px rgba(46,232,255,.09);
   display:flex; flex-direction:column; overflow:hidden;
   font-family:var(--f2-body, system-ui,-apple-system,'Segoe UI',Roboto,sans-serif);
   animation:f2-len .24s cubic-bezier(.22,1,.36,1);
+  transition:width .22s cubic-bezier(.22,1,.36,1);
 }
+/* Mở sidebar lịch sử thì panel tự nới rộng thêm ĐÚNG bề rộng sidebar, để
+   khung chat chính không bị chật đi (user chốt 23/09). Cộng dồn được với
+   "phóng to" (.f2-to) — mở cả hai thì panel rộng theo cả hai lượt nới. */
+.f2-panel.f2-sb-mo{ width:calc(460px + 208px) }
+.f2-panel.f2-to.f2-sb-mo{ width:calc(min(52vw, 900px) + 208px) }
 @keyframes f2-len{
   from{ opacity:0; transform:translateY(18px) scale(.97) }
   to  { opacity:1; transform:none }
@@ -8660,39 +8673,51 @@ theoHash();              /* #ngay-moi-nhat hoặc #ngay=YYYY-MM-DD */
 }
 .f2-nut-dau:hover{ border-color:var(--f2-ngoc, #2ee8ff); color:var(--f2-ngoc, #2ee8ff) }
 
-/* ───────── danh sách cuộc đã lưu ─────────
-   Xổ xuống ngay dưới thanh tiêu đề, đè lên vùng tin nhắn. Không làm ngăn
-   bên trái kiểu ChatGPT vì panel chỉ rộng 412px — cắt đôi ra thì cả hai
-   nửa đều chật. */
+/* ───────── sidebar lịch sử kiểu ChatGPT ─────────
+   XỔ RA/VÀO bằng cách đổi WIDTH của chính .f2-sos (không phải display:none)
+   để có chuyển động trượt mượt, nội dung bên trong giữ nguyên bề rộng cố
+   định (.f2-sos-inner) nên không bị vỡ chữ giữa lúc trượt. Panel tự nới rộng
+   thêm đúng bề rộng sidebar khi mở (xem .f2-panel.f2-sb-mo) để khung chat
+   chính không bị chật đi (user chốt 23/09). */
+.f2-corpo{ display:flex; flex:1; min-height:0 }
 .f2-sos{
-  flex:none; max-height:46%; overflow-y:auto; scrollbar-width:thin;
-  background:#0a1020; border-bottom:1px solid var(--f2-vien, #1c2a47);
-  scrollbar-color:var(--f2-vien, #1c2a47) transparent;
+  --f2-sbw:208px;
+  flex:none; width:0; overflow:hidden;
+  border-right:1px solid transparent;
+  background:#0a1020;
+  transition:width .22s cubic-bezier(.22,1,.36,1), border-color .22s;
 }
-.f2-sos::-webkit-scrollbar{ width:7px }
-.f2-sos::-webkit-scrollbar-thumb{ background:var(--f2-vien, #1c2a47); border-radius:4px }
+.f2-sos:not(.f2-sb-an){ width:var(--f2-sbw); border-right-color:var(--f2-vien, #1c2a47) }
+.f2-sos-inner{
+  width:208px; height:100%; display:flex; flex-direction:column; min-height:0;
+}
 .f2-sos-dau{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:7px 13px 5px; font-family:var(--f2-mono, ui-monospace, monospace);
+  flex:none; display:flex; align-items:center; justify-content:space-between;
+  padding:10px 12px 7px; font-family:var(--f2-mono, ui-monospace, monospace);
   font-size:9.5px; color:var(--f2-mo2, #5f6f8f); letter-spacing:.02em;
-  position:sticky; top:0; background:#0a1020;
 }
 .f2-sos-dau button{
   background:none; border:0; color:var(--f2-mo2, #5f6f8f); cursor:pointer;
   font-family:inherit; font-size:9.5px; padding:2px 5px; border-radius:4px;
 }
 .f2-sos-dau button:hover{ color:var(--f2-do, #ff6b6b); background:rgba(255,107,107,.09) }
-.f2-cuoc{
-  display:flex; align-items:center; gap:8px; padding:7px 13px; cursor:pointer;
-  border-left:2px solid transparent; transition:.12s;
+#f2-sos-ds{
+  flex:1; min-height:0; overflow-y:auto; scrollbar-width:thin;
+  scrollbar-color:var(--f2-vien, #1c2a47) transparent; padding:2px 6px 8px;
 }
-.f2-cuoc:hover{ background:rgba(46,232,255,.055) }
-.f2-cuoc.dang{ border-left-color:var(--f2-ngoc, #2ee8ff); background:rgba(46,232,255,.08) }
+#f2-sos-ds::-webkit-scrollbar{ width:6px }
+#f2-sos-ds::-webkit-scrollbar-thumb{ background:var(--f2-vien, #1c2a47); border-radius:4px }
+.f2-cuoc{
+  display:flex; align-items:center; gap:8px; padding:7px 8px; cursor:pointer;
+  border-radius:8px; transition:.12s; margin:1px 0;
+}
+.f2-cuoc:hover{ background:rgba(46,232,255,.07) }
+.f2-cuoc.dang{ background:rgba(46,232,255,.13) }
 .f2-cuoc-ten{
   flex:1; min-width:0; font-size:11.5px; color:var(--f2-dim, #b4c0d6);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.35;
 }
-.f2-cuoc.dang .f2-cuoc-ten{ color:var(--f2-ngoc, #2ee8ff) }
+.f2-cuoc.dang .f2-cuoc-ten{ color:var(--f2-ngoc, #2ee8ff); font-weight:600 }
 .f2-cuoc-luc{
   flex:none; font-family:var(--f2-mono, ui-monospace, monospace); font-size:9px;
   color:var(--f2-mo2, #5f6f8f);
@@ -8705,9 +8730,11 @@ theoHash();              /* #ngay-moi-nhat hoặc #ngay=YYYY-MM-DD */
 .f2-cuoc-xoa:hover{ opacity:1 !important; color:var(--f2-do, #ff6b6b);
                     background:rgba(255,107,107,.12) }
 .f2-sos-trong{
-  padding:11px 13px 14px; font-size:11px; color:var(--f2-mo2, #5f6f8f);
+  padding:9px 8px 14px; font-size:11px; color:var(--f2-mo2, #5f6f8f);
   line-height:1.5;
 }
+/* ───────── khung chat chính (bên phải sidebar) ───────── */
+.f2-main{ flex:1; min-width:0; display:flex; flex-direction:column; min-height:0 }
 
 /* ───────── chip phạm vi đang lọc ───────── */
 .f2-chip{
@@ -8966,6 +8993,15 @@ strong button.f2-ref{ font-weight:inherit }
 /* ───────── màn hình hẹp ───────── */
 @media (max-width:720px){
   .f2-panel{ right:10px; left:10px; top:58px; bottom:10px; width:auto }
+  /* Màn hẹp không đủ chỗ để vừa nới panel vừa chia sidebar — giữ panel
+     nguyên bề rộng màn hình, cho sidebar ĐÈ LÊN khung chat thay vì đẩy nó
+     hẹp lại (208px sidebar trong panel ~350px thì chat gần như biến mất). */
+  .f2-panel.f2-sb-mo, .f2-panel.f2-to.f2-sb-mo{ width:auto }
+  .f2-corpo{ position:relative }
+  .f2-sos:not(.f2-sb-an){
+    position:absolute; left:0; top:0; bottom:0; z-index:2;
+    box-shadow:12px 0 24px rgba(0,0,0,.4);
+  }
   .f2-nut{ right:16px; bottom:16px; width:56px; height:56px }
   .f2-nhung .f2-nut{ bottom:74px }
 }
@@ -9055,29 +9091,38 @@ strong button.f2-ref{ font-weight:inherit }
     <button class="f2-nut-dau" id="f2-thu" title="Thu gọn" aria-label="Thu gọn">−</button>
   </div>
 
-  <!-- Danh sách các cuộc đã lưu. Ẩn mặc định: mở panel ra là để hỏi, không
-       phải để duyệt lịch sử — bấm ☰ mới hiện. -->
-  <div class="f2-sos f2-an" id="f2-sosbox">
-    <div class="f2-sos-dau">
-      <span id="f2-sos-dem">Chưa có cuộc nào</span>
-      <button id="f2-xoahet" title="Xoá tất cả các cuộc đã lưu">Xoá hết</button>
+  <!-- ═══ THÂN PANEL: sidebar lịch sử (kiểu ChatGPT) + khung chat ═══
+       Sidebar XỔ RA/VÀO bằng cách đổi WIDTH (không phải display:none) để có
+       chuyển động trượt mượt — bấm ☰ ở thanh trên để mở/đóng (user chốt
+       23/09: "làm giống ChatGPT, có nút xổ ra xổ vào"). Đóng mặc định: mở
+       panel ra là để hỏi, không phải để duyệt lịch sử. -->
+  <div class="f2-corpo">
+    <div class="f2-sos f2-sb-an" id="f2-sosbox">
+      <div class="f2-sos-inner">
+        <div class="f2-sos-dau">
+          <span id="f2-sos-dem">Chưa có cuộc nào</span>
+          <button id="f2-xoahet" title="Xoá tất cả các cuộc đã lưu">Xoá hết</button>
+        </div>
+        <div id="f2-sos-ds"></div>
+      </div>
     </div>
-    <div id="f2-sos-ds"></div>
+
+    <div class="f2-main">
+      <div class="f2-chip f2-an" id="f2-chip"></div>
+
+      <div class="f2-tin" id="f2-tin"></div>
+
+      <div class="f2-goiy" id="f2-goiy"></div>
+
+      <div class="f2-nhap">
+        <textarea id="f2-o" rows="1" placeholder="Hỏi về dữ liệu kỳ này…"
+                  aria-label="Câu hỏi"></textarea>
+        <button class="f2-gui" id="f2-gui" title="Gửi" aria-label="Gửi">↑</button>
+      </div>
+
+      <div class="f2-conlai" id="f2-conlai"></div>
+    </div>
   </div>
-
-  <div class="f2-chip f2-an" id="f2-chip"></div>
-
-  <div class="f2-tin" id="f2-tin"></div>
-
-  <div class="f2-goiy" id="f2-goiy"></div>
-
-  <div class="f2-nhap">
-    <textarea id="f2-o" rows="1" placeholder="Hỏi về dữ liệu kỳ này…"
-              aria-label="Câu hỏi"></textarea>
-    <button class="f2-gui" id="f2-gui" title="Gửi" aria-label="Gửi">↑</button>
-  </div>
-
-  <div class="f2-conlai" id="f2-conlai"></div>
 </div>
 <script>window.F2_CAU_HINH = {"khoaAPI": [], "proxy": "/api/gemini", "soKhoa": 5};</script>
 <script>
@@ -11049,6 +11094,23 @@ window.F2TriThuc = (function () {
       chua_qua_han: chua.length,
       theo_nguon: bang(theoNguon),
       dang_vuong_o_dau: bang(theoAction),
+      /* Câu "đơn nào đang tồn" thực chất luôn kèm câu hỏi NGÀY NÀO — người
+         vận hành cần biết tồn dồn vào hôm nào để đi đòi đúng chỗ. Trả mỗi
+         tổng số là thiếu mất chiều quan trọng nhất. */
+      ton_theo_ngay_tiep_nhan: (function () {
+        var m = {};
+        ton.forEach(function (r) {
+          if (!m[r.nhan]) m[r.nhan] = { so_don: 0, qua_han: 0, ma_don: [] };
+          m[r.nhan].so_don++;
+          if (r.han && r.han < moc) m[r.nhan].qua_han++;
+          m[r.nhan].ma_don.push(r.id);
+        });
+        return Object.keys(m).sort().map(function (k) {
+          return { ngay_tiep_nhan: k, thu: thu(k), so_don_ton: m[k].so_don,
+                   trong_do_qua_han: m[k].qua_han, ma_don: m[k].ma_don };
+        });
+      })(),
+      ton_cuoi_moi_ngay: tonCuoiNgayKn(ts, 21),
       danh_sach: sx.slice(0, 30).map(function (r) {
         return {
           ma_don: r.id, ngay_tiep_nhan: r.nhan, han_sla: r.han,
@@ -11057,12 +11119,70 @@ window.F2TriThuc = (function () {
           so_tien: +r.tien || 0, ma_khach: r.sdt
         };
       }),
-      _cach_tra_loi: "Đây là các đơn CHƯA đóng. 'Đang vướng ở đâu' là trạng " +
-        "thái xử lý hiện tại (chờ ngân hàng đối soát, chờ xác minh khách...), " +
-        "nêu nó ra vì đó là thứ người vận hành cần biết để gỡ. Quá hạn tính " +
-        "theo mốc ngày mới nhất có trong dữ liệu, không phải ngày hôm nay thật."
+      _cach_tra_loi: "Đây là các đơn CHƯA đóng. ⚠️ PHẢI nêu TỒN THEO TỪNG " +
+        "NGÀY (ton_theo_ngay_tiep_nhan) — đó là thứ người vận hành cần nhất, " +
+        "chỉ đưa tổng số là thiếu. 'Đang vướng ở đâu' là trạng thái xử lý " +
+        "hiện tại (chờ ngân hàng đối soát, chờ xác minh khách...), nêu ra vì " +
+        "đó là chỗ phải gỡ. ton_cuoi_moi_ngay là số đơn ĐANG MỞ cuối mỗi " +
+        "ngày (tồn tích luỹ, khác với số đơn mới nhận trong ngày) — dùng nó " +
+        "khi người hỏi muốn biết tồn đang phình lên hay đang được giải toả. " +
+        "Quá hạn tính theo mốc ngày mới nhất trong dữ liệu, không phải ngày " +
+        "hôm nay thật."
     };
   };
+
+  /* ⛔ KHÔNG dùng toISOString() để lấy ngày của một Date dựng theo giờ máy:
+     nó quy sang UTC, máy múi giờ +7 nên lùi mất một ngày — cả dãy lệch nhãn
+     và rụng ngày cuối. Bug này tự nó nhất quán nên test so "tính tay theo
+     chính nhãn đó" vẫn xanh; phải so với mốc dữ liệu mới lộ. */
+  function isoTaCho(d) {
+    return d.getFullYear() + "-" +
+      ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
+      ("0" + d.getDate()).slice(-2);
+  }
+
+  /* Tồn ĐANG MỞ cuối mỗi ngày: đếm đơn đã nhận tính đến ngày đó mà chưa xong
+     trước hoặc trong ngày đó. Khác hẳn "số đơn nhận trong ngày" — một ngày
+     nhận ít vẫn có thể tồn cao nếu ngày trước chưa giải quyết xong. */
+  function tonCuoiNgayKn(ts, soNgay) {
+    var K = dsKn();
+    if (!K) return [];
+    var ds = K.ds;
+    if (!ds.length) return [];
+    var moc = mocHomNayKn();
+    var d0 = "";
+    ds.forEach(function (r) { if (!d0 || r.nhan < d0) d0 = r.nhan; });
+    /* Khi người hỏi đã giới hạn khoảng ngày thì bám theo khoảng đó. */
+    ts = ts || {};
+    var tu = ts.ngay ? chuanNgay(ts.ngay) : (ts.tu ? chuanNgay(ts.tu) : null);
+    var den = ts.ngay ? chuanNgay(ts.ngay) : (ts.den ? chuanNgay(ts.den) : null);
+    var het = den || moc;
+    var dau = tu;
+    if (!dau) {
+      var t = new Date(het + "T00:00:00");
+      t.setDate(t.getDate() - (soNgay || 21) + 1);
+      dau = isoTaCho(t);
+      if (dau < d0) dau = d0;
+    }
+    var ra = [];
+    for (var s = new Date(dau + "T00:00:00"), e = new Date(het + "T00:00:00");
+         s <= e; s.setDate(s.getDate() + 1)) {
+      var ng = isoTaCho(s);
+      var mo = 0, qh = 0, moi = 0, dong = 0;
+      for (var i = 0; i < ds.length; i++) {
+        var r = ds[i];
+        if (r.nhan > ng) continue;
+        if (r.nhan === ng) moi++;
+        var xongRoi = r.status === 1 && r.xong && r.xong <= ng;
+        if (r.xong && r.xong === ng) dong++;
+        if (!xongRoi) { mo++; if (r.han && r.han < ng) qh++; }
+      }
+      ra.push({ ngay: ng, thu: thu(ng), don_moi_trong_ngay: moi,
+                dong_trong_ngay: dong, dang_mo_cuoi_ngay: mo,
+                trong_do_qua_han: qh });
+    }
+    return ra;
+  }
 
   H.khieu_nai_toc_do_xu_ly = function (ts) {
     var K = dsKn();
@@ -11304,7 +11424,7 @@ window.F2TriThuc = (function () {
     khieu_nai_top_khach: "Xếp hạng KHÁCH HÀNG bị nhiều khiếu nại nhất. Dùng khi hỏi 'ông khách nào bị dính nhiều khiếu nại nhất', 'ai bị khiếu nại nhiều', 'khách nào lặp lại nhiều lần', 'có khách nào bị nhiều lần không'. ✅ TRẢ LỜI THẲNG ĐƯỢC — mã khách trong dữ liệu khiếu nại ĐÃ BĂM sha256 (cùng muối với bảng alert nên đối chiếu hai bên được), KHÔNG phải số điện thoại thật, nên KHÔNG được từ chối vì lý do 'không có thông tin định danh'. Tham số tùy chọn: top (mặc định 10, tối đa 50), ngay HOẶC tu+den.",
     khieu_nai_mot_khach: "Chi tiết mọi khiếu nại của MỘT khách cụ thể. Dùng khi người hỏi đưa ra một mã khách (mã băm, có thể chỉ một phần) và muốn xem khách đó bị khiếu nại những gì, ngày nào, bao nhiêu tiền, xử lý ra sao. Tham số bắt buộc: ma_khach. Tham số tùy chọn: ngay HOẶC tu+den.",
     khieu_nai_theo_tien: "Khiếu nại theo SỐ TIỀN giao dịch bị khiếu nại — tổng tiền, trung bình, 10 vụ lớn nhất, phân bố theo bậc giá trị. Dùng khi hỏi 'tổng giá trị khiếu nại bao nhiêu', 'vụ nào lớn nhất', 'khiếu nại chủ yếu là số tiền lớn hay nhỏ'. Tham số tùy chọn: ngay HOẶC tu+den. Số tiền là GIÁ TRỊ GIAO DỊCH bị khiếu nại, không phải tiền đã mất hay đã bồi hoàn.",
-    khieu_nai_con_ton: "Các đơn khiếu nại CÒN TỒN — chưa xử lý xong, tách rõ đã quá hạn SLA và chưa quá hạn, kèm danh sách từng đơn và ĐANG VƯỚNG Ở ĐÂU (chờ ngân hàng đối soát, chờ xác minh khách, đã phong tỏa chờ kết luận...). Dùng khi hỏi 'còn bao nhiêu đơn chưa xử lý', 'đơn nào đang tồn', 'có đơn nào quá hạn chưa xong không', 'đang tắc ở đâu', 'đơn nào cần xử lý gấp'. Tham số tùy chọn: ngay HOẶC tu+den. Mốc tính quá hạn là ngày MỚI NHẤT trong dữ liệu chứ không phải ngày thật hôm nay — nói rõ điều đó nếu người hỏi quan tâm mốc.",
+    khieu_nai_con_ton: "Các đơn khiếu nại CÒN TỒN — chưa xử lý xong, tách rõ đã quá hạn SLA và chưa quá hạn, kèm danh sách từng đơn và ĐANG VƯỚNG Ở ĐÂU (chờ ngân hàng đối soát, chờ xác minh khách, đã phong tỏa chờ kết luận...). Dùng khi hỏi 'còn bao nhiêu đơn chưa xử lý', 'đơn nào đang tồn', 'có đơn nào quá hạn chưa xong không', 'đang tắc ở đâu', 'đơn nào cần xử lý gấp', 'mỗi ngày tồn bao nhiêu'. Tham số tùy chọn: ngay HOẶC tu+den. ⚠️ BẮT BUỘC nêu TỒN THEO TỪNG NGÀY khi trả lời — trường ton_theo_ngay_tiep_nhan cho biết đơn tồn rơi vào ngày tiếp nhận nào (kèm mã đơn), đây là thứ người vận hành cần nhất để đi đòi đúng chỗ; chỉ đưa tổng số là trả lời THIẾU. Thêm trường ton_cuoi_moi_ngay = số đơn ĐANG MỞ cuối mỗi ngày (tồn tích luỹ, khác số đơn mới nhận trong ngày) — dùng khi hỏi tồn đang phình lên hay đang giải toả. Mốc tính quá hạn là ngày MỚI NHẤT trong dữ liệu chứ không phải ngày thật hôm nay.",
     khieu_nai_toc_do_xu_ly: "TỐC ĐỘ xử lý khiếu nại — nhanh nhất/chậm nhất/trung bình/trung vị/p90 số ngày từ tiếp nhận đến xong, phân bố số ngày, và đơn trễ hạn tập trung ở nguồn nào, lý do nào. Dùng khi hỏi 'xử lý mất bao lâu', 'có nhanh không', 'đơn nào lâu nhất', 'vì sao trễ hạn', 'trễ chủ yếu ở đâu'. Tham số tùy chọn: ngay HOẶC tu+den. ⚠️ Số ngày ở đây là NGÀY LỊCH, còn SLA 2 ngày là NGÀY LÀM VIỆC — đơn 3 ngày lịch vắt cuối tuần vẫn có thể đúng hạn, đừng lẫn.",
     khieu_nai_theo_huong_xu_ly: "Khiếu nại theo HƯỚNG XỬ LÝ mà QTRR đã áp dụng để đóng đơn (khóa tài khoản vỏ, chỉ theo dõi, không đủ số dư để phong tỏa, khóa ví...), kèm tỷ lệ phải khóa tài khoản. Dùng khi hỏi 'xử lý thế nào', 'đã làm gì với các đơn đó', 'bao nhiêu ca phải khóa tài khoản', 'kết quả xử lý ra sao'. Tham số tùy chọn: ngay HOẶC tu+den. Đây là HÀNH ĐỘNG đã làm, không phải kết luận khách đúng hay sai — 'theo dõi' nghĩa là chưa đủ căn cứ xử lý mạnh.",
     khieu_nai_theo_loai_kh: "Khiếu nại theo LOẠI KHÁCH/tài khoản bị khiếu nại (TK Vỏ, KH cá nhân, KH liên kết NH, TK nghi giả mạo). Dùng khi hỏi 'khiếu nại rơi vào loại tài khoản nào', 'có phải toàn tài khoản vỏ không', 'ai là đối tượng bị khiếu nại'. Tham số tùy chọn: ngay HOẶC tu+den. Hàm ĐÃ tự gộp ba cách gõ 'TK Vỏ'/'Tk vỏ'/'TK vỏ' về một — nếu tự đếm tay trên bảng thô sẽ ra ba dòng rời và sai quy mô.",
@@ -13771,12 +13891,39 @@ window.F2Lai = (function () {
   var soLuot = 0, dangCho = false;
   var lichSu = [];          // {hoi, dap} — ngữ cảnh cho câu hỏi nối tiếp
 
+  /* Kho câu gợi ý mở màn — phủ đủ cả ba mảng dữ liệu đang có (alert · xử lý
+     alert · khiếu nại), không chỉ riêng alert như trước (user chốt 23/09).
+     Mỗi lần vẽ chỉ lấy NGẪU NHIÊN 4 câu (xem ngauNhien()), và tự đổi bộ mới
+     mỗi phút trong lúc còn đứng ở màn chào — xem xoayGoiYDinhKy(). */
   var GOI_Y_DAU = [
     "Kịch bản nào nhiều alert nhất?",
     "Ngày nào bất thường?",
     "Khách nào bị bắn nhiều nhất?",
-    "Có kịch bản nào im lặng không?"
+    "Có kịch bản nào im lặng không?",
+    "Nhóm nghiệp vụ nào chiếm nhiều alert nhất?",
+    "Kịch bản nào lệch xa trung bình ngày nhất?",
+    "Hôm nay có bao nhiêu khách mức Very High?",
+    "So hôm nay với hôm qua thì thế nào?",
+    "Tuần này biến động ra sao so với tuần trước?",
+    "Hôm nay xử lý được bao nhiêu ca rồi?",
+    "Tỉ lệ bắt đúng (dương tính) đang ở mức nào?",
+    "Có khách nào bị bắt nhầm nhiều lần không?",
+    "Nhóm nghiệp vụ nào đang bắt nhầm nhiều nhất?",
+    "Khiếu nại nào đang còn tồn?",
+    "Khiếu nại kỳ này có đúng hạn SLA không?",
+    "Nguồn khiếu nại nào nhiều nhất kỳ này?",
+    "Có khách nào vừa bị alert vừa gửi khiếu nại không?"
   ];
+
+  /* Bốc n phần tử NGẪU NHIÊN KHÔNG TRÙNG từ một mảng — dùng Fisher-Yates một
+     phần, đủ dùng cho mảng vài chục phần tử như GOI_Y_DAU. */
+  function ngauNhien(ds, n) {
+    var b = ds.slice(), ra = [];
+    while (b.length && ra.length < n) {
+      ra.push(b.splice(Math.floor(Math.random() * b.length), 1)[0]);
+    }
+    return ra;
+  }
 
   /* ───────── markdown rất gọn → HTML ─────────
      Thoát HTML TRƯỚC để nội dung từ model không chèn được thẻ lạ vào trang. */
@@ -14144,7 +14291,7 @@ window.F2Lai = (function () {
         veNhan(R);
         veNguon(R);
         veLai(R);
-        veGoiY(t.goiY.length ? t.goiY : GOI_Y_DAU.slice(0, 3));
+        veGoiY(t.goiY.length ? t.goiY : ngauNhien(GOI_Y_DAU, 3));
         lichSu.push({ hoi: cau, dap: t.van });
         if (lichSu.length > 6) lichSu.shift();
         /* Lưu lại để tải trang vẫn còn. Giữ cả nhãn kiểm chứng, không thì
@@ -14260,7 +14407,7 @@ window.F2Lai = (function () {
     /* Ngữ cảnh cho câu hỏi nối tiếp lấy từ chính cuộc vừa mở, nên hỏi
        tiếp "cái đó" vẫn hiểu đúng thứ đang nói. */
     lichSu = KHO.nganhCanh(6);
-    veGoiY(GOI_Y_DAU.slice(0, 3));
+    veGoiY(ngauNhien(GOI_Y_DAU, 3));
     dongDanhSach();
     cuonXuong();
   }
@@ -14271,27 +14418,33 @@ window.F2Lai = (function () {
     lichSu = [];
     themHang("bot", md(
       "Cuộc mới. Hỏi gì cũng được — tôi vẫn đọc đúng dữ liệu của kỳ này."));
-    veGoiY(GOI_Y_DAU);
+    veGoiY(ngauNhien(GOI_Y_DAU, 4));
     dongDanhSach();
     veDanhSach();
     o.focus();
   }
 
+  /* Sidebar xổ ra/vào bằng class riêng "f2-sb-an" (không dùng ".f2-an" dùng
+     chung toàn trang), vì sidebar cần ĐỔI WIDTH để trượt mượt thay vì ẩn
+     hiện tức thì — xem CSS .f2-sos trong _chat_ui.html (user chốt 23/09,
+     làm giống ChatGPT). Panel cũng tự nới rộng thêm qua class "f2-sb-mo". */
   function moDanhSach() {
     veDanhSach();
-    sosBox.classList.remove("f2-an");
+    sosBox.classList.remove("f2-sb-an");
+    panel.classList.add("f2-sb-mo");
     nutSos.classList.add("on");
     nutSos.setAttribute("aria-expanded", "true");
   }
   function dongDanhSach() {
-    sosBox.classList.add("f2-an");
+    sosBox.classList.add("f2-sb-an");
+    panel.classList.remove("f2-sb-mo");
     nutSos.classList.remove("on");
     nutSos.setAttribute("aria-expanded", "false");
   }
 
   if (nutMoi) nutMoi.onclick = cuocMoi;
   if (nutSos) nutSos.onclick = function () {
-    if (sosBox.classList.contains("f2-an")) moDanhSach(); else dongDanhSach();
+    if (sosBox.classList.contains("f2-sb-an")) moDanhSach(); else dongDanhSach();
   };
   if (xoaHet) xoaHet.onclick = function () {
     if (!KHO) return;
@@ -14312,6 +14465,14 @@ window.F2Lai = (function () {
     if (c) moCuoc(c.getAttribute("data-ma"));
   };
 
+  /* Xoay bộ gợi ý mở màn mỗi phút — CHỈ khi vẫn còn đứng ở màn chào (chưa
+     hỏi câu nào), không đụng vào gợi ý nối tiếp của một câu trả lời đang có
+     trên màn (user chốt 23/09: "đừng fix, mỗi phút đổi ngẫu nhiên"). */
+  var henGoiY = null;
+  function xoayGoiYDinhKy() {
+    if (!tin.querySelector(".f2-hang")) veGoiY(ngauNhien(GOI_Y_DAU, 4));
+  }
+
   /* ───────── mở / thu ───────── */
   var hen_dong = null;
   function mo() {
@@ -14323,6 +14484,7 @@ window.F2Lai = (function () {
     nut.classList.add("f2-an");
     nut.classList.remove("f2-hien");
     setTimeout(function () { o.focus(); cuonXuong(); }, 60);
+    if (!henGoiY) henGoiY = setInterval(xoayGoiYDinhKy, 60000);
   }
   /* Truoc day thu lai la display:none phut mot cai, trong khi mo thi co
      animation truot len — lech han. Gio panel co ve phia nut tron o goc duoi
@@ -14338,6 +14500,8 @@ window.F2Lai = (function () {
       nut.classList.add("f2-hien");
       setTimeout(function () { nut.classList.remove("f2-hien"); }, 320);
     }, 190);
+    clearInterval(henGoiY);
+    henGoiY = null;
   }
 
   /* ═══════════ BONG BÓNG THOẠI ═══════════
@@ -14544,9 +14708,15 @@ window.F2Lai = (function () {
         "Chào bạn. Tôi đọc được dữ liệu alert của kỳ này và trả lời bằng số " +
         "lấy thẳng từ đó — không đoán.\n\n" +
         "Hỏi gì cũng được, hoặc bấm một câu gợi ý bên dưới."));
+      /* BUG CŨ: "if (!tin.querySelector('.f2-hang')) veGoiY(...)" đặt SAU
+         dòng themHang ở trên — mà themHang đã tự thêm một .f2-hang, nên điều
+         kiện này luôn SAI và gợi ý không bao giờ hiện ở lần mở đầu tiên
+         (chỉ hiện khi bấm "+" tạo cuộc mới, vì cuocMoi() gọi veGoiY không
+         điều kiện). Phát hiện lúc kiểm tra tính năng đổi gợi ý mỗi phút
+         (user chốt 23/09) — gọi thẳng ở đây, đúng nhánh vừa chào lần đầu. */
+      veGoiY(ngauNhien(GOI_Y_DAU, 4));
     }
   }
-  if (!tin.querySelector(".f2-hang")) veGoiY(GOI_Y_DAU);
   veDanhSach();
   capNhatConLai();
 
