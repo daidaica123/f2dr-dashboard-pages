@@ -764,6 +764,33 @@ select#matKb{max-width:430px}
 .bcknguon .hang.khong{color:var(--faint)}
 .bcknguon .hang.khong span{color:var(--faint)}
 
+/* ── Ô KPI "Nguồn & số lượng" bản 2 CỘT (user chốt 23/09, mục ③ khiếu nại):
+   trái là tỉ lệ nguồn có phát sinh/tổng nguồn, phải là danh sách tên+số kèm
+   thanh ngang so trực quan giữa các nguồn — khác bản .bcknguon cũ (chỉ liệt
+   kê tên+số, không thanh, không tỉ lệ). ── */
+.bcknguon2{display:flex;gap:11px;margin-top:2px;align-items:stretch}
+.bcknguon2 .sn4{display:flex;flex-direction:column;align-items:flex-start;
+  justify-content:center;flex:0 0 auto;padding-right:11px;
+  border-right:1px solid var(--border)}
+/* Số tử (nguồn có phát sinh) to ĐÚNG BẰNG cỡ số ở ô "Đã xử lý/còn tồn"
+   (26px, xem .bckxuly2 .so b) để hai ô cạnh nhau cân mắt — user chốt 23/09.
+   Số mẫu nhỏ hơn và dịch chéo xuống-phải một chút, không nằm ngay hàng. */
+.bcknguon2 .sn4 b{font:700 26px var(--mono);letter-spacing:-.6px;line-height:1;
+  color:var(--accent);white-space:nowrap}
+.bcknguon2 .sn4 b small{font-size:.52em;font-weight:600;color:var(--faint);
+  position:relative;top:3px;left:1px}
+.bcknguon2 .sn4 span{font:600 9px var(--sans);letter-spacing:.4px;
+  text-transform:uppercase;color:var(--faint);margin-top:3px}
+.bcknguon2 .dsn4{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.bcknguon2 .hang4 .ten4{display:flex;justify-content:space-between;gap:6px;
+  font:500 11px var(--sans);color:var(--dim)}
+.bcknguon2 .hang4 .ten4 span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bcknguon2 .hang4 .ten4 b{font:700 11.5px var(--mono);color:var(--accent);flex:0 0 auto}
+.bcknguon2 .hang4 .thanh4{height:4px;border-radius:2px;margin-top:2px;
+  background:rgba(28,42,71,.6);overflow:hidden}
+.bcknguon2 .hang4 .thanh4 i{display:block;height:100%;border-radius:2px;
+  background:var(--accent);opacity:.75}
+
 /* ── Ô KPI kiểu HAI SỐ NGANG HÀNG cỡ bằng nhau (vd "Đã xử lý & còn tồn") —
    thay cho 1 số to/1 số nhỏ, vì hai đại lượng này bình đẳng, không cái nào
    phụ thuộc cái nào (user chốt 21/09). ── */
@@ -923,7 +950,16 @@ select#matKb{max-width:430px}
               color-mix(in srgb,var(--bc) 20%,transparent),transparent 70%),
              linear-gradient(180deg,rgba(18,30,54,.92),rgba(10,17,32,.92));
   border:1px solid color-mix(in srgb,var(--bc) 32%,transparent);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  transition:border-color .16s,transform .16s,box-shadow .16s}
+/* Rê chuột sáng lên + nhích nhẹ lên trên — CÙNG hiệu ứng với 4 ô KPI to
+   phía trên (.bck:hover), cho đồng bộ cảm giác trên toàn trang (user chốt
+   23/09: "rê vào 4 ô này phải giống hệt rê vào tab to ở trên"). */
+.knso-o:hover{border-color:color-mix(in srgb,var(--bc) 55%,var(--border-hi));
+  transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),
+             0 10px 26px rgba(0,0,0,.4),
+             0 0 26px color-mix(in srgb,var(--bc) 22%,transparent)}
 .knso-o .t{font:600 9px var(--sans);letter-spacing:.05em;text-transform:uppercase;
   color:var(--dim);display:flex;align-items:center;gap:6px}
 .knso-o .t:before{content:'';width:7px;height:7px;border-radius:50%;
@@ -1186,6 +1222,11 @@ select#matKb{max-width:430px}
   padding:5px 9px;pointer-events:none;white-space:nowrap;
   box-shadow:0 6px 20px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:1px}
 .kntip.phai{transform:translate(-88%,-125%)}
+/* [hidden] mac dinh chi co o UA stylesheet (uu tien THAP NHAT), nen bi
+   ".kntip{display:flex}" o tren de len -> gan hidden=true KHONG an duoc gi,
+   day la GOC RE nguyen nhan tooltip nam lỳ tren man hinh du da roi chuot ra
+   ngoai (kiem lai du 2026-09-23: hidden VAN = true nhung the van hien). */
+.kntip[hidden]{display:none}
 .kntip b{font:600 11px var(--sans);color:var(--text)}
 .kntip span{font:700 12px var(--mono);color:var(--accent)}
 /* Trục X của biểu đồ đường: nhãn định vị tuyệt đối theo đúng x() của điểm.
@@ -3479,15 +3520,16 @@ function veKnDuong(){
              -> chắc chắn do đang zoom lệch ra khỏi khoảng lọc, không phải do
              thiếu data. */
           : `biểu đồ <b>toàn cảnh</b> · đang zoom, khoảng đang lọc ${nhanKhoang} nằm ngoài phần đang xem`;
+  /* Bỏ dòng "Tổng/cao nhất/biểu đồ toàn cảnh..." — đã trùng với dải 4 ô số
+     ngay dưới biểu đồ (Tổng/Trung bình/Cao nhất/Xu hướng), user chốt 23/09.
+     Chỉ giữ cảnh báo "chưa tra được số tiền", đặt NGANG HÀNG với tên chuỗi
+     (cùng .bcchu flex-row), giống bố cục gọn của chế độ Số lượng. */
   $('bcKnChu').innerHTML =
     `<span><i style="background:var(--accent)"></i>${
-       laTien ? 'Tổng giá trị giao dịch bị khiếu nại' : 'Khiếu nại tiếp nhận'}</span>
-     <span class="sub">Tổng <b>${laTien ? fmt(tong) + ' đ' : fmt(tong) + ' khiếu nại'}</b>
-       · cao nhất <b>${laTien ? fmt(mx) + ' đ' : fmt(mx)}</b> ở ${nhanDay(ds[dinh].k)}
-       · ${chuPv}${
-         laTien && soKhongTien
-           ? ` · <span style="color:var(--orange)">${fmt(soKhongTien)} khiếu nại chưa tra được số tiền, tính là 0</span>`
-           : ''}</span>`;
+       laTien ? 'Tổng giá trị giao dịch bị khiếu nại' : 'Khiếu nại tiếp nhận'}</span>${
+       laTien && soKhongTien
+         ? `<span class="sub" style="color:var(--orange)">${fmt(soKhongTien)} khiếu nại chưa tra được số tiền, tính là 0</span>`
+         : ''}`;
 
   /* ── Dải số dưới biểu đồ ──
      Lấp đúng khoảng trống do box "Thời gian xử lý" bên phải cao hơn, và trả
@@ -4467,6 +4509,11 @@ function bcPhan3(dsNgay){
     return Object.entries(m).map(([k,n])=>({k,n}))
       .sort((a,b)=>b.n-a.n || a.k.localeCompare(b.k));
   })();
+  /* Chỉ hiện nguồn CÓ phát sinh trong phạm vi (0 thì bỏ, user chốt 23/09).
+     Thanh ngang so theo nguồn cao nhất đang hiện — không so theo tổng kỳ,
+     vì mục đích là so các nguồn VỚI NHAU, không phải đọc tỷ trọng %. */
+  const nguonCoDu4 = nguonArr.filter(x=>x.n > 0);
+  const mxNguon4 = nguonCoDu4.length ? nguonCoDu4[0].n : 0;
 
   $('bcKpi3').innerHTML =
     bcK('Tổng số khiếu nại', fmt(nhan.length),
@@ -4477,6 +4524,24 @@ function bcPhan3(dsNgay){
         `<b>${fmt(luot3)}</b> lượt — một khách trong một ngày tính là một lượt`, 'dim') +
     bcK('Số khiếu nại / khách hàng', khUniq3 ? (nhan.length/khUniq3).toFixed(2) : '—',
         'Trung bình mỗi khách gửi bao nhiêu khiếu nại trong phạm vi đang xem') +
+    /* ── Nguồn & số lượng — dời lên ô số 4, bố cục 2 cột (user chốt 23/09):
+       trái là tỉ lệ "Số nguồn CÓ PHÁT SINH / tổng số nguồn từng thấy", phải
+       là danh sách tên+số kèm thanh ngang so trực quan giữa các nguồn.
+       Nguồn nào 0 trong phạm vi thì bỏ hẳn dòng, không liệt kê xám như box
+       "Theo nguồn" chi tiết bên dưới — ô KPI cần gọn. ── */
+    `<div class="bck dim">
+       <div class="t">Nguồn &amp; số lượng</div>
+       <div class="bcknguon2">
+         <div class="sn4"><b>${fmt(nguonCoDu4.length)}<small>/${fmt(nguonArr.length)}</small></b>
+           <span>Số nguồn</span></div>
+         <div class="dsn4">${
+           nguonCoDu4.map(x=>`<div class="hang4">
+             <div class="ten4"><span>${esc(x.k)}</span><b>${fmt(x.n)}</b></div>
+             <div class="thanh4"><i style="width:${mxNguon4 ? (x.n/mxNguon4*100).toFixed(1) : 0}%"></i></div>
+           </div>`).join('')
+         }</div>
+       </div>
+     </div>` +
     /* Đã xử lý và còn tồn GỘP 1 Ô, hai số ngang hàng cỡ bằng nhau — không
        cái nào phụ, không dùng kiểu 1 số to/1 số nhỏ (user chốt 21/09).
        "Đã xử lý xong" tính cả khiếu nại đóng SAU ngày cuối kỳ; "còn tồn" là
@@ -4502,16 +4567,7 @@ function bcPhan3(dsNgay){
         xongDuoc.length
           ? `<b>${fmt(xongDuoc.length - treCuaLo.length)}</b>/${fmt(xongDuoc.length)} khiếu nại đã xong nằm trong hạn 2 ngày làm việc`
           : 'Chưa khiếu nại nào xử lý xong nên chưa tính được tỷ lệ',
-        pcHanLo === null ? 'dim' : (pcHanLo >= 90 ? 'ok' : 'wa'), pcHanLo) +
-    /* Liệt kê mini TẤT CẢ nguồn + số lượng ngay trong ô (user chốt 21/09) —
-       không phải 1 số to như các ô khác. */
-    `<div class="bck dim">
-       <div class="t">Nguồn &amp; số lượng</div>
-       <div class="bcknguon">${
-         nguonArr.map(x=>`<div class="hang${x.n ? '' : ' khong'}">
-           <span>${esc(x.k)}</span><b>${fmt(x.n)}</b></div>`).join('')
-       }</div>
-     </div>`;
+        pcHanLo === null ? 'dim' : (pcHanLo >= 90 ? 'ok' : 'wa'), pcHanLo);
   /* Không còn ô KPI riêng cho "Còn đang mở"/"Quá hạn SLA"/"Tỷ lệ xử lý" nữa
      (đã gộp/rút gọn ở trên, user chốt 21/09), nhưng các biến `treCuaLo`/
      `dangTre`/`pcXuLyLo` vẫn dùng ở ô "Đúng hạn SLA", mô tả ô gộp, và bảng
