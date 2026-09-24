@@ -6941,7 +6941,7 @@ function renderTopKH(){
       ${thS('sxKH','tb','TB alert/ngày','w-num',-1,'width:118px')}
       ${thS('sxKH','alert','Tổng alert','w-num',-1,'width:112px')}
       ${thS('sxKH','sc','Score','w-num-s')}
-      <th class="l w-pill">Mức</th>
+      <th class="l w-pill">Impact</th>
       ${thS('sxKH','nd','Ngày điểm cao nhất','l',-1,'width:140px')}
       </tr></thead><tbody>` +
     rows.map(x=>{
@@ -8075,7 +8075,7 @@ function veKhNgay(){
       ${thS('sxKhN','al','Alert')}
       ${thS('sxKhN','nkb','KB')}
       ${thS('sxKhN','sc','Score ngày')}
-      ${thS('sxKhN','m','Mức','l')}
+      ${thS('sxKhN','m','Impact','l')}
       <th class="l">Kịch bản</th><th class="l">Level KB</th>
       <th>Score KB</th><th>Lần</th></tr></thead>
     <tbody>${ds.map(x=>{
