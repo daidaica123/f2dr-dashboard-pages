@@ -7319,6 +7319,11 @@ $('bResetFx').textContent = `↺ Về r=${D.r.toFixed(2)} · k=${D.k.toFixed(2)}
    D.topkh — nên "khách nhiều alert nhất trong ngày" là thật, không bị cắt
    theo bảng xếp hạng cả kỳ của mục ⑥. */
 let NGAY_MO = null, LUOT_NGAY = null, KH_NGAY_TOP = 15;
+/* Tiêu chí CẮT top khách trong ngày. Khác hẳn việc bấm tiêu đề cột: bấm cột
+   chỉ sắp lại phần ĐÃ cắt, còn ô này quyết định ai được lọt vào danh sách.
+   Trước đây chỉ cắt theo alert, nên người điểm cao mà ít alert không bao giờ
+   hiện ra dù bấm cột Score — muốn xem phải kéo top lên vài nghìn dòng. */
+let KH_NGAY_CAT = 'al';
 /* Bộ lọc bảng kịch bản trong popup — giữ nguyên khi chuyển ngày, vì người
    đang soi một nhóm nghiệp vụ thì muốn soi nhóm đó qua nhiều ngày. */
 let S_NGAY = null, J_NGAY = null;
@@ -7876,7 +7881,7 @@ function veNgay(j){
      Dựng từ mảng lượt nên đây là top thật của ngày, không lấy lại bảng
      xếp hạng cả kỳ ở mục ⑥ (ông đứng đầu cả kỳ có thể hôm nay im lặng). */
   const khHtml = `<div class="mcard" style="--gc:var(--high)">
-    <h3>KHÁCH HÀNG BỊ BẮT NHIỀU NHẤT NGÀY NÀY
+    <h3 id="khNgayTieu">KHÁCH HÀNG BỊ BẮT NHIỀU NHẤT NGÀY NÀY
       <span>xếp theo alert <b>của riêng ngày này</b> — không phải xếp hạng cả kỳ</span></h3>
     <div class="btn-row" style="margin-bottom:9px">
       <span class="sub">Hiện top</span>
@@ -7889,6 +7894,12 @@ function veNgay(j){
         <span class="ndlab">khách</span>
         <button class="ndstep" onclick="stepTopNgay(5)">+</button>
       </span>
+      <span class="sub">cao nhất theo</span>
+      <select class="dmini" id="khNgayCat" onchange="onCatNgay()">
+        <option value="al"${KH_NGAY_CAT==='al'?' selected':''}>Số alert</option>
+        <option value="sc"${KH_NGAY_CAT==='sc'?' selected':''}>Score ngày</option>
+        <option value="nkb"${KH_NGAY_CAT==='nkb'?' selected':''}>Số kịch bản</option>
+      </select>
       <span class="sub">trong ${fmt(S.kh.length)} khách bị bắt hôm nay</span>
     </div>
     <div class="md-tr" id="mdKh"></div>
@@ -8026,12 +8037,32 @@ function veKbNgay(){
    Mỗi kịch bản một dòng, ô của khách gộp dọc bằng rowspan. Gộp ô thì không
    thể nhầm kịch bản nào của khách nào — đường kẻ tự nói, khỏi đoán theo
    thụt lề. Nhờ tách dòng mới nhét được Level KB và Score KB của TỪNG kịch bản. */
+/* Tiêu chí cắt top: mỗi cái kèm cách so sánh riêng + nhãn để đổi tiêu đề.
+   Luôn có khoá phụ để hai người bằng nhau không nhảy thứ tự lung tung. */
+const CAT_NGAY = {
+  al:  {ss:(a,b)=> b.al-a.al || b.sc-a.sc,
+        tieu:'KHÁCH HÀNG BỊ BẮT NHIỀU NHẤT NGÀY NÀY',
+        mo:'xếp theo <b>số alert</b> của riêng ngày này — không phải xếp hạng cả kỳ'},
+  sc:  {ss:(a,b)=> b.sc-a.sc || b.al-a.al,
+        tieu:'KHÁCH HÀNG ĐIỂM CAO NHẤT NGÀY NÀY',
+        mo:'xếp theo <b>score của riêng ngày này</b> — người điểm cao có thể chỉ vài alert'},
+  nkb: {ss:(a,b)=> b.nkb-a.nkb || b.sc-a.sc || b.al-a.al,
+        tieu:'KHÁCH DÍNH NHIỀU KỊCH BẢN NHẤT NGÀY NÀY',
+        mo:'xếp theo <b>số kịch bản khác nhau</b> — dính từ 3 kịch bản trở lên mới đáng điều tra'}
+};
+
 function veKhNgay(){
   const S = S_NGAY; if(!S || !$('mdKh')) return;
   const nTop = Math.min(KH_NGAY_TOP, S.kh.length);
-  /* Cắt top theo ALERT (đúng nghĩa "bị bắt nhiều nhất"), rồi mới sắp lại phần
-     đang hiện theo cột được bấm. Cột # giữ thứ hạng alert để còn đối chiếu. */
-  const ds = sxSap(S.kh.slice(0, nTop).map((x,q)=>({...x, r:q+1})),
+  const cat = CAT_NGAY[KH_NGAY_CAT] || CAT_NGAY.al;
+  /* CẮT trên TOÀN BỘ khách trong ngày theo tiêu chí đang chọn, rồi mới sắp lại
+     phần đang hiện theo cột được bấm. Hai việc khác nhau: đổi ô chọn là đổi
+     AI được vào danh sách, bấm cột chỉ đổi thứ tự của những người đã vào.
+     Cột # giữ thứ hạng theo tiêu chí cắt để còn đối chiếu. */
+  const tieu = $('khNgayTieu');
+  if(tieu) tieu.innerHTML = `${cat.tieu}<span>${cat.mo}</span>`;
+  const ds = sxSap(S.kh.slice().sort(cat.ss).slice(0, nTop)
+      .map((x,q)=>({...x, r:q+1})),
     'sxKhN', k => ({r:x=>x.r, kh:x=>x.kh, al:x=>x.al, nkb:x=>x.nkb,
       sc:x=>x.sc, m:x=>x.m})[k]);
   $('mdKh').innerHTML = `<table class="khtb"><colgroup><col style="width:26px">
@@ -8071,6 +8102,13 @@ function veKhNgay(){
           <td class="num"><b>${fmt(c[1])}</b></td></tr>`;
       }).join('');
     }).join('')}</tbody></table>`;
+}
+function onCatNgay(){
+  KH_NGAY_CAT = $('khNgayCat').value;
+  /* Đổi tiêu chí cắt thì thứ tự cũ do bấm cột không còn nghĩa — xoá đi để
+     bảng hiện đúng thứ hạng của tiêu chí vừa chọn. */
+  if(typeof SX === 'object' && SX) delete SX.sxKhN;
+  veKhNgay();
 }
 function onTopNgay(){
   const S = S_NGAY; if(!S) return;
