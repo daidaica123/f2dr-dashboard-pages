@@ -1849,8 +1849,692 @@ body.dangmo{overflow:hidden}
     <span class="chedo" id="cheDo">
       <button id="cdVH" class="on" onclick="datCheDo('vh')">⚙ Vận hành</button>
       <button id="cdBC" onclick="datCheDo('bc')">▤ Báo cáo</button>
+      <button id="cdWF" onclick="datCheDo('wf')">⛓ Workflow</button>
     </span>
     <span class="badge" id="hdrBadge"><i class="live"></i><span id="hdrClock"></span></span>
+  </div>
+</div>
+
+<div id="wfWrap" style="display:none">
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:11px 16px;border-bottom:1px solid var(--line);
+                font-size:12.5px;color:var(--mut)">
+      Mở ra là bản thu gọn, bấm <b>Xổ chi tiết</b> để xem đủ. Kéo hộp sắp lại được.
+      Phần <b>xử lý alert bằng AI</b> và <b>khiếu nại</b> là thiết kế, chưa chạy —
+      hiện chạy thật từ <b>Trigger</b> tới <b>Push &amp; Deploy</b>.
+    </div>
+    <iframe id="wfFrame" title="Sơ đồ luồng chạy tự động"
+            style="width:100%;height:80vh;min-height:560px;border:0;display:block"
+            srcdoc="<title>Luồng F2DR 7h sáng</title>
+<link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap&quot;>
+<style>
+  :root{
+    color-scheme: light;
+    --nen:#eceff4; --canvas:#fafbfd; --cham:#dae1ea; --khoi:#f0f3f7;
+    --giay:#ffffff; --vien:#d6dde6; --chu:#0f161e; --chu-nhat:#57646f; --chu-mo:#8794a2;
+    --kenh:#b0bcc9;
+    --g1:#0b6f84; --g1n:#dcf0f3;
+    --g2:#54399f; --g2n:#e8e2f8;
+    --g3:#a32a6b; --g3n:#fbe2ee;
+    --g4:#9c5c0a; --g4n:#fbeacf;
+    --g5:#1f7a4d; --g5n:#e0f0e7;
+    --gx:#a82b25; --gxn:#fbe2df;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme=&quot;light&quot;]){
+    color-scheme: dark;
+    --nen:#0c1116; --canvas:#141b23; --cham:#242e3a; --khoi:#10171f;
+    --giay:#1b232d; --vien:#2f3a47; --chu:#e9eef4; --chu-nhat:#a0aebd; --chu-mo:#6f7d8d;
+    --kenh:#3d4956;
+    --g1:#50cade; --g1n:#0f353d;
+    --g2:#a794f5; --g2n:#272143;
+    --g3:#f07ab2; --g3n:#3a1a2c;
+    --g4:#e5aa52; --g4n:#3b2d12;
+    --g5:#5ecd8b; --g5n:#14331f;
+    --gx:#f3776e; --gxn:#391b19;
+  }}
+  :root[data-theme=&quot;dark&quot;]{
+    color-scheme: dark;
+    --nen:#0c1116; --canvas:#141b23; --cham:#242e3a; --khoi:#10171f;
+    --giay:#1b232d; --vien:#2f3a47; --chu:#e9eef4; --chu-nhat:#a0aebd; --chu-mo:#6f7d8d;
+    --kenh:#3d4956;
+    --g1:#50cade; --g1n:#0f353d;
+    --g2:#a794f5; --g2n:#272143;
+    --g3:#f07ab2; --g3n:#3a1a2c;
+    --g4:#e5aa52; --g4n:#3b2d12;
+    --g5:#5ecd8b; --g5n:#14331f;
+    --gx:#f3776e; --gxn:#391b19;
+  }
+
+  html,body{ height:100%; }
+  body{ background:var(--nen); color:var(--chu); margin:0; overflow:hidden;
+        font-family:&quot;IBM Plex Sans&quot;,&quot;Segoe UI&quot;,system-ui,sans-serif;
+        display:flex; flex-direction:column; box-sizing:border-box; }
+
+  .top{ flex:none; padding:11px 18px 5px; display:flex; align-items:flex-end;
+        gap:14px; flex-wrap:wrap; }
+  .nhan{ font-size:9.5px; letter-spacing:.17em; text-transform:uppercase;
+         color:var(--chu-nhat); font-weight:600; }
+  h1{ font-size:clamp(17px,2.1vw,24px); line-height:1.1; margin:2px 0 0;
+      letter-spacing:-.022em; font-weight:700; }
+  .so-lieu{ display:flex; gap:16px; flex-wrap:wrap; margin-left:auto; align-items:flex-end; }
+  .so-lieu div{ text-align:right; }
+  .so-lieu b{ display:block; font-size:16px; font-weight:600; letter-spacing:-.018em;
+              font-variant-numeric:tabular-nums; line-height:1.1; }
+  .so-lieu span{ font-size:9px; color:var(--chu-nhat); }
+  .so-lieu .to b{ font-size:23px; color:var(--g5); }
+
+  .thanh{ flex:none; display:flex; flex-wrap:wrap; align-items:center; gap:5px 14px;
+          padding:0 18px 6px; font-size:10.5px; color:var(--chu-nhat); }
+  .thanh i{ display:inline-block; width:10px; height:10px; border-radius:3px;
+            margin-right:6px; vertical-align:-1px; }
+  .nut-td{ margin-left:auto; display:flex; gap:7px; align-items:center; }
+  button{ font-family:inherit; font-size:10.5px; font-weight:600; color:var(--chu-nhat);
+          background:var(--giay); border:1px solid var(--vien); border-radius:7px;
+          padding:5px 11px; cursor:pointer; }
+  button:hover{ color:var(--chu); border-color:var(--kenh); }
+  button:focus-visible{ outline:2px solid var(--g1); outline-offset:1px; }
+  button.chinh{ color:var(--giay); background:var(--g3); border-color:var(--g3); }
+  button.chinh:hover{ color:var(--giay); filter:brightness(1.08); }
+  .keo-hint{ color:var(--chu-mo); }
+
+  .sanh{ flex:1; min-height:0; margin:0 12px 12px; border:1px solid var(--vien);
+         border-radius:14px; background:var(--canvas);
+         background-image:radial-gradient(var(--cham) 1.1px, transparent 1.1px);
+         background-size:22px 22px; padding:5px; box-sizing:border-box; position:relative; }
+  .sanh svg{ display:block; width:100%; height:100%; touch-action:none; }
+  text{ font-family:&quot;IBM Plex Sans&quot;,system-ui,sans-serif; }
+  .nut{ cursor:grab; }
+  .nut.dang-keo{ cursor:grabbing; }
+  .t-lan{ font-size:13.5px; font-weight:600; letter-spacing:.12em; }
+  .t-gio{ font-size:11.5px; font-weight:600; font-family:&quot;IBM Plex Mono&quot;,monospace; }
+  .t-canh{ font-size:13px; font-weight:600; }
+
+  .hop-dan{ position:absolute; inset:auto 12px 12px auto; width:min(420px,70%);
+            background:var(--giay); border:1px solid var(--vien); border-radius:12px;
+            padding:12px; box-shadow:0 8px 28px -10px rgba(10,16,24,.4); }
+  .hop-dan p{ margin:0 0 7px; font-size:11.5px; color:var(--chu-nhat); }
+  .hop-dan textarea{ width:100%; box-sizing:border-box; height:90px; resize:vertical;
+                     font-family:&quot;IBM Plex Mono&quot;,monospace; font-size:10.5px;
+                     color:var(--chu); background:var(--canvas);
+                     border:1px solid var(--vien); border-radius:8px; padding:7px; }
+  .hop-dan .hang{ display:flex; gap:7px; justify-content:flex-end; margin-top:8px; }
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+</style>
+
+<div class=&quot;top&quot;>
+  <div>
+    <div class=&quot;nhan&quot;>Viettel Money · Quản trị rủi ro</div>
+    <h1>Luồng F2DR 7h sáng</h1>
+  </div>
+  <div class=&quot;so-lieu&quot;>
+    <div class=&quot;to&quot;><b>5′52″</b><span>TỔNG MỘT LƯỢT</span></div>
+    <div><b id=&quot;soBuoc&quot;>15</b><span>bước</span></div>
+    <div><b>2</b><span>điểm khởi động</span></div>
+    <div><b>3</b><span>nhánh song song</span></div>
+    <div><b>48</b><span>kịch bản</span></div>
+    <div><b>0</b><span>thao tác tay</span></div>
+  </div>
+</div>
+
+<div class=&quot;thanh&quot;>
+  <span><i style=&quot;background:var(--g1n);border:2px solid var(--g1)&quot;></i>Thu thập &amp;amp; chấm điểm</span>
+  <span><i style=&quot;background:var(--g2n);border:2px solid var(--g2)&quot;></i>Giám sát hằng ngày</span>
+  <span><i style=&quot;background:var(--g3n);border:2px solid var(--g3)&quot;></i>Xử lý alert bằng AI</span>
+  <span><i style=&quot;background:var(--g4n);border:2px solid var(--g4)&quot;></i>Khiếu nại</span>
+  <span><i style=&quot;background:var(--g5n);border:2px solid var(--g5)&quot;></i>Phát hành</span>
+  <span><i style=&quot;background:var(--gxn);border:2px solid var(--gx)&quot;></i>Chặn lỗi</span>
+  <span class=&quot;nut-td&quot;>
+    <span class=&quot;keo-hint&quot;>Kéo hộp để sắp lại</span>
+    <button id=&quot;btnCheDo&quot; class=&quot;chinh&quot; type=&quot;button&quot;>Xổ chi tiết</button>
+    <button id=&quot;btnChep&quot; type=&quot;button&quot;>Sao chép bố cục</button>
+    <button id=&quot;btnDan&quot; type=&quot;button&quot;>Dán bố cục</button>
+    <button id=&quot;btnReset&quot; type=&quot;button&quot;>Bố cục gốc</button>
+  </span>
+</div>
+
+<div class=&quot;sanh&quot;>
+<svg id=&quot;cv&quot; viewBox=&quot;0 0 1840 1070&quot; preserveAspectRatio=&quot;xMidYMid meet&quot; role=&quot;img&quot;
+     aria-label=&quot;Sơ đồ luồng tự động hoá F2DR, kéo được và xổ ra chi tiết&quot;>
+  <defs>
+    <marker id=&quot;mg1&quot; markerWidth=&quot;12&quot; markerHeight=&quot;12&quot; refX=&quot;10&quot; refY=&quot;5.5&quot; orient=&quot;auto&quot; markerUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M0,1 L11,5.5 L0,10 z&quot; fill=&quot;var(--g1)&quot;/></marker>
+    <marker id=&quot;mg2&quot; markerWidth=&quot;12&quot; markerHeight=&quot;12&quot; refX=&quot;10&quot; refY=&quot;5.5&quot; orient=&quot;auto&quot; markerUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M0,1 L11,5.5 L0,10 z&quot; fill=&quot;var(--g2)&quot;/></marker>
+    <marker id=&quot;mg3&quot; markerWidth=&quot;12&quot; markerHeight=&quot;12&quot; refX=&quot;10&quot; refY=&quot;5.5&quot; orient=&quot;auto&quot; markerUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M0,1 L11,5.5 L0,10 z&quot; fill=&quot;var(--g3)&quot;/></marker>
+    <marker id=&quot;mg4&quot; markerWidth=&quot;12&quot; markerHeight=&quot;12&quot; refX=&quot;10&quot; refY=&quot;5.5&quot; orient=&quot;auto&quot; markerUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M0,1 L11,5.5 L0,10 z&quot; fill=&quot;var(--g4)&quot;/></marker>
+    <marker id=&quot;mg5&quot; markerWidth=&quot;12&quot; markerHeight=&quot;12&quot; refX=&quot;10&quot; refY=&quot;5.5&quot; orient=&quot;auto&quot; markerUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M0,1 L11,5.5 L0,10 z&quot; fill=&quot;var(--g5)&quot;/></marker>
+    <marker id=&quot;mgx&quot; markerWidth=&quot;12&quot; markerHeight=&quot;12&quot; refX=&quot;10&quot; refY=&quot;5.5&quot; orient=&quot;auto&quot; markerUnits=&quot;userSpaceOnUse&quot;><path d=&quot;M0,1 L11,5.5 L0,10 z&quot; fill=&quot;var(--gx)&quot;/></marker>
+
+    <g id=&quot;k-clock&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;9&quot;/><path d=&quot;M12 7v5.3l3.2 1.9&quot;/></g>
+    <g id=&quot;k-mail&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><rect x=&quot;3.2&quot; y=&quot;5.2&quot; width=&quot;17.6&quot; height=&quot;13.6&quot; rx=&quot;2.6&quot;/><path d=&quot;M3.8 7.2l8.2 6.2 8.2-6.2&quot;/></g>
+    <g id=&quot;k-db&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><ellipse cx=&quot;12&quot; cy=&quot;5.5&quot; rx=&quot;7.5&quot; ry=&quot;2.8&quot;/><path d=&quot;M4.5 5.5v13c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8v-13&quot;/><path d=&quot;M4.5 12c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8&quot;/></g>
+    <g id=&quot;k-loop&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M20.5 12a8.5 8.5 0 1 1-2.5-6&quot;/><path d=&quot;M20.5 3.5V9h-5.5&quot;/></g>
+    <g id=&quot;k-stop&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M8.2 3.2h7.6l5 5v7.6l-5 5H8.2l-5-5V8.2z&quot;/><path d=&quot;M9.6 9.6l4.8 4.8M14.4 9.6l-4.8 4.8&quot;/></g>
+    <g id=&quot;k-merge&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 3l8.5 4.6L12 12.2 3.5 7.6z&quot;/><path d=&quot;M3.5 12.4L12 17l8.5-4.6&quot;/><path d=&quot;M3.5 16.8L12 21.4l8.5-4.6&quot;/></g>
+    <g id=&quot;k-clean&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M11 3.2l1.7 4.1 4.1 1.7-4.1 1.7L11 14.8 9.3 10.7 5.2 9l4.1-1.7z&quot;/><path d=&quot;M17.6 14.6l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z&quot;/></g>
+    <g id=&quot;k-map&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M9 4.2L3.5 7v12.8L9 17l6 2.8 5.5-2.8V4.2L15 7z&quot;/><path d=&quot;M9 4.2V17M15 7v12.8&quot;/></g>
+    <g id=&quot;k-score&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M3.6 18a8.7 8.7 0 1 1 16.8 0&quot;/><path d=&quot;M12 18l4.2-5.4&quot;/><circle cx=&quot;12&quot; cy=&quot;18&quot; r=&quot;1.4&quot;/></g>
+    <g id=&quot;k-chart&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M3 20.4h18&quot;/><path d=&quot;M6.4 20.4v-6.8M11.4 20.4V5.6M16.4 20.4v-9.6&quot;/></g>
+    <g id=&quot;k-target&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;8.6&quot;/><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4.6&quot;/><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;1.3&quot; fill=&quot;currentColor&quot;/></g>
+    <g id=&quot;k-layers&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M3.4 3.4h17.2v17.2H3.4z&quot;/><path d=&quot;M3.4 8.8h7.4V3.4&quot;/><path d=&quot;M8.4 13.2h8.2M8.4 16.8h5.4&quot;/></g>
+    <g id=&quot;k-ai&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><rect x=&quot;4.4&quot; y=&quot;7.6&quot; width=&quot;15.2&quot; height=&quot;12&quot; rx=&quot;3.2&quot;/><path d=&quot;M12 4.2v3.4&quot;/><circle cx=&quot;12&quot; cy=&quot;2.8&quot; r=&quot;1.2&quot; fill=&quot;currentColor&quot; stroke=&quot;none&quot;/><circle cx=&quot;9.3&quot; cy=&quot;13&quot; r=&quot;1.25&quot; fill=&quot;currentColor&quot; stroke=&quot;none&quot;/><circle cx=&quot;14.7&quot; cy=&quot;13&quot; r=&quot;1.25&quot; fill=&quot;currentColor&quot; stroke=&quot;none&quot;/><path d=&quot;M9.5 16.6h5&quot;/><path d=&quot;M1.9 11.8v3.4M22.1 11.8v3.4&quot;/></g>
+    <g id=&quot;k-radar&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;9&quot;/><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;4.8&quot;/><path d=&quot;M12 12l6.4-6.4&quot;/><circle cx=&quot;16.4&quot; cy=&quot;8.2&quot; r=&quot;1.5&quot; fill=&quot;currentColor&quot; stroke=&quot;none&quot;/></g>
+    <g id=&quot;k-verdict&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 3.2L4.6 6v6.2c0 4.5 3.1 7.7 7.4 8.8 4.3-1.1 7.4-4.3 7.4-8.8V6z&quot;/><path d=&quot;M12 8.4v4.4&quot;/><circle cx=&quot;12&quot; cy=&quot;16.2&quot; r=&quot;1.15&quot; fill=&quot;currentColor&quot; stroke=&quot;none&quot;/></g>
+    <g id=&quot;k-action&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M13.4 2.6L4.2 13.4h6.2l-1.2 8 9.2-10.8h-6.2z&quot;/></g>
+    <g id=&quot;k-down&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 3.4v12&quot;/><path d=&quot;M7.4 11l4.6 4.6L16.6 11&quot;/><path d=&quot;M4 19.8h16&quot;/></g>
+    <g id=&quot;k-hash&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M9.6 3.4L7.6 20.6M16.4 3.4l-2 17.2&quot;/><path d=&quot;M4.4 8.6h15.4M3.8 15.4h15.4&quot;/></g>
+    <g id=&quot;k-pie&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 3.6a8.4 8.4 0 1 0 8.4 8.4H12z&quot;/><path d=&quot;M15.4 2.4a8.4 8.4 0 0 1 6.2 6.2h-6.2z&quot;/></g>
+    <g id=&quot;k-stack&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M3.4 6.6h17.2M3.4 11.4h17.2M3.4 16.2h17.2M3.4 20.6h17.2&quot;/><path d=&quot;M6.6 2.8h11&quot;/></g>
+    <g id=&quot;k-shield&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M12 2.8l7.8 2.9v6.1c0 4.8-3.4 8.1-7.8 9.4-4.4-1.3-7.8-4.6-7.8-9.4V5.7z&quot;/><path d=&quot;M8.9 11.9l2.2 2.2 4.1-4.3&quot;/></g>
+    <g id=&quot;k-git&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><circle cx=&quot;6.4&quot; cy=&quot;5.6&quot; r=&quot;2.4&quot;/><circle cx=&quot;6.4&quot; cy=&quot;18.4&quot; r=&quot;2.4&quot;/><circle cx=&quot;17.6&quot; cy=&quot;8.4&quot; r=&quot;2.4&quot;/><path d=&quot;M6.4 8v8&quot;/><path d=&quot;M17.6 10.8c0 4.2-4.3 4.6-11.2 5.2&quot;/></g>
+    <g id=&quot;k-cloud&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7.4 19a4.2 4.2 0 0 1 .5-8.4 6.2 6.2 0 0 1 11.7 2A3.6 3.6 0 0 1 18.4 19&quot;/><path d=&quot;M12 21.2v-8.4&quot;/><path d=&quot;M9 15.6l3-3 3 3&quot;/></g>
+    <g id=&quot;k-globe&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;9&quot;/><path d=&quot;M3.2 12h17.6&quot;/><path d=&quot;M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z&quot;/></g>
+  </defs>
+
+  <g id=&quot;lop-khoi&quot;></g>
+  <g id=&quot;lop-day&quot;></g>
+  <g id=&quot;lop-chu&quot;></g>
+  <g id=&quot;lop-nut&quot;></g>
+</svg>
+</div>
+
+<script>
+(function(){
+  &quot;use strict&quot;;
+  var SVG = document.getElementById(&quot;cv&quot;);
+  var LK = document.getElementById(&quot;lop-khoi&quot;), LD = document.getElementById(&quot;lop-day&quot;),
+      LC = document.getElementById(&quot;lop-chu&quot;), LN = document.getElementById(&quot;lop-nut&quot;);
+  var NS = &quot;http://www.w3.org/2000/svg&quot;;
+  var KHOA = &quot;f2dr-luong-v4&quot;;
+
+  /* ct = vị trí ở bản CHI TIẾT · tq = bản TỔNG QUAN (null = ẩn ở tổng quan) */
+  var NUT = [
+    {id:&quot;trg&quot;, g:&quot;g1&quot;, k:&quot;dau&quot;, i:&quot;k-clock&quot;,  t:&quot;SCHEDULE TRIGGER&quot;, s:&quot;07:00 mỗi ngày&quot;,             gio:&quot;tức thì&quot;, w:320,h:88, ct:[40,140],   tq:[80,120]},
+    {id:&quot;qry&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-db&quot;,     t:&quot;RUN QUERY&quot;,        s:&quot;48 kịch bản · ClickHouse&quot;,   gio:&quot;208s&quot;,    w:320,h:88, ct:[400,140],  tq:null},
+    {id:&quot;rty&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-loop&quot;,   t:&quot;RETRY ON ERROR&quot;,   s:&quot;đọc lỗi rồi chạy lại&quot;,       gio:&quot;0–60s&quot;,   w:320,h:88, ct:[760,140],  tq:null},
+    {id:&quot;abt&quot;, g:&quot;gx&quot;, k:&quot;lun&quot;, i:&quot;k-stop&quot;,   t:&quot;ABORT RUN&quot;,        s:&quot;&quot;,                           gio:&quot;&quot;,        w:240,h:46, ct:[1020,26],  tq:null},
+    {id:&quot;mrg&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-merge&quot;,  t:&quot;RAW ALERTS&quot;,       s:&quot;48 kịch bản · 3.739 cảnh báo&quot;,        gio:&quot;2s&quot;,      w:320,h:88, ct:[1120,140], tq:[500,120]},
+    {id:&quot;cln&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;DATA CLEANING&quot;,    s:&quot;khử trùng · loại dòng lệch&quot;, gio:&quot;4s&quot;,      w:320,h:88, ct:[1120,300], tq:null},
+    {id:&quot;map&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-map&quot;,    t:&quot;MAPPING&quot;,          s:&quot;tên KB · nhóm rủi ro&quot;,       gio:&quot;3s&quot;,      w:320,h:88, ct:[760,300],  tq:null},
+    {id:&quot;scr&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-score&quot;,  t:&quot;SCORING&quot;,          s:&quot;2.069 khách × ngày&quot;,         gio:&quot;6s&quot;,      w:320,h:88, ct:[400,300],  tq:[920,120]},
+
+    {id:&quot;dch&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;DAILY CHARTS&quot;,     s:&quot;xu hướng · phân tầng&quot;,       gio:&quot;4s&quot;,      w:250,h:84, ct:[70,440],   tq:null},
+
+    {id:&quot;spk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-radar&quot;,  t:&quot;SPIKE DETECTION&quot;,  s:&quot;27 KB đột biến · 9 KB bàn đầy&quot;, gio:&quot;2s&quot;,  w:250,h:84, ct:[350,440],  tq:null},
+    {id:&quot;rnk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;CUSTOMER RANKING&quot;, s:&quot;1.585 người · 4 trục&quot;,       gio:&quot;3s&quot;,  w:250,h:84, ct:[630,440],  tq:null},
+
+    {id:&quot;mon&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;MONITORING&quot;,       s:&quot;biểu đồ · đột biến · xếp hạng&quot;, gio:&quot;9s&quot;,      w:320,h:88, ct:null, tq:[560,400]},
+    {id:&quot;inv&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;INVESTIGATION&quot;,    s:&quot;chọn lọc · làm giàu · AI soát&quot;, gio:&quot;70s&quot;,     w:320,h:88, ct:null, tq:[560,580]},
+    {id:&quot;com&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;COMPLAINTS&quot;,       s:&quot;nhận mail · làm sạch · băm&quot;,    gio:&quot;sự kiện&quot;, w:320,h:88, ct:null, tq:[560,760]},
+
+    {id:&quot;tgt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-target&quot;, t:&quot;TRIAGE&quot;,           s:&quot;top 10–50 điểm cao&quot;,              gio:&quot;2s&quot;,      w:250,h:84, ct:[70,600],   tq:null},
+    {id:&quot;ver&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;soát lại đối tượng&quot;,         gio:&quot;60s&quot;,     w:250,h:78, ct:[350,552],  tq:null},
+    {id:&quot;det&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-radar&quot;,  t:&quot;AI DETECTION&quot;,     s:&quot;dò dấu hiệu mới&quot;,            gio:&quot;45s&quot;,     w:250,h:78, ct:[350,648],  tq:null},
+    {id:&quot;vdt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-verdict&quot;,t:&quot;RISK VERDICT&quot;,     s:&quot;dương tính / âm tính&quot;,       gio:&quot;3s&quot;,      w:250,h:84, ct:[630,600],  tq:null},
+    {id:&quot;act&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-action&quot;, t:&quot;ACTION&quot;,           s:&quot;lập hồ sơ · hoặc khép lại&quot;,  gio:&quot;5s&quot;,      w:250,h:84, ct:[910,600], tq:null},
+
+    {id:&quot;eml&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;EMAIL TRIGGER&quot;,    s:&quot;Outlook · mail đồng nghiệp&quot;, gio:&quot;sự kiện&quot;, w:250,h:84, ct:[70,790],   tq:null},
+    {id:&quot;ccl&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;CLEANING&quot;,         s:&quot;chuẩn hoá · kiểm hợp lệ&quot;,    gio:&quot;4s&quot;,      w:250,h:84, ct:[350,790],  tq:null},
+    {id:&quot;hsh&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-hash&quot;,   t:&quot;HASHING&quot;,          s:&quot;ẩn danh số điện thoại&quot;,      gio:&quot;3s&quot;,      w:250,h:84, ct:[630,790],  tq:null},
+    {id:&quot;cch&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-pie&quot;,    t:&quot;COMPLAINT CHARTS&quot;, s:&quot;số đơn · tồn đọng&quot;,          gio:&quot;4s&quot;,      w:250,h:84, ct:[910,790], tq:null},
+
+    {id:&quot;bot&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI ASSISTANT&quot;,     s:&quot;hỏi đáp · chặn bịa số&quot;,      gio:&quot;theo yêu cầu&quot;, w:320,h:88, ct:[40,950],  tq:null},
+    {id:&quot;bld&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;APPEND DASHBOARD&quot;, s:&quot;cộng dồn 86 ngày · 265.839 alert&quot;, gio:&quot;8s&quot;, w:280,h:84, ct:[1240,600], tq:[1080,580]},
+    {id:&quot;sec&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-shield&quot;, t:&quot;SECURITY GATE&quot;,    s:&quot;quét khoá API · mã GD · SĐT&quot;,gio:&quot;6s&quot;,      w:320,h:88, ct:[1120,950], tq:null},
+    {id:&quot;dep&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-cloud&quot;,  t:&quot;PUSH &amp; DEPLOY&quot;,    s:&quot;commit sạch · Cloudflare&quot;,   gio:&quot;45s&quot;,     w:320,h:88, ct:[760,950],  tq:[1060,850]},
+    {id:&quot;liv&quot;, g:&quot;g5&quot;, k:&quot;cuoi&quot;,i:&quot;k-globe&quot;,  t:&quot;LIVE&quot;,             s:&quot;đội vận hành mở là thấy&quot;,    gio:&quot;&quot;,        w:320,h:88, ct:[400,950],   tq:null}
+  ];
+
+  /* ch: 'ca' = cả hai chế độ · 'ct' = chỉ chi tiết · 'tq' = chỉ tổng quan */
+  var DAY = [
+    {f:&quot;trg&quot;,t:&quot;qry&quot;,m:&quot;rl&quot;,c:&quot;g1&quot;,ch:&quot;ct&quot;},
+    {f:&quot;trg&quot;,t:&quot;mrg&quot;,m:&quot;rl&quot;,c:&quot;g1&quot;,ch:&quot;tq&quot;},
+    {f:&quot;qry&quot;,t:&quot;rty&quot;,m:&quot;rl&quot;,c:&quot;g1&quot;,ch:&quot;ct&quot;},
+    {f:&quot;rty&quot;,t:&quot;abt&quot;,m:&quot;len&quot;,c:&quot;gx&quot;,ch:&quot;ct&quot;,dash:1},
+    {f:&quot;rty&quot;,t:&quot;mrg&quot;,m:&quot;rl&quot;,c:&quot;g1&quot;,ch:&quot;ct&quot;},
+    {f:&quot;rty&quot;,t:&quot;rty&quot;,m:&quot;vong&quot;,c:&quot;g1&quot;,ch:&quot;ct&quot;},
+    {f:&quot;mrg&quot;,t:&quot;cln&quot;,m:&quot;vong_phai&quot;,c:&quot;g1&quot;,ch:&quot;ct&quot;},
+    {f:&quot;cln&quot;,t:&quot;map&quot;,m:&quot;lr&quot;,c:&quot;g1&quot;,ch:&quot;ct&quot;},
+    {f:&quot;map&quot;,t:&quot;scr&quot;,m:&quot;lr&quot;,c:&quot;g1&quot;,ch:&quot;ct&quot;},
+    {f:&quot;mrg&quot;,t:&quot;scr&quot;,m:&quot;rl&quot;,c:&quot;g1&quot;,ch:&quot;tq&quot;},
+
+    {f:&quot;scr&quot;,t:&quot;dch&quot;,m:&quot;lb&quot;,c:&quot;g2&quot;,ch:&quot;ct&quot;},
+    {f:&quot;scr&quot;,t:&quot;tgt&quot;,m:&quot;lb&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;dch&quot;,t:&quot;spk&quot;,m:&quot;rl&quot;,c:&quot;g2&quot;,ch:&quot;ct&quot;},
+    {f:&quot;spk&quot;,t:&quot;rnk&quot;,m:&quot;rl&quot;,c:&quot;g2&quot;,ch:&quot;ct&quot;},
+    {f:&quot;rnk&quot;,t:&quot;bld&quot;,m:&quot;rt&quot;,c:&quot;g2&quot;,ch:&quot;ct&quot;},
+
+    {f:&quot;tgt&quot;,t:&quot;ver&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;tgt&quot;,t:&quot;det&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;ver&quot;,t:&quot;vdt&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;det&quot;,t:&quot;vdt&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;vdt&quot;,t:&quot;act&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;act&quot;,t:&quot;bld&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+
+    {f:&quot;eml&quot;,t:&quot;ccl&quot;,m:&quot;rl&quot;,c:&quot;g4&quot;,ch:&quot;ct&quot;},
+    {f:&quot;ccl&quot;,t:&quot;hsh&quot;,m:&quot;rl&quot;,c:&quot;g4&quot;,ch:&quot;ct&quot;},
+    {f:&quot;hsh&quot;,t:&quot;cch&quot;,m:&quot;rl&quot;,c:&quot;g4&quot;,ch:&quot;ct&quot;},
+    {f:&quot;cch&quot;,t:&quot;bld&quot;,m:&quot;rb&quot;,c:&quot;g4&quot;,ch:&quot;ct&quot;},
+
+    {f:&quot;bld&quot;,t:&quot;sec&quot;,m:&quot;vong_phai_xuong&quot;,c:&quot;g5&quot;,ch:&quot;ct&quot;},
+    {f:&quot;sec&quot;,t:&quot;dep&quot;,m:&quot;lr&quot;,c:&quot;g5&quot;,ch:&quot;ct&quot;},
+    {f:&quot;dep&quot;,t:&quot;liv&quot;,m:&quot;lr&quot;,c:&quot;g5&quot;,ch:&quot;ct&quot;},
+    {f:&quot;liv&quot;,t:&quot;bot&quot;,m:&quot;lr&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;sec&quot;,t:&quot;sec&quot;,m:&quot;vong&quot;,c:&quot;g5&quot;,ch:&quot;ct&quot;},
+    {f:&quot;scr&quot;,t:&quot;mon&quot;,m:&quot;bl&quot;,c:&quot;g2&quot;,ch:&quot;tq&quot;,dy:60,ln:40},
+    {f:&quot;scr&quot;,t:&quot;inv&quot;,m:&quot;bl&quot;,c:&quot;g3&quot;,ch:&quot;tq&quot;,dy:60,ln:40},
+    {f:&quot;scr&quot;,t:&quot;com&quot;,m:&quot;bl&quot;,c:&quot;g4&quot;,ch:&quot;tq&quot;,dy:60,ln:40},
+    {f:&quot;mon&quot;,t:&quot;bld&quot;,m:&quot;rl&quot;,c:&quot;g2&quot;,ch:&quot;tq&quot;},
+    {f:&quot;inv&quot;,t:&quot;bld&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;tq&quot;},
+    {f:&quot;com&quot;,t:&quot;bld&quot;,m:&quot;rb&quot;,c:&quot;g4&quot;,ch:&quot;tq&quot;},
+    {f:&quot;bld&quot;,t:&quot;dep&quot;,m:&quot;tb&quot;,c:&quot;g5&quot;,ch:&quot;tq&quot;}
+  ];
+
+  var NHAN = [
+    {neo:&quot;rty&quot;, dx:-96, dy:-64, t:&quot;lặp đến khi chạy được&quot;, c:&quot;g1&quot;, giua:1, ch:&quot;ct&quot;},
+    {neo:&quot;abt&quot;, dx:300, dy:30,  t:&quot;lỗi hệ thống · CSDL sập&quot;, c:&quot;gx&quot;, ch:&quot;ct&quot;}
+  ];
+
+  var LAN = [
+    {t:&quot;01 · COLLECT &amp; SCORE — 223s&quot;, c:&quot;g1&quot;, neo:&quot;trg&quot;, dx:0, dy:-26, ch:&quot;ca&quot;},
+    {t:&quot;A · MONITORING — 9s&quot;,         c:&quot;g2&quot;, neo:&quot;dch&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;B · INVESTIGATION — 70s&quot;,   c:&quot;g3&quot;, neo:&quot;tgt&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;C · COMPLAINTS — 11s&quot;,        c:&quot;g4&quot;, neo:&quot;eml&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;04 · PUBLISH — 59s&quot;,          c:&quot;g5&quot;, neo:&quot;liv&quot;, dx:0,   dy:-24, ch:&quot;ct&quot;},
+    {t:&quot;04 · PUBLISH — 59s&quot;,          c:&quot;g5&quot;, neo:&quot;sec&quot;, dx:320, dy:-22, cuoi:1, ch:&quot;tq&quot;}
+  ];
+
+  var IDS_KHOI = [&quot;mon&quot;,&quot;inv&quot;,&quot;com&quot;,&quot;spk&quot;,&quot;rnk&quot;,&quot;dch&quot;,&quot;tgt&quot;,&quot;enr&quot;,&quot;ver&quot;,&quot;det&quot;,&quot;vdt&quot;,&quot;act&quot;,&quot;eml&quot;,&quot;fch&quot;,&quot;ccl&quot;,&quot;hsh&quot;,&quot;cch&quot;];
+
+  var map = {}, che = &quot;tq&quot;;
+  NUT.forEach(function(n){
+    var _p = n.tq || n.ct;
+    n.x = _p[0]; n.y = _p[1];
+    n.mo = n.tq ? 1 : 0;
+    map[n.id] = n;
+  });
+  var GOC = JSON.stringify(NUT.map(function(n){
+    return {id:n.id, ct:n.ct?n.ct.slice():null, tq:n.tq?n.tq.slice():null};
+  }));
+
+  function hienO(n, c){ return c === &quot;ct&quot; ? !!n.ct : !!n.tq; }
+  function dich(n, c){ return (c === &quot;ct&quot; ? n.ct : n.tq) || n.ct || n.tq; }
+
+  /* ── lưu / nạp ── */
+  function luu(){
+    try{
+      localStorage.setItem(KHOA, JSON.stringify({che:che, vt:NUT.map(function(n){
+        return {id:n.id, ct:n.ct, tq:n.tq};
+      })}));
+    }catch(e){}
+  }
+  function nap(txt){
+    var d = JSON.parse(txt);
+    var ds = d.vt || d;
+    ds.forEach(function(v){
+      var n = map[v.id];
+      if(!n) return;
+      if(v.ct &amp;&amp; n.ct) n.ct = v.ct;     // chi doi cho, KHONG hoi sinh nut da an
+      if(v.tq &amp;&amp; n.tq) n.tq = v.tq;
+    });
+    if(d.che === &quot;ct&quot; || d.che === &quot;tq&quot;) che = d.che;
+    NUT.forEach(function(n){
+      var p = dich(n, che);
+      n.x = p[0]; n.y = p[1];
+      n.mo = hienO(n, che) ? 1 : 0;
+    });
+    veTatCa(); capNhatNut();
+  }
+  try{ var s = localStorage.getItem(KHOA); if(s) nap(s); }catch(e){}
+
+  function el(t, a){
+    var e = document.createElementNS(NS, t);
+    for(var k in a){ if(a[k] !== null &amp;&amp; a[k] !== undefined) e.setAttribute(k, a[k]); }
+    return e;
+  }
+  function chu(x, y, noi, lop, mau, neo){
+    var t = el(&quot;text&quot;, {x:x, y:y, class:lop, fill:mau});
+    if(neo) t.setAttribute(&quot;text-anchor&quot;, neo);
+    t.textContent = noi;
+    return t;
+  }
+  function cong(n, p){
+    if(p === &quot;r&quot;) return {x:n.x+n.w, y:n.y+n.h/2};
+    if(p === &quot;l&quot;) return {x:n.x,     y:n.y+n.h/2};
+    if(p === &quot;t&quot;) return {x:n.x+n.w/2, y:n.y};
+    return {x:n.x+n.w/2, y:n.y+n.h};
+  }
+
+  function tuyChe(v, md){
+    if(v === undefined || v === null) return md;
+    if(typeof v === &quot;object&quot;) return (v[che] === undefined) ? md : v[che];
+    return v;
+  }
+
+  function veDuong(d){
+    var a = map[d.f], b = map[d.t], s, e, k, R = 18;
+    if(d.m === &quot;vong&quot;){
+      var x1 = a.x + a.w*0.74, x2 = a.x + a.w*0.26, yt = a.y;
+      return &quot;M&quot;+x1+&quot;,&quot;+yt+&quot; C&quot;+x1+&quot;,&quot;+(yt-52)+&quot; &quot;+x2+&quot;,&quot;+(yt-52)+&quot; &quot;+x2+&quot;,&quot;+(yt-4);
+    }
+    if(d.m === &quot;rl&quot;){ s=cong(a,&quot;r&quot;); e=cong(b,&quot;l&quot;);
+      k = Math.max(34, Math.abs(e.x-s.x)/2);
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; C&quot;+(s.x+k)+&quot;,&quot;+s.y+&quot; &quot;+(e.x-k)+&quot;,&quot;+e.y+&quot; &quot;+e.x+&quot;,&quot;+e.y; }
+    if(d.m === &quot;lr&quot;){ s=cong(a,&quot;l&quot;); e=cong(b,&quot;r&quot;);
+      k = Math.max(34, Math.abs(s.x-e.x)/2);
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; C&quot;+(s.x-k)+&quot;,&quot;+s.y+&quot; &quot;+(e.x+k)+&quot;,&quot;+e.y+&quot; &quot;+e.x+&quot;,&quot;+e.y; }
+    if(d.m === &quot;tb&quot;){ s=cong(a,&quot;b&quot;); e=cong(b,&quot;t&quot;);
+      if(Math.abs(e.x-s.x) < 6) return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; V&quot;+e.y;   // cùng trục -> kẻ thẳng
+      k = Math.max(26, Math.abs(e.y-s.y)/2);
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; C&quot;+s.x+&quot;,&quot;+(s.y+k)+&quot; &quot;+e.x+&quot;,&quot;+(e.y-k)+&quot; &quot;+e.x+&quot;,&quot;+e.y; }
+    if(d.m === &quot;len&quot;){                      // đỉnh → đi LÊN → vào đáy hộp phía trên
+      s = cong(a,&quot;t&quot;); e = cong(b,&quot;b&quot;);
+      var kl = Math.max(20, (s.y-e.y)/2);
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; C&quot;+s.x+&quot;,&quot;+(s.y-kl)+&quot; &quot;+e.x+&quot;,&quot;+(e.y+kl)+&quot; &quot;+e.x+&quot;,&quot;+e.y; }
+    if(d.m === &quot;bl&quot;){                       // đáy → tụt xuống → men lề trái → vào trái
+      s = cong(a,&quot;b&quot;); e = cong(b,&quot;l&quot;);
+      var hd = s.y + tuyChe(d.dy, 40);      // độ sâu rẽ ngang, tách nhau cho khỏi chồng
+      var lb = e.x - tuyChe(d.ln, 30);      // làn dọc bên trái hộp đích
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; V&quot;+(hd-R)+&quot; Q&quot;+s.x+&quot;,&quot;+hd+&quot; &quot;+(s.x-R)+&quot;,&quot;+hd+
+             &quot; H&quot;+(lb+R)+&quot; Q&quot;+lb+&quot;,&quot;+hd+&quot; &quot;+lb+&quot;,&quot;+(hd+R)+
+             &quot; V&quot;+(e.y-R)+&quot; Q&quot;+lb+&quot;,&quot;+e.y+&quot; &quot;+(lb+R)+&quot;,&quot;+e.y+&quot; H&quot;+e.x; }
+    if(d.m === &quot;lb&quot;){ s=cong(a,&quot;l&quot;); e=cong(b,&quot;l&quot;);
+      var ln = Math.min(s.x, e.x) - 44;
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; H&quot;+(ln+R)+&quot; Q&quot;+ln+&quot;,&quot;+s.y+&quot; &quot;+ln+&quot;,&quot;+(s.y+R)+
+             &quot; V&quot;+(e.y-R)+&quot; Q&quot;+ln+&quot;,&quot;+e.y+&quot; &quot;+(ln+R)+&quot;,&quot;+e.y+&quot; H&quot;+e.x; }
+    if(d.m === &quot;rb&quot;){ s=cong(a,&quot;r&quot;); e=cong(b,&quot;b&quot;);   // phải → đáy hộp đích (đi lên)
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; H&quot;+(e.x-R)+&quot; Q&quot;+e.x+&quot;,&quot;+s.y+&quot; &quot;+e.x+&quot;,&quot;+(s.y-R)+&quot; V&quot;+e.y; }
+    if(d.m === &quot;rt&quot;){ s=cong(a,&quot;r&quot;); e=cong(b,&quot;t&quot;);
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; H&quot;+(e.x-R)+&quot; Q&quot;+e.x+&quot;,&quot;+s.y+&quot; &quot;+e.x+&quot;,&quot;+(s.y+R)+&quot; V&quot;+e.y; }
+    if(d.m === &quot;vong_phai&quot;){ s=cong(a,&quot;r&quot;); e=cong(b,&quot;r&quot;);
+      var lp = Math.max(s.x, e.x) + 46;
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; H&quot;+(lp-R)+&quot; Q&quot;+lp+&quot;,&quot;+s.y+&quot; &quot;+lp+&quot;,&quot;+(s.y+R)+
+             &quot; V&quot;+(e.y-R)+&quot; Q&quot;+lp+&quot;,&quot;+e.y+&quot; &quot;+(lp-R)+&quot;,&quot;+e.y+&quot; H&quot;+e.x; }
+    if(d.m === &quot;vong_phai_xuong&quot;){ s=cong(a,&quot;b&quot;); e=cong(b,&quot;r&quot;);
+      var lq = Math.max(s.x, e.x) + 56;
+      return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; V&quot;+(s.y+40-R)+&quot; Q&quot;+s.x+&quot;,&quot;+(s.y+40)+&quot; &quot;+(s.x+R)+&quot;,&quot;+(s.y+40)+
+             &quot; H&quot;+(lq-R)+&quot; Q&quot;+lq+&quot;,&quot;+(s.y+40)+&quot; &quot;+lq+&quot;,&quot;+(s.y+40+R)+
+             &quot; V&quot;+(e.y-R)+&quot; Q&quot;+lq+&quot;,&quot;+e.y+&quot; &quot;+(lq-R)+&quot;,&quot;+e.y+&quot; H&quot;+e.x; }
+    s = cong(a,&quot;r&quot;); e = cong(b,&quot;l&quot;);
+    return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; L&quot;+e.x+&quot;,&quot;+e.y;
+  }
+
+  function dungChe(x){ return x === &quot;ca&quot; || x === che; }
+
+  function veDay(){
+    LD.textContent = &quot;&quot;;
+    DAY.forEach(function(d){
+      if(!dungChe(d.ch)) return;
+      if(!map[d.f].mo || !map[d.t].mo) return;
+      LD.appendChild(el(&quot;path&quot;, {d:veDuong(d), fill:&quot;none&quot;,
+        stroke:&quot;var(--&quot;+d.c+&quot;)&quot;, &quot;stroke-width&quot;: d.m===&quot;vong&quot; ? 2.4 : 2.6,
+        &quot;stroke-dasharray&quot;: d.dash ? &quot;7 5&quot; : null,
+        &quot;marker-end&quot;:&quot;url(#m&quot;+d.c+&quot;)&quot;}));
+    });
+  }
+
+  function veKhoi(){
+    LK.textContent = &quot;&quot;;
+    var x1=1e9, y1=1e9, x2=-1e9, y2=-1e9, co = 0;
+    IDS_KHOI.forEach(function(id){
+      var n = map[id];
+      if(!n || !n.mo) return;
+      co = 1;
+      x1 = Math.min(x1, n.x); y1 = Math.min(y1, n.y);
+      x2 = Math.max(x2, n.x+n.w); y2 = Math.max(y2, n.y+n.h);
+    });
+    if(!co) return;
+    var p = 30;
+    LK.appendChild(el(&quot;rect&quot;, {x:x1-p, y:y1-p-14, width:(x2-x1)+p*2,
+      height:(y2-y1)+p*2+14, rx:22, fill:&quot;var(--khoi)&quot;, stroke:&quot;var(--g3)&quot;,
+      &quot;stroke-width&quot;:2.4, &quot;stroke-dasharray&quot;:&quot;10 8&quot;}));
+    LK.appendChild(chu(x2+p-10, y1-p+12,
+      &quot;SONG SONG · nhánh dài nhất 70s&quot;,
+      &quot;t-lan&quot;, &quot;var(--g3)&quot;, &quot;end&quot;));
+  }
+
+  function veChu(){
+    LC.textContent = &quot;&quot;;
+    LAN.forEach(function(l){
+      if(!dungChe(l.ch)) return;
+      var n = map[l.neo];
+      if(!n || !n.mo) return;
+      LC.appendChild(chu(n.x+l.dx, n.y+l.dy, l.t, &quot;t-lan&quot;,
+        &quot;var(--&quot;+l.c+&quot;)&quot;, l.cuoi ? &quot;end&quot; : null));
+    });
+    NHAN.forEach(function(g){
+      if(!dungChe(g.ch)) return;
+      var n = map[g.neo];
+      if(!n || !n.mo) return;
+      LC.appendChild(chu(n.x+g.dx+(g.giua ? n.w/2 : 0), n.y+g.dy, g.t,
+        &quot;t-canh&quot;, &quot;var(--&quot;+g.c+&quot;)&quot;, g.giua ? &quot;middle&quot; : null));
+    });
+  }
+
+  var oNut = {};
+  function veMotNut(n){
+    var m = &quot;var(--&quot;+n.g+&quot;)&quot;, nn = &quot;var(--&quot;+n.g+&quot;n)&quot;;
+    var dac = (n.k===&quot;dau&quot; || n.k===&quot;cuoi&quot; || n.k===&quot;ai&quot; || n.k===&quot;lun&quot;);
+    var g = el(&quot;g&quot;, {class:&quot;nut&quot;, &quot;data-id&quot;:n.id,
+      transform:&quot;translate(&quot;+n.x+&quot;,&quot;+n.y+&quot;)&quot;});
+    g.appendChild(el(&quot;rect&quot;, {x:0, y:0, width:n.w, height:n.h, rx: n.h<60?12:14,
+      fill: dac ? nn : &quot;var(--giay)&quot;, stroke:m,
+      &quot;stroke-width&quot;: n.k===&quot;ai&quot; ? 3.4 : (dac ? 3 : 2.6)}));
+    var ico = n.h<60 ? 30 : 46, ip = (n.h-ico)/2;
+    g.appendChild(el(&quot;rect&quot;, {x:13, y:ip, width:ico, height:ico, rx:11,
+      fill: dac ? &quot;var(--giay)&quot; : nn}));
+    var sc = ico/24*0.72, off = (ico-24*sc)/2;
+    var gi = el(&quot;g&quot;, {transform:&quot;translate(&quot;+(13+off)+&quot;,&quot;+(ip+off)+&quot;) scale(&quot;+sc+&quot;)&quot;});
+    gi.setAttribute(&quot;color&quot;, m);
+    gi.appendChild(el(&quot;use&quot;, {href:&quot;#&quot;+n.i}));
+    g.appendChild(gi);
+    var tx = 13+ico+16, fs = n.w>=300 ? 18 : 16.5;
+    if(n.s){
+      var a = chu(tx, n.h/2-4, n.t, null, dac ? m : &quot;var(--chu)&quot;);
+      a.setAttribute(&quot;style&quot;,&quot;font-size:&quot;+fs+&quot;px;font-weight:600;letter-spacing:.006em&quot;);
+      g.appendChild(a);
+      var b = chu(tx, n.h/2+18, n.s, null, &quot;var(--chu-nhat)&quot;);
+      b.setAttribute(&quot;style&quot;,&quot;font-size:&quot;+(n.w>=300?13.5:12.5)+&quot;px&quot;);
+      g.appendChild(b);
+    }else{
+      var c = chu(tx, n.h/2+6, n.t, null, m);
+      c.setAttribute(&quot;style&quot;,&quot;font-size:&quot;+fs+&quot;px;font-weight:600;letter-spacing:.006em&quot;);
+      g.appendChild(c);
+    }
+    if(n.gio){
+      var bw = 72;
+      g.appendChild(el(&quot;rect&quot;, {x:n.w-bw-14, y:-12, width:bw, height:24, rx:12,
+        fill:&quot;var(--giay)&quot;, stroke:m, &quot;stroke-width&quot;:1.9}));
+      g.appendChild(chu(n.w-bw/2-14, 4, n.gio, &quot;t-gio&quot;, m, &quot;middle&quot;));
+    }
+    if(n.k === &quot;ai&quot;){
+      g.appendChild(el(&quot;rect&quot;, {x:12, y:-12, width:80, height:24, rx:12, fill:m}));
+      g.appendChild(chu(52, 4, &quot;AI AGENT&quot;, &quot;t-gio&quot;, &quot;var(--giay)&quot;, &quot;middle&quot;));
+    }
+    return g;
+  }
+
+  function veNut(){
+    LN.textContent = &quot;&quot;; oNut = {};
+    NUT.forEach(function(n){
+      var g = veMotNut(n);
+      oNut[n.id] = g;
+      LN.appendChild(g);
+    });
+    capNhatNut();
+  }
+  function capNhatNut(){
+    NUT.forEach(function(n){
+      var g = oNut[n.id];
+      if(!g) return;
+      g.setAttribute(&quot;opacity&quot;, n.mo);
+      g.style.display = n.mo > 0.01 ? &quot;&quot; : &quot;none&quot;;
+    });
+    var d = document.getElementById(&quot;soBuoc&quot;);
+    if(d) d.textContent = NUT.filter(function(n){
+      return n.mo &amp;&amp; n.g !== &quot;gx&quot;;
+    }).length;
+  }
+  function veTatCa(){ veKhoi(); veDay(); veChu(); veNut(); }
+  veTatCa();
+
+  /* ── xổ ra / thu gọn, có chuyển động ── */
+  var dangChay = false;
+  function doiChe(){
+    if(dangChay) return;
+    var moi = che === &quot;tq&quot; ? &quot;ct&quot; : &quot;tq&quot;;
+    var giam = !!(window.matchMedia &amp;&amp;
+                  window.matchMedia(&quot;(prefers-reduced-motion: reduce)&quot;).matches);
+    var buoc = NUT.map(function(n){
+      var d = dich(n, moi), hien = hienO(n, moi);
+      return {n:n, x0:n.x, y0:n.y, x1:d[0], y1:d[1], m0:n.mo, m1:hien ? 1 : 0};
+    });
+    che = moi;
+    document.getElementById(&quot;btnCheDo&quot;).textContent =
+      che === &quot;tq&quot; ? &quot;Xổ chi tiết&quot; : &quot;Thu gọn&quot;;
+    if(giam){
+      buoc.forEach(function(b){ b.n.x=b.x1; b.n.y=b.y1; b.n.mo=b.m1; });
+      veTatCa(); luu(); return;
+    }
+    dangChay = true;
+    var T = 620, t0 = performance.now();
+    (function khung(now){
+      var p = Math.min(1, (now-t0)/T);
+      var e = p<0.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2;
+      buoc.forEach(function(b){
+        b.n.x = b.x0 + (b.x1-b.x0)*e;
+        b.n.y = b.y0 + (b.y1-b.y0)*e;
+        b.n.mo = b.m0 + (b.m1-b.m0)*e;
+        var g = oNut[b.n.id];
+        if(g){
+          g.setAttribute(&quot;transform&quot;,&quot;translate(&quot;+b.n.x+&quot;,&quot;+b.n.y+&quot;)&quot;);
+          g.setAttribute(&quot;opacity&quot;, b.n.mo);
+          g.style.display = b.n.mo > 0.01 ? &quot;&quot; : &quot;none&quot;;
+        }
+      });
+      veKhoi(); veDay(); veChu();
+      if(p < 1){ requestAnimationFrame(khung); }
+      else{
+        buoc.forEach(function(b){ b.n.x=b.x1; b.n.y=b.y1; b.n.mo=b.m1; });
+        capNhatNut(); veKhoi(); veDay(); veChu();
+        dangChay = false; luu();
+      }
+    })(t0);
+  }
+  document.getElementById(&quot;btnCheDo&quot;).addEventListener(&quot;click&quot;, doiChe);
+  document.getElementById(&quot;btnCheDo&quot;).textContent =
+    che === &quot;tq&quot; ? &quot;Xổ chi tiết&quot; : &quot;Thu gọn&quot;;
+
+  /* ── kéo thả ── */
+  var keo = null, lech = {x:0,y:0};
+  function toaDo(ev){
+    var p = SVG.createSVGPoint();
+    p.x = ev.clientX; p.y = ev.clientY;
+    var m = SVG.getScreenCTM();
+    return m ? p.matrixTransform(m.inverse()) : {x:0,y:0};
+  }
+  SVG.addEventListener(&quot;pointerdown&quot;, function(ev){
+    if(dangChay) return;
+    var g = ev.target.closest ? ev.target.closest(&quot;.nut&quot;) : null;
+    if(!g) return;
+    var n = map[g.getAttribute(&quot;data-id&quot;)];
+    if(!n || !n.mo) return;
+    var p = toaDo(ev);
+    keo = {n:n, g:g};
+    lech.x = p.x-n.x; lech.y = p.y-n.y;
+    g.classList.add(&quot;dang-keo&quot;);
+    LN.appendChild(g);
+    try{ SVG.setPointerCapture(ev.pointerId); }catch(e){}
+    ev.preventDefault();
+  });
+  SVG.addEventListener(&quot;pointermove&quot;, function(ev){
+    if(!keo) return;
+    var p = toaDo(ev);
+    keo.n.x = Math.round(p.x-lech.x);
+    keo.n.y = Math.round(p.y-lech.y);
+    var d = dich(keo.n, che);
+    d[0] = keo.n.x; d[1] = keo.n.y;
+    keo.g.setAttribute(&quot;transform&quot;,&quot;translate(&quot;+keo.n.x+&quot;,&quot;+keo.n.y+&quot;)&quot;);
+    veKhoi(); veDay(); veChu();
+  });
+  function tha(ev){
+    if(!keo) return;
+    keo.g.classList.remove(&quot;dang-keo&quot;);
+    keo = null; luu();
+    try{ SVG.releasePointerCapture(ev.pointerId); }catch(e){}
+  }
+  SVG.addEventListener(&quot;pointerup&quot;, tha);
+  SVG.addEventListener(&quot;pointercancel&quot;, tha);
+  window.addEventListener(&quot;beforeunload&quot;, luu);
+  document.addEventListener(&quot;visibilitychange&quot;, function(){
+    if(document.visibilityState === &quot;hidden&quot;) luu();
+  });
+
+  /* ── sao chép / dán bố cục ── */
+  function banGhi(){
+    return JSON.stringify({che:che, vt:NUT.map(function(n){
+      return {id:n.id, ct:n.ct, tq:n.tq};
+    })});
+  }
+  function moHop(noi, chiXem){
+    dongHop();
+    var h = document.createElement(&quot;div&quot;);
+    h.className = &quot;hop-dan&quot;; h.id = &quot;hopDan&quot;;
+    h.innerHTML = '<p>' + (chiXem
+      ? 'Chép đoạn dưới đây và cất đi. Lần sau bấm <b>Dán bố cục</b> rồi dán lại.'
+      : 'Dán đoạn bố cục đã cất vào đây rồi bấm Áp dụng.') + '</p>';
+    var ta = document.createElement(&quot;textarea&quot;);
+    ta.value = noi || &quot;&quot;;
+    h.appendChild(ta);
+    var hang = document.createElement(&quot;div&quot;);
+    hang.className = &quot;hang&quot;;
+    if(!chiXem){
+      var ok = document.createElement(&quot;button&quot;);
+      ok.type = &quot;button&quot;; ok.className = &quot;chinh&quot;; ok.textContent = &quot;Áp dụng&quot;;
+      ok.onclick = function(){
+        try{ nap(ta.value); luu(); dongHop(); }
+        catch(e){ ta.style.borderColor = &quot;var(--gx)&quot;; }
+      };
+      hang.appendChild(ok);
+    }
+    var dg = document.createElement(&quot;button&quot;);
+    dg.type = &quot;button&quot;; dg.textContent = &quot;Đóng&quot;;
+    dg.onclick = dongHop;
+    hang.appendChild(dg);
+    h.appendChild(hang);
+    document.querySelector(&quot;.sanh&quot;).appendChild(h);
+    ta.focus(); if(chiXem) ta.select();
+  }
+  function dongHop(){
+    var c = document.getElementById(&quot;hopDan&quot;);
+    if(c) c.remove();
+  }
+  document.getElementById(&quot;btnChep&quot;).addEventListener(&quot;click&quot;, function(){
+    var s = banGhi();
+    if(navigator.clipboard &amp;&amp; navigator.clipboard.writeText){
+      navigator.clipboard.writeText(s).then(function(){
+        var b = document.getElementById(&quot;btnChep&quot;);
+        var cu = b.textContent;
+        b.textContent = &quot;Đã chép&quot;;
+        setTimeout(function(){ b.textContent = cu; }, 1400);
+      }, function(){ moHop(s, 1); });
+    }else{ moHop(s, 1); }
+  });
+  document.getElementById(&quot;btnDan&quot;).addEventListener(&quot;click&quot;, function(){ moHop(&quot;&quot;, 0); });
+
+  document.getElementById(&quot;btnReset&quot;).addEventListener(&quot;click&quot;, function(){
+    JSON.parse(GOC).forEach(function(v){
+      map[v.id].ct = v.ct; map[v.id].tq = v.tq;
+    });
+    try{ localStorage.removeItem(KHOA); }catch(e){}
+    NUT.forEach(function(n){
+      var p = dich(n, che);
+      n.x = p[0]; n.y = p[1];
+      n.mo = hienO(n, che) ? 1 : 0;
+    });
+    veTatCa();
+  });
+})();
+</script>
+"></iframe>
   </div>
 </div>
 
@@ -2817,21 +3501,37 @@ function datSapBC(o, v){
   renderBaoCao();
 }
 
+/* Ep so do trong iframe dung nen toi cho khop dashboard. Goi lai moi lan mo
+   tab vi iframe co the chua tai xong o lan bam dau tien. */
+function epNenToiChoSoDo(){
+  const f = $('wfFrame');
+  if(!f) return;
+  const dat = () => { try{
+    f.contentDocument.documentElement.setAttribute('data-theme','dark');
+  }catch(e){} };
+  dat();
+  f.addEventListener('load', dat, {once:true});
+}
+
 function datCheDo(v){
-  CHE_DO = v === 'bc' ? 'bc' : 'vh';
-  const bc = CHE_DO === 'bc';
-  $('cdVH').classList.toggle('on', !bc);
+  CHE_DO = (v === 'bc' || v === 'wf') ? v : 'vh';
+  const bc = CHE_DO === 'bc', wf = CHE_DO === 'wf', an = bc || wf;
+  $('cdVH').classList.toggle('on', CHE_DO === 'vh');
   $('cdBC').classList.toggle('on', bc);
+  $('cdWF').classList.toggle('on', wf);
   $('bcWrap').style.display = bc ? '' : 'none';
+  $('wfWrap').style.display = wf ? '' : 'none';
+  if(wf) epNenToiChoSoDo();
   /* foldScore là khối công cụ điểm (⓪①②) — không phải .card nên vòng dưới
      không quét tới. Để hiện ở chế độ Báo cáo thì số khoanh tròn của nó đụng
      ①②③ của tab. */
   ['nav','ngaybar','kpis','chuy','foldScore','m0','m1','m2','m3','m4','m5','m6','m7','m8','m9']
-    .forEach(id=>{ const e = $(id); if(e) e.style.display = bc ? 'none' : ''; });
+    .forEach(id=>{ const e = $(id); if(e) e.style.display = an ? 'none' : ''; });
   document.querySelectorAll('.card').forEach(e=>{
-    if(!e.closest('#bcWrap')) e.style.display = bc ? 'none' : '';
+    if(!e.closest('#bcWrap') && !e.closest('#wfWrap')) e.style.display = an ? 'none' : '';
   });
-  if(bc){ renderBaoCao(); window.scrollTo(0,0); }
+  if(bc){ renderBaoCao(); }
+  if(an){ window.scrollTo(0,0); }
 }
 
 /* ───────── xổ / thu chi tiết từng mục ─────────
