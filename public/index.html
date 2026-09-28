@@ -1864,7 +1864,7 @@ body.dangmo{overflow:hidden}
       hiện chạy thật từ <b>Trigger</b> tới <b>Push &amp; Deploy</b>.
     </div>
     <iframe id="wfFrame" title="Sơ đồ luồng chạy tự động"
-            style="width:100%;height:80vh;min-height:560px;border:0;display:block"
+            style="width:100%;height:calc(100vh - 110px);min-height:600px;border:0;display:block"
             srcdoc="<title>Luồng F2DR 7h sáng</title>
 <link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap&quot;>
 <style>
@@ -1908,39 +1908,60 @@ body.dangmo{overflow:hidden}
   html,body{ height:100%; }
   body{ background:var(--nen); color:var(--chu); margin:0; overflow:hidden;
         font-family:&quot;IBM Plex Sans&quot;,&quot;Segoe UI&quot;,system-ui,sans-serif;
-        display:flex; flex-direction:column; box-sizing:border-box; }
+        display:flex; flex-direction:row; box-sizing:border-box; }
 
-  .top{ flex:none; padding:11px 18px 5px; display:flex; align-items:flex-end;
-        gap:14px; flex-wrap:wrap; }
+  /* Cot trai ~1/4: tieu de, so lieu, chu giai, nut. Truoc day nam ngang phia
+     tren, an mat chieu cao cua so do. */
+  .ben{ flex:none; width:clamp(236px,24vw,340px); box-sizing:border-box;
+        padding:14px 12px 12px 16px; display:flex; flex-direction:column; gap:14px;
+        overflow-y:auto; }
   .nhan{ font-size:9.5px; letter-spacing:.17em; text-transform:uppercase;
          color:var(--chu-nhat); font-weight:600; }
-  h1{ font-size:clamp(17px,2.1vw,24px); line-height:1.1; margin:2px 0 0;
+  h1{ font-size:clamp(17px,1.6vw,22px); line-height:1.15; margin:3px 0 0;
       letter-spacing:-.022em; font-weight:700; }
-  .so-lieu{ display:flex; gap:16px; flex-wrap:wrap; margin-left:auto; align-items:flex-end; }
-  .so-lieu div{ text-align:right; }
-  .so-lieu b{ display:block; font-size:16px; font-weight:600; letter-spacing:-.018em;
+  /* 3 cot cho 5 so nho; so to 5'52&quot; nam ngang cung nhan cua no -> bot 2 hang */
+  .so-lieu{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px 6px; }
+  .so-lieu b{ display:block; font-size:15px; font-weight:600; letter-spacing:-.018em;
               font-variant-numeric:tabular-nums; line-height:1.1; }
-  .so-lieu span{ font-size:9px; color:var(--chu-nhat); }
-  .so-lieu .to b{ font-size:23px; color:var(--g5); }
+  .so-lieu span{ display:block; font-size:9.5px; line-height:1.25; color:var(--chu-nhat); }
+  .so-lieu .to{ grid-column:1/-1; display:flex; align-items:baseline; gap:9px;
+                padding-bottom:9px; border-bottom:1px solid var(--vien); }
+  .so-lieu .to b{ font-size:22px; color:var(--g5); }
 
-  .thanh{ flex:none; display:flex; flex-wrap:wrap; align-items:center; gap:5px 14px;
-          padding:0 18px 6px; font-size:10.5px; color:var(--chu-nhat); }
+  .tieu{ font-size:9.5px; letter-spacing:.15em; text-transform:uppercase;
+         color:var(--chu-mo); font-weight:600; margin-bottom:1px; }
+  .thanh{ display:flex; flex-direction:column; gap:6px; font-size:11px;
+          color:var(--chu-nhat); }
   .thanh i{ display:inline-block; width:10px; height:10px; border-radius:3px;
-            margin-right:6px; vertical-align:-1px; }
-  .nut-td{ margin-left:auto; display:flex; gap:7px; align-items:center; }
+            margin-right:8px; vertical-align:-1px; }
+  .nut-td{ margin-top:auto; display:flex; flex-direction:column; gap:5px; }
   button{ font-family:inherit; font-size:10.5px; font-weight:600; color:var(--chu-nhat);
-          background:var(--giay); border:1px solid var(--vien); border-radius:7px;
-          padding:5px 11px; cursor:pointer; }
+          background:var(--giay); border:1px solid var(--vien); border-radius:8px;
+          padding:5px 10px; cursor:pointer; }
   button:hover{ color:var(--chu); border-color:var(--kenh); }
   button:focus-visible{ outline:2px solid var(--g1); outline-offset:1px; }
   button.chinh{ color:var(--giay); background:var(--g3); border-color:var(--g3); }
   button.chinh:hover{ color:var(--giay); filter:brightness(1.08); }
-  .keo-hint{ color:var(--chu-mo); }
+  .keo-hint{ color:var(--chu-mo); font-size:10.5px; }
 
-  .sanh{ flex:1; min-height:0; margin:0 12px 12px; border:1px solid var(--vien);
+  .sanh{ flex:1; min-width:0; margin:12px 12px 12px 0; border:1px solid var(--vien);
          border-radius:14px; background:var(--canvas);
          background-image:radial-gradient(var(--cham) 1.1px, transparent 1.1px);
          background-size:22px 22px; padding:5px; box-sizing:border-box; position:relative; }
+
+  /* Man thap: chu giai chia 2 cot de cot trai van khong phai cuon */
+  @media (max-height:480px){
+    .thanh{ display:grid; grid-template-columns:1fr 1fr; gap:5px 8px; }
+    .thanh .tieu{ grid-column:1/-1; }
+  }
+  /* Man hep (dien thoai): cot trai len tren, so do xuong duoi. */
+  @media (max-width:760px){
+    body{ flex-direction:column; overflow:auto; }
+    .ben{ width:auto; overflow:visible; gap:14px; }
+    .so-lieu{ grid-template-columns:repeat(3,1fr); }
+    .nut-td{ flex-direction:row; flex-wrap:wrap; }
+    .sanh{ flex:none; height:75vh; margin:0 12px 12px; }
+  }
   .sanh svg{ display:block; width:100%; height:100%; touch-action:none; }
   text{ font-family:&quot;IBM Plex Sans&quot;,system-ui,sans-serif; }
   .nut{ cursor:grab; }
@@ -1961,7 +1982,7 @@ body.dangmo{overflow:hidden}
   @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
 </style>
 
-<div class=&quot;top&quot;>
+<aside class=&quot;ben&quot;>
   <div>
     <div class=&quot;nhan&quot;>Viettel Money · Quản trị rủi ro</div>
     <h1>Luồng F2DR 7h sáng</h1>
@@ -1974,23 +1995,23 @@ body.dangmo{overflow:hidden}
     <div><b>48</b><span>kịch bản</span></div>
     <div><b>0</b><span>thao tác tay</span></div>
   </div>
-</div>
-
-<div class=&quot;thanh&quot;>
-  <span><i style=&quot;background:var(--g1n);border:2px solid var(--g1)&quot;></i>Thu thập &amp;amp; chấm điểm</span>
-  <span><i style=&quot;background:var(--g2n);border:2px solid var(--g2)&quot;></i>Giám sát hằng ngày</span>
-  <span><i style=&quot;background:var(--g3n);border:2px solid var(--g3)&quot;></i>Xử lý alert bằng AI</span>
-  <span><i style=&quot;background:var(--g4n);border:2px solid var(--g4)&quot;></i>Khiếu nại</span>
-  <span><i style=&quot;background:var(--g5n);border:2px solid var(--g5)&quot;></i>Phát hành</span>
-  <span><i style=&quot;background:var(--gxn);border:2px solid var(--gx)&quot;></i>Chặn lỗi</span>
-  <span class=&quot;nut-td&quot;>
+  <div class=&quot;thanh&quot;>
+    <div class=&quot;tieu&quot;>Chú thích màu</div>
+    <span><i style=&quot;background:var(--g1n);border:2px solid var(--g1)&quot;></i>Thu thập &amp;amp; chấm điểm</span>
+    <span><i style=&quot;background:var(--g2n);border:2px solid var(--g2)&quot;></i>Giám sát hằng ngày</span>
+    <span><i style=&quot;background:var(--g3n);border:2px solid var(--g3)&quot;></i>Xử lý alert bằng AI</span>
+    <span><i style=&quot;background:var(--g4n);border:2px solid var(--g4)&quot;></i>Khiếu nại</span>
+    <span><i style=&quot;background:var(--g5n);border:2px solid var(--g5)&quot;></i>Phát hành</span>
+    <span><i style=&quot;background:var(--gxn);border:2px solid var(--gx)&quot;></i>Chặn lỗi</span>
+  </div>
+  <div class=&quot;nut-td&quot;>
     <span class=&quot;keo-hint&quot;>Kéo hộp để sắp lại</span>
     <button id=&quot;btnCheDo&quot; class=&quot;chinh&quot; type=&quot;button&quot;>Xổ chi tiết</button>
     <button id=&quot;btnChep&quot; type=&quot;button&quot;>Sao chép bố cục</button>
     <button id=&quot;btnDan&quot; type=&quot;button&quot;>Dán bố cục</button>
     <button id=&quot;btnReset&quot; type=&quot;button&quot;>Bố cục gốc</button>
-  </span>
-</div>
+  </div>
+</aside>
 
 <div class=&quot;sanh&quot;>
 <svg id=&quot;cv&quot; viewBox=&quot;0 0 1840 1070&quot; preserveAspectRatio=&quot;xMidYMid meet&quot; role=&quot;img&quot;
@@ -2043,44 +2064,44 @@ body.dangmo{overflow:hidden}
   var LK = document.getElementById(&quot;lop-khoi&quot;), LD = document.getElementById(&quot;lop-day&quot;),
       LC = document.getElementById(&quot;lop-chu&quot;), LN = document.getElementById(&quot;lop-nut&quot;);
   var NS = &quot;http://www.w3.org/2000/svg&quot;;
-  var KHOA = &quot;f2dr-luong-v4&quot;;
+  var KHOA = &quot;f2dr-luong-v5&quot;;
 
   /* ct = vị trí ở bản CHI TIẾT · tq = bản TỔNG QUAN (null = ẩn ở tổng quan) */
   var NUT = [
-    {id:&quot;trg&quot;, g:&quot;g1&quot;, k:&quot;dau&quot;, i:&quot;k-clock&quot;,  t:&quot;SCHEDULE TRIGGER&quot;, s:&quot;07:00 mỗi ngày&quot;,             gio:&quot;tức thì&quot;, w:320,h:88, ct:[40,140],   tq:[80,120]},
-    {id:&quot;qry&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-db&quot;,     t:&quot;RUN QUERY&quot;,        s:&quot;48 kịch bản · ClickHouse&quot;,   gio:&quot;208s&quot;,    w:320,h:88, ct:[400,140],  tq:null},
-    {id:&quot;rty&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-loop&quot;,   t:&quot;RETRY ON ERROR&quot;,   s:&quot;đọc lỗi rồi chạy lại&quot;,       gio:&quot;0–60s&quot;,   w:320,h:88, ct:[760,140],  tq:null},
-    {id:&quot;abt&quot;, g:&quot;gx&quot;, k:&quot;lun&quot;, i:&quot;k-stop&quot;,   t:&quot;ABORT RUN&quot;,        s:&quot;&quot;,                           gio:&quot;&quot;,        w:240,h:46, ct:[1020,26],  tq:null},
-    {id:&quot;mrg&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-merge&quot;,  t:&quot;RAW ALERTS&quot;,       s:&quot;48 kịch bản · 3.739 cảnh báo&quot;,        gio:&quot;2s&quot;,      w:320,h:88, ct:[1120,140], tq:[500,120]},
-    {id:&quot;cln&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;DATA CLEANING&quot;,    s:&quot;khử trùng · loại dòng lệch&quot;, gio:&quot;4s&quot;,      w:320,h:88, ct:[1120,300], tq:null},
-    {id:&quot;map&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-map&quot;,    t:&quot;MAPPING&quot;,          s:&quot;tên KB · nhóm rủi ro&quot;,       gio:&quot;3s&quot;,      w:320,h:88, ct:[760,300],  tq:null},
-    {id:&quot;scr&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-score&quot;,  t:&quot;SCORING&quot;,          s:&quot;2.069 khách × ngày&quot;,         gio:&quot;6s&quot;,      w:320,h:88, ct:[400,300],  tq:[920,120]},
+    {id:&quot;trg&quot;, g:&quot;g1&quot;, k:&quot;dau&quot;, i:&quot;k-clock&quot;,  t:&quot;SCHEDULE TRIGGER&quot;, s:&quot;07:00 mỗi ngày&quot;,             gio:&quot;tức thì&quot;, w:320,h:88, ct:[46,151],   tq:[92,130]},
+    {id:&quot;qry&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-db&quot;,     t:&quot;RUN QUERY&quot;,        s:&quot;48 kịch bản · ClickHouse&quot;,   gio:&quot;208s&quot;,    w:320,h:88, ct:[460,151],  tq:null},
+    {id:&quot;rty&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-loop&quot;,   t:&quot;RETRY ON ERROR&quot;,   s:&quot;đọc lỗi rồi chạy lại&quot;,       gio:&quot;0–60s&quot;,   w:320,h:88, ct:[874,151],  tq:null},
+    {id:&quot;abt&quot;, g:&quot;gx&quot;, k:&quot;lun&quot;, i:&quot;k-stop&quot;,   t:&quot;ABORT RUN&quot;,        s:&quot;&quot;,                           gio:&quot;&quot;,        w:240,h:46, ct:[1173,28],  tq:null},
+    {id:&quot;mrg&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-merge&quot;,  t:&quot;RAW ALERTS&quot;,       s:&quot;48 kịch bản · 3.739 cảnh báo&quot;,        gio:&quot;2s&quot;,      w:320,h:88, ct:[1288,151], tq:[575,130]},
+    {id:&quot;cln&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;DATA CLEANING&quot;,    s:&quot;khử trùng · loại dòng lệch&quot;, gio:&quot;4s&quot;,      w:320,h:88, ct:[1288,324], tq:null},
+    {id:&quot;map&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-map&quot;,    t:&quot;MAPPING&quot;,          s:&quot;tên KB · nhóm rủi ro&quot;,       gio:&quot;3s&quot;,      w:320,h:88, ct:[874,324],  tq:null},
+    {id:&quot;scr&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-score&quot;,  t:&quot;SCORING&quot;,          s:&quot;2.069 khách × ngày&quot;,         gio:&quot;6s&quot;,      w:320,h:88, ct:[460,324],  tq:[1058,130]},
 
-    {id:&quot;dch&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;DAILY CHARTS&quot;,     s:&quot;xu hướng · phân tầng&quot;,       gio:&quot;4s&quot;,      w:250,h:84, ct:[70,440],   tq:null},
+    {id:&quot;dch&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;DAILY CHARTS&quot;,     s:&quot;xu hướng · phân tầng&quot;,       gio:&quot;4s&quot;,      w:250,h:84, ct:[80,475],   tq:null},
 
-    {id:&quot;spk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-radar&quot;,  t:&quot;SPIKE DETECTION&quot;,  s:&quot;27 KB đột biến · 9 KB bàn đầy&quot;, gio:&quot;2s&quot;,  w:250,h:84, ct:[350,440],  tq:null},
-    {id:&quot;rnk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;CUSTOMER RANKING&quot;, s:&quot;1.585 người · 4 trục&quot;,       gio:&quot;3s&quot;,  w:250,h:84, ct:[630,440],  tq:null},
+    {id:&quot;spk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-radar&quot;,  t:&quot;SPIKE DETECTION&quot;,  s:&quot;27 KB đột biến · 9 KB bàn đầy&quot;, gio:&quot;2s&quot;,  w:250,h:84, ct:[402,475],  tq:null},
+    {id:&quot;rnk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;CUSTOMER RANKING&quot;, s:&quot;1.585 người · 4 trục&quot;,       gio:&quot;3s&quot;,  w:250,h:84, ct:[724,475],  tq:null},
 
-    {id:&quot;mon&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;MONITORING&quot;,       s:&quot;biểu đồ · đột biến · xếp hạng&quot;, gio:&quot;9s&quot;,      w:320,h:88, ct:null, tq:[560,400]},
-    {id:&quot;inv&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;INVESTIGATION&quot;,    s:&quot;chọn lọc · làm giàu · AI soát&quot;, gio:&quot;70s&quot;,     w:320,h:88, ct:null, tq:[560,580]},
-    {id:&quot;com&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;COMPLAINTS&quot;,       s:&quot;nhận mail · làm sạch · băm&quot;,    gio:&quot;sự kiện&quot;, w:320,h:88, ct:null, tq:[560,760]},
+    {id:&quot;mon&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;MONITORING&quot;,       s:&quot;biểu đồ · đột biến · xếp hạng&quot;, gio:&quot;9s&quot;,      w:320,h:88, ct:null, tq:[644,432]},
+    {id:&quot;inv&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;INVESTIGATION&quot;,    s:&quot;chọn lọc · làm giàu · AI soát&quot;, gio:&quot;70s&quot;,     w:320,h:88, ct:null, tq:[644,626]},
+    {id:&quot;com&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;COMPLAINTS&quot;,       s:&quot;nhận mail · làm sạch · băm&quot;,    gio:&quot;sự kiện&quot;, w:320,h:88, ct:null, tq:[644,821]},
 
-    {id:&quot;tgt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-target&quot;, t:&quot;TRIAGE&quot;,           s:&quot;top 10–50 điểm cao&quot;,              gio:&quot;2s&quot;,      w:250,h:84, ct:[70,600],   tq:null},
-    {id:&quot;ver&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;soát lại đối tượng&quot;,         gio:&quot;60s&quot;,     w:250,h:78, ct:[350,552],  tq:null},
-    {id:&quot;det&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-radar&quot;,  t:&quot;AI DETECTION&quot;,     s:&quot;dò dấu hiệu mới&quot;,            gio:&quot;45s&quot;,     w:250,h:78, ct:[350,648],  tq:null},
-    {id:&quot;vdt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-verdict&quot;,t:&quot;RISK VERDICT&quot;,     s:&quot;dương tính / âm tính&quot;,       gio:&quot;3s&quot;,      w:250,h:84, ct:[630,600],  tq:null},
-    {id:&quot;act&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-action&quot;, t:&quot;ACTION&quot;,           s:&quot;lập hồ sơ · hoặc khép lại&quot;,  gio:&quot;5s&quot;,      w:250,h:84, ct:[910,600], tq:null},
+    {id:&quot;tgt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-target&quot;, t:&quot;TRIAGE&quot;,           s:&quot;top 10–50 điểm cao&quot;,              gio:&quot;2s&quot;,      w:250,h:84, ct:[80,648],   tq:null},
+    {id:&quot;ver&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;soát lại đối tượng&quot;,         gio:&quot;60s&quot;,     w:250,h:78, ct:[402,596],  tq:null},
+    {id:&quot;det&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-radar&quot;,  t:&quot;AI DETECTION&quot;,     s:&quot;dò dấu hiệu mới&quot;,            gio:&quot;45s&quot;,     w:250,h:78, ct:[402,700],  tq:null},
+    {id:&quot;vdt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-verdict&quot;,t:&quot;RISK VERDICT&quot;,     s:&quot;dương tính / âm tính&quot;,       gio:&quot;3s&quot;,      w:250,h:84, ct:[724,648],  tq:null},
+    {id:&quot;act&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-action&quot;, t:&quot;ACTION&quot;,           s:&quot;lập hồ sơ · hoặc khép lại&quot;,  gio:&quot;5s&quot;,      w:250,h:84, ct:[1046,648], tq:null},
 
-    {id:&quot;eml&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;EMAIL TRIGGER&quot;,    s:&quot;Outlook · mail đồng nghiệp&quot;, gio:&quot;sự kiện&quot;, w:250,h:84, ct:[70,790],   tq:null},
-    {id:&quot;ccl&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;CLEANING&quot;,         s:&quot;chuẩn hoá · kiểm hợp lệ&quot;,    gio:&quot;4s&quot;,      w:250,h:84, ct:[350,790],  tq:null},
-    {id:&quot;hsh&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-hash&quot;,   t:&quot;HASHING&quot;,          s:&quot;ẩn danh số điện thoại&quot;,      gio:&quot;3s&quot;,      w:250,h:84, ct:[630,790],  tq:null},
-    {id:&quot;cch&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-pie&quot;,    t:&quot;COMPLAINT CHARTS&quot;, s:&quot;số đơn · tồn đọng&quot;,          gio:&quot;4s&quot;,      w:250,h:84, ct:[910,790], tq:null},
+    {id:&quot;eml&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;EMAIL TRIGGER&quot;,    s:&quot;Outlook · mail đồng nghiệp&quot;, gio:&quot;sự kiện&quot;, w:250,h:84, ct:[80,853],   tq:null},
+    {id:&quot;ccl&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;CLEANING&quot;,         s:&quot;chuẩn hoá · kiểm hợp lệ&quot;,    gio:&quot;4s&quot;,      w:250,h:84, ct:[402,853],  tq:null},
+    {id:&quot;hsh&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-hash&quot;,   t:&quot;HASHING&quot;,          s:&quot;ẩn danh số điện thoại&quot;,      gio:&quot;3s&quot;,      w:250,h:84, ct:[724,853],  tq:null},
+    {id:&quot;cch&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-pie&quot;,    t:&quot;COMPLAINT CHARTS&quot;, s:&quot;số đơn · tồn đọng&quot;,          gio:&quot;4s&quot;,      w:250,h:84, ct:[1046,853], tq:null},
 
-    {id:&quot;bot&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI ASSISTANT&quot;,     s:&quot;hỏi đáp · chặn bịa số&quot;,      gio:&quot;theo yêu cầu&quot;, w:320,h:88, ct:[40,950],  tq:null},
-    {id:&quot;bld&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;APPEND DASHBOARD&quot;, s:&quot;cộng dồn 86 ngày · 265.839 alert&quot;, gio:&quot;8s&quot;, w:280,h:84, ct:[1240,600], tq:[1080,580]},
-    {id:&quot;sec&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-shield&quot;, t:&quot;SECURITY GATE&quot;,    s:&quot;quét khoá API · mã GD · SĐT&quot;,gio:&quot;6s&quot;,      w:320,h:88, ct:[1120,950], tq:null},
-    {id:&quot;dep&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-cloud&quot;,  t:&quot;PUSH &amp; DEPLOY&quot;,    s:&quot;commit sạch · Cloudflare&quot;,   gio:&quot;45s&quot;,     w:320,h:88, ct:[760,950],  tq:[1060,850]},
-    {id:&quot;liv&quot;, g:&quot;g5&quot;, k:&quot;cuoi&quot;,i:&quot;k-globe&quot;,  t:&quot;LIVE&quot;,             s:&quot;đội vận hành mở là thấy&quot;,    gio:&quot;&quot;,        w:320,h:88, ct:[400,950],   tq:null}
+    {id:&quot;bot&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI ASSISTANT&quot;,     s:&quot;hỏi đáp · chặn bịa số&quot;,      gio:&quot;theo yêu cầu&quot;, w:320,h:88, ct:[46,1026],  tq:null},
+    {id:&quot;bld&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;APPEND DASHBOARD&quot;, s:&quot;cộng dồn 86 ngày · 265.839 alert&quot;, gio:&quot;8s&quot;, w:280,h:84, ct:[1426,648], tq:[1242,626]},
+    {id:&quot;sec&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-shield&quot;, t:&quot;SECURITY GATE&quot;,    s:&quot;quét khoá API · mã GD · SĐT&quot;,gio:&quot;6s&quot;,      w:320,h:88, ct:[1288,1026], tq:null},
+    {id:&quot;dep&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-cloud&quot;,  t:&quot;PUSH &amp; DEPLOY&quot;,    s:&quot;commit sạch · Cloudflare&quot;,   gio:&quot;45s&quot;,     w:320,h:88, ct:[874,1026],  tq:[1219,918]},
+    {id:&quot;liv&quot;, g:&quot;g5&quot;, k:&quot;cuoi&quot;,i:&quot;k-globe&quot;,  t:&quot;LIVE&quot;,             s:&quot;đội vận hành mở là thấy&quot;,    gio:&quot;&quot;,        w:320,h:88, ct:[460,1026],   tq:null}
   ];
 
   /* ch: 'ca' = cả hai chế độ · 'ct' = chỉ chi tiết · 'tq' = chỉ tổng quan */
@@ -2157,6 +2178,27 @@ body.dangmo{overflow:hidden}
 
   function hienO(n, c){ return c === &quot;ct&quot; ? !!n.ct : !!n.tq; }
   function dich(n, c){ return (c === &quot;ct&quot; ? n.ct : n.tq) || n.ct || n.tq; }
+
+  /* ── khung nhìn ôm sát các hộp đang hiện, mỗi chế độ một khung ──
+     Khung cố định 1840×1070 cũ để trống ~400 đơn vị bên phải bản chi tiết,
+     trình duyệt phải co cả sơ đồ cho vừa -> chữ nhỏ, sơ đồ lọt thỏm giữa nền. */
+  var LE = [60, 50, 80, 50];   // trái · trên · phải · dưới — chừa dây vòng và nhãn
+  function khungCua(c){
+    var x1=1e9, y1=1e9, x2=-1e9, y2=-1e9;
+    NUT.forEach(function(n){
+      if(!hienO(n, c)) return;
+      var p = dich(n, c);
+      x1 = Math.min(x1, p[0]);      y1 = Math.min(y1, p[1]);
+      x2 = Math.max(x2, p[0]+n.w);  y2 = Math.max(y2, p[1]+n.h);
+    });
+    return [x1-LE[0], y1-LE[1], x2-x1+LE[0]+LE[2], y2-y1+LE[1]+LE[3]];
+  }
+  function khungDang(){
+    return SVG.getAttribute(&quot;viewBox&quot;).split(/\s+/).map(Number);
+  }
+  function datKhung(v){
+    SVG.setAttribute(&quot;viewBox&quot;, v.map(function(x){ return Math.round(x); }).join(&quot; &quot;));
+  }
 
   /* ── lưu / nạp ── */
   function luu(){
@@ -2340,7 +2382,7 @@ body.dangmo{overflow:hidden}
       g.appendChild(c);
     }
     if(n.gio){
-      var bw = 72;
+      var bw = Math.max(72, n.gio.length*7.4 + 22);   // &quot;theo yêu cầu&quot; từng bị cắt ở 72
       g.appendChild(el(&quot;rect&quot;, {x:n.w-bw-14, y:-12, width:bw, height:24, rx:12,
         fill:&quot;var(--giay)&quot;, stroke:m, &quot;stroke-width&quot;:1.9}));
       g.appendChild(chu(n.w-bw/2-14, 4, n.gio, &quot;t-gio&quot;, m, &quot;middle&quot;));
@@ -2373,7 +2415,7 @@ body.dangmo{overflow:hidden}
       return n.mo &amp;&amp; n.g !== &quot;gx&quot;;
     }).length;
   }
-  function veTatCa(){ veKhoi(); veDay(); veChu(); veNut(); }
+  function veTatCa(){ datKhung(khungCua(che)); veKhoi(); veDay(); veChu(); veNut(); }
   veTatCa();
 
   /* ── xổ ra / thu gọn, có chuyển động ── */
@@ -2396,6 +2438,7 @@ body.dangmo{overflow:hidden}
     }
     dangChay = true;
     var T = 620, t0 = performance.now();
+    var v0 = khungDang(), v1 = khungCua(moi);   // khung trượt cùng các hộp
     (function khung(now){
       var p = Math.min(1, (now-t0)/T);
       var e = p<0.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2;
@@ -2410,6 +2453,7 @@ body.dangmo{overflow:hidden}
           g.style.display = b.n.mo > 0.01 ? &quot;&quot; : &quot;none&quot;;
         }
       });
+      datKhung(v0.map(function(a, i){ return a + (v1[i]-a)*e; }));
       veKhoi(); veDay(); veChu();
       if(p < 1){ requestAnimationFrame(khung); }
       else{
@@ -2459,6 +2503,7 @@ body.dangmo{overflow:hidden}
     if(!keo) return;
     keo.g.classList.remove(&quot;dang-keo&quot;);
     keo = null; luu();
+    datKhung(khungCua(che));   // kéo hộp ra mép thì khung nới theo, không cắt mất
     try{ SVG.releasePointerCapture(ev.pointerId); }catch(e){}
   }
   SVG.addEventListener(&quot;pointerup&quot;, tha);
