@@ -1694,7 +1694,9 @@ body.dangmo{overflow:hidden}
 #bcThan td,#bcThan th{text-align:left}
 #bcThan .tt{display:inline-block;border:1px solid;border-radius:5px;
   padding:1px 6px;font:600 10px var(--sans);white-space:nowrap}
-.bcr td.m{font-family:var(--mono);color:var(--dim);white-space:nowrap}
+/* Cột mốc thời gian được xuống dòng: nowrap + cột cố định 170px làm nhãn dài
+   ("Dính alert 5 ngày trước đó") tràn đè sang cột mô tả (Daicd bắt 29/09). */
+.bcr td.m{font-family:var(--mono);color:var(--dim);white-space:normal;overflow-wrap:anywhere}
 .bcr ul{margin:0;padding-left:18px;line-height:1.6}
 .bcr .sub{margin-top:6px}
 .md-nav{display:flex;gap:6px;align-items:center}
