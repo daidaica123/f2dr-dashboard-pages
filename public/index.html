@@ -2033,7 +2033,7 @@ body.dangmo{overflow:hidden}
     <h1>Luồng F2DR 7h sáng</h1>
   </div>
   <div class=&quot;so-lieu&quot;>
-    <div class=&quot;to&quot;><b>5′52″</b><span>TỔNG MỘT LƯỢT</span></div>
+    <div class=&quot;to&quot;><b>17′44″</b><span>TỔNG MỘT LƯỢT · LUỒNG CHÍNH 9′00″</span></div>
     <div><b id=&quot;soBuoc&quot;>15</b><span>bước</span></div>
     <div><b>2</b><span>điểm khởi động</span></div>
     <div><b>3</b><span>nhánh song song</span></div>
@@ -2113,39 +2113,39 @@ body.dangmo{overflow:hidden}
 
   /* ct = vị trí ở bản CHI TIẾT · tq = bản TỔNG QUAN (null = ẩn ở tổng quan) */
   var NUT = [
-    {id:&quot;trg&quot;, g:&quot;g1&quot;, k:&quot;dau&quot;, i:&quot;k-clock&quot;,  t:&quot;SCHEDULE TRIGGER&quot;, s:&quot;07:00 mỗi ngày&quot;,             gio:&quot;tức thì&quot;, w:320,h:88, ct:[46,151],   tq:[92,130]},
-    {id:&quot;qry&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-db&quot;,     t:&quot;RUN QUERY&quot;,        s:&quot;48 kịch bản · ClickHouse&quot;,   gio:&quot;208s&quot;,    w:320,h:88, ct:[460,151],  tq:null},
+    {id:&quot;trg&quot;, g:&quot;g1&quot;, k:&quot;dau&quot;, i:&quot;k-clock&quot;,  t:&quot;SCHEDULE TRIGGER&quot;, s:&quot;07:00 · cổng dữ liệu nguồn&quot;,             gio:&quot;≈22s&quot;, w:320,h:88, ct:[46,151],   tq:[92,130]},
+    {id:&quot;qry&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-db&quot;,     t:&quot;RUN QUERY&quot;,        s:&quot;48 kịch bản · ClickHouse&quot;,   gio:&quot;208–452s&quot;,    w:320,h:88, ct:[460,151],  tq:null},
     {id:&quot;rty&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-loop&quot;,   t:&quot;RETRY ON ERROR&quot;,   s:&quot;đọc lỗi rồi chạy lại&quot;,       gio:&quot;0–60s&quot;,   w:320,h:88, ct:[874,151],  tq:null},
     {id:&quot;abt&quot;, g:&quot;gx&quot;, k:&quot;lun&quot;, i:&quot;k-stop&quot;,   t:&quot;ABORT RUN&quot;,        s:&quot;&quot;,                           gio:&quot;&quot;,        w:240,h:46, ct:[1173,28],  tq:null},
-    {id:&quot;mrg&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-merge&quot;,  t:&quot;RAW ALERTS&quot;,       s:&quot;48 kịch bản · 3.739 cảnh báo&quot;,        gio:&quot;2s&quot;,      w:320,h:88, ct:[1288,151], tq:[575,130]},
-    {id:&quot;cln&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;DATA CLEANING&quot;,    s:&quot;khử trùng · loại dòng lệch&quot;, gio:&quot;4s&quot;,      w:320,h:88, ct:[1288,324], tq:null},
-    {id:&quot;map&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-map&quot;,    t:&quot;MAPPING&quot;,          s:&quot;tên KB · nhóm rủi ro&quot;,       gio:&quot;3s&quot;,      w:320,h:88, ct:[874,324],  tq:null},
-    {id:&quot;scr&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-score&quot;,  t:&quot;SCORING&quot;,          s:&quot;2.069 khách × ngày&quot;,         gio:&quot;6s&quot;,      w:320,h:88, ct:[460,324],  tq:[1058,130]},
+    {id:&quot;mrg&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-merge&quot;,  t:&quot;RAW ALERTS&quot;,       s:&quot;48 kịch bản · 4.203 cảnh báo&quot;,        gio:&quot;2s&quot;,      w:320,h:88, ct:[1288,151], tq:[575,130]},
+    {id:&quot;cln&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;DATA CLEANING&quot;,    s:&quot;khử trùng · loại dòng lệch&quot;, gio:&quot;1s&quot;,      w:320,h:88, ct:[1288,324], tq:null},
+    {id:&quot;map&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-map&quot;,    t:&quot;MAPPING&quot;,          s:&quot;tên KB · nhóm rủi ro&quot;,       gio:&quot;1s&quot;,      w:320,h:88, ct:[874,324],  tq:null},
+    {id:&quot;scr&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-score&quot;,  t:&quot;SCORING&quot;,          s:&quot;2.221 khách × ngày&quot;,         gio:&quot;2s&quot;,      w:320,h:88, ct:[460,324],  tq:[1058,130]},
 
-    {id:&quot;dch&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;DAILY CHARTS&quot;,     s:&quot;xu hướng · phân tầng&quot;,       gio:&quot;4s&quot;,      w:250,h:84, ct:[80,475],   tq:null},
+    {id:&quot;dch&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;DAILY CHARTS&quot;,     s:&quot;xu hướng · phân tầng&quot;,       gio:&quot;9s&quot;,      w:250,h:84, ct:[80,475],   tq:null},
 
-    {id:&quot;spk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-radar&quot;,  t:&quot;SPIKE DETECTION&quot;,  s:&quot;27 KB đột biến · 9 KB bàn đầy&quot;, gio:&quot;2s&quot;,  w:250,h:84, ct:[402,475],  tq:null},
-    {id:&quot;rnk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;CUSTOMER RANKING&quot;, s:&quot;1.585 người · 4 trục&quot;,       gio:&quot;3s&quot;,  w:250,h:84, ct:[724,475],  tq:null},
+    {id:&quot;spk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-radar&quot;,  t:&quot;SPIKE DETECTION&quot;,  s:&quot;28 KB đột biến · 9 KB bàn đầy&quot;, gio:&quot;5s&quot;,  w:250,h:84, ct:[402,475],  tq:null},
+    {id:&quot;rnk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;CUSTOMER RANKING&quot;, s:&quot;1.602 người · 4 trục&quot;,       gio:&quot;8s&quot;,  w:250,h:84, ct:[724,475],  tq:null},
 
-    {id:&quot;mon&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;MONITORING&quot;,       s:&quot;biểu đồ · đột biến · xếp hạng&quot;, gio:&quot;9s&quot;,      w:320,h:88, ct:null, tq:[644,432]},
-    {id:&quot;inv&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;INVESTIGATION&quot;,    s:&quot;chọn lọc · làm giàu · AI soát&quot;, gio:&quot;70s&quot;,     w:320,h:88, ct:null, tq:[644,626]},
-    {id:&quot;com&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;COMPLAINTS&quot;,       s:&quot;nhận mail · làm sạch · băm&quot;,    gio:&quot;sự kiện&quot;, w:320,h:88, ct:null, tq:[644,821]},
+    {id:&quot;mon&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;MONITORING&quot;,       s:&quot;biểu đồ · đột biến · xếp hạng&quot;, gio:&quot;22s&quot;,      w:320,h:88, ct:null, tq:[644,432]},
+    {id:&quot;inv&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;INVESTIGATION&quot;,    s:&quot;hồ sơ · Claude nhận định · 2 lớp soát&quot;, gio:&quot;580s&quot;,     w:320,h:88, ct:null, tq:[644,626]},
+    {id:&quot;com&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;COMPLAINTS&quot;,       s:&quot;mail 7h · soát · nạp · băm&quot;,    gio:&quot;≤5s&quot;, w:320,h:88, ct:null, tq:[644,821]},
 
-    {id:&quot;tgt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-target&quot;, t:&quot;TRIAGE&quot;,           s:&quot;top 10–50 điểm cao&quot;,              gio:&quot;2s&quot;,      w:250,h:84, ct:[80,648],   tq:null},
-    {id:&quot;ver&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;soát lại đối tượng&quot;,         gio:&quot;60s&quot;,     w:250,h:78, ct:[402,596],  tq:null},
-    {id:&quot;det&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-radar&quot;,  t:&quot;AI DETECTION&quot;,     s:&quot;dò dấu hiệu mới&quot;,            gio:&quot;45s&quot;,     w:250,h:78, ct:[402,700],  tq:null},
-    {id:&quot;vdt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-verdict&quot;,t:&quot;RISK VERDICT&quot;,     s:&quot;dương tính / âm tính&quot;,       gio:&quot;3s&quot;,      w:250,h:84, ct:[724,648],  tq:null},
-    {id:&quot;act&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-action&quot;, t:&quot;ACTION&quot;,           s:&quot;lập hồ sơ · hoặc khép lại&quot;,  gio:&quot;5s&quot;,      w:250,h:84, ct:[1046,648], tq:null},
+    {id:&quot;tgt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-target&quot;, t:&quot;TRIAGE&quot;,           s:&quot;top 10+10 · dựng hồ sơ&quot;,              gio:&quot;156s&quot;,      w:250,h:84, ct:[80,648],   tq:null},
+    {id:&quot;ver&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;kiểm sự thật 2 lớp&quot;,         gio:&quot;63s&quot;,     w:250,h:78, ct:[402,596],  tq:null},
+    {id:&quot;det&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-radar&quot;,  t:&quot;AI DETECTION&quot;,     s:&quot;Claude viết nhận định&quot;,            gio:&quot;248s&quot;,     w:250,h:78, ct:[402,700],  tq:null},
+    {id:&quot;vdt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-verdict&quot;,t:&quot;RISK VERDICT&quot;,     s:&quot;gắn nhãn · sinh báo cáo&quot;,       gio:&quot;3s&quot;,      w:250,h:84, ct:[724,648],  tq:null},
+    {id:&quot;act&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-action&quot;, t:&quot;ACTION&quot;,           s:&quot;dựng lại · deploy riêng&quot;,  gio:&quot;110s&quot;,      w:250,h:84, ct:[1046,648], tq:null},
 
-    {id:&quot;eml&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;EMAIL TRIGGER&quot;,    s:&quot;Outlook · mail đồng nghiệp&quot;, gio:&quot;sự kiện&quot;, w:250,h:84, ct:[80,853],   tq:null},
-    {id:&quot;ccl&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;CLEANING&quot;,         s:&quot;chuẩn hoá · kiểm hợp lệ&quot;,    gio:&quot;4s&quot;,      w:250,h:84, ct:[402,853],  tq:null},
-    {id:&quot;hsh&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-hash&quot;,   t:&quot;HASHING&quot;,          s:&quot;ẩn danh số điện thoại&quot;,      gio:&quot;3s&quot;,      w:250,h:84, ct:[724,853],  tq:null},
-    {id:&quot;cch&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-pie&quot;,    t:&quot;COMPLAINT CHARTS&quot;, s:&quot;số đơn · tồn đọng&quot;,          gio:&quot;4s&quot;,      w:250,h:84, ct:[1046,853], tq:null},
+    {id:&quot;eml&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;EMAIL TRIGGER&quot;,    s:&quot;Outlook · mail đồng nghiệp&quot;, gio:&quot;0,3s&quot;, w:250,h:84, ct:[80,853],   tq:null},
+    {id:&quot;ccl&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;CLEANING&quot;,         s:&quot;soát · reply cùng thread&quot;,    gio:&quot;≤3s&quot;,      w:250,h:84, ct:[402,853],  tq:null},
+    {id:&quot;hsh&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-hash&quot;,   t:&quot;HASHING&quot;,          s:&quot;nạp Excel · băm SĐT · che tên&quot;,      gio:&quot;1s&quot;,      w:250,h:84, ct:[724,853],  tq:null},
+    {id:&quot;cch&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-pie&quot;,    t:&quot;COMPLAINT CHARTS&quot;, s:&quot;số đơn · tồn đọng (dựng ở B4)&quot;,          gio:&quot;trong B4&quot;,      w:250,h:84, ct:[1046,853], tq:null},
 
     {id:&quot;bot&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI ASSISTANT&quot;,     s:&quot;hỏi đáp · chặn bịa số&quot;,      gio:&quot;theo yêu cầu&quot;, w:320,h:88, ct:[46,1026],  tq:null},
-    {id:&quot;bld&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;APPEND DASHBOARD&quot;, s:&quot;cộng dồn 86 ngày · 265.839 alert&quot;, gio:&quot;8s&quot;, w:280,h:84, ct:[1426,648], tq:[1242,626]},
-    {id:&quot;sec&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-shield&quot;, t:&quot;SECURITY GATE&quot;,    s:&quot;quét khoá API · mã GD · SĐT&quot;,gio:&quot;6s&quot;,      w:320,h:88, ct:[1288,1026], tq:null},
-    {id:&quot;dep&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-cloud&quot;,  t:&quot;PUSH &amp; DEPLOY&quot;,    s:&quot;commit sạch · Cloudflare&quot;,   gio:&quot;45s&quot;,     w:320,h:88, ct:[874,1026],  tq:[1219,918]},
+    {id:&quot;bld&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;APPEND DASHBOARD&quot;, s:&quot;cộng dồn 90 ngày · 278.386 alert&quot;, gio:&quot;3s&quot;, w:280,h:84, ct:[1426,648], tq:[1242,626]},
+    {id:&quot;sec&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-shield&quot;, t:&quot;SECURITY GATE&quot;,    s:&quot;quét khoá API · mã GD · SĐT&quot;,gio:&quot;1s&quot;,      w:320,h:88, ct:[1288,1026], tq:null},
+    {id:&quot;dep&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-cloud&quot;,  t:&quot;PUSH &amp; DEPLOY&quot;,    s:&quot;commit sạch · Cloudflare&quot;,   gio:&quot;35s&quot;,     w:320,h:88, ct:[874,1026],  tq:[1219,918]},
     {id:&quot;liv&quot;, g:&quot;g5&quot;, k:&quot;cuoi&quot;,i:&quot;k-globe&quot;,  t:&quot;LIVE&quot;,             s:&quot;đội vận hành mở là thấy&quot;,    gio:&quot;&quot;,        w:320,h:88, ct:[460,1026],   tq:null}
   ];
 
@@ -2200,12 +2200,12 @@ body.dangmo{overflow:hidden}
   ];
 
   var LAN = [
-    {t:&quot;01 · COLLECT &amp; SCORE — 223s&quot;, c:&quot;g1&quot;, neo:&quot;trg&quot;, dx:0, dy:-26, ch:&quot;ca&quot;},
-    {t:&quot;A · MONITORING — 9s&quot;,         c:&quot;g2&quot;, neo:&quot;dch&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
-    {t:&quot;B · INVESTIGATION — 70s&quot;,   c:&quot;g3&quot;, neo:&quot;tgt&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
-    {t:&quot;C · COMPLAINTS — 11s&quot;,        c:&quot;g4&quot;, neo:&quot;eml&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
-    {t:&quot;04 · PUBLISH — 59s&quot;,          c:&quot;g5&quot;, neo:&quot;liv&quot;, dx:0,   dy:-24, ch:&quot;ct&quot;},
-    {t:&quot;04 · PUBLISH — 59s&quot;,          c:&quot;g5&quot;, neo:&quot;sec&quot;, dx:320, dy:-22, cuoi:1, ch:&quot;tq&quot;}
+    {t:&quot;01 · COLLECT &amp; SCORE — 480s&quot;, c:&quot;g1&quot;, neo:&quot;trg&quot;, dx:0, dy:-26, ch:&quot;ca&quot;},
+    {t:&quot;A · MONITORING — 22s&quot;,         c:&quot;g2&quot;, neo:&quot;dch&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;B · INVESTIGATION — 580s&quot;,   c:&quot;g3&quot;, neo:&quot;tgt&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;C · COMPLAINTS — 1–5s&quot;,        c:&quot;g4&quot;, neo:&quot;eml&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;04 · PUBLISH — 39s&quot;,          c:&quot;g5&quot;, neo:&quot;liv&quot;, dx:0,   dy:-24, ch:&quot;ct&quot;},
+    {t:&quot;04 · PUBLISH — 39s&quot;,          c:&quot;g5&quot;, neo:&quot;sec&quot;, dx:320, dy:-22, cuoi:1, ch:&quot;tq&quot;}
   ];
 
   var IDS_KHOI = [&quot;mon&quot;,&quot;inv&quot;,&quot;com&quot;,&quot;spk&quot;,&quot;rnk&quot;,&quot;dch&quot;,&quot;tgt&quot;,&quot;enr&quot;,&quot;ver&quot;,&quot;det&quot;,&quot;vdt&quot;,&quot;act&quot;,&quot;eml&quot;,&quot;fch&quot;,&quot;ccl&quot;,&quot;hsh&quot;,&quot;cch&quot;];
@@ -2374,7 +2374,7 @@ body.dangmo{overflow:hidden}
       height:(y2-y1)+p*2+14, rx:22, fill:&quot;var(--khoi)&quot;, stroke:&quot;var(--g3)&quot;,
       &quot;stroke-width&quot;:2.4, &quot;stroke-dasharray&quot;:&quot;10 8&quot;}));
     LK.appendChild(chu(x2+p-10, y1-p+12,
-      &quot;SONG SONG · nhánh dài nhất 70s&quot;,
+      &quot;SONG SONG · nhánh dài nhất 580s&quot;,
       &quot;t-lan&quot;, &quot;var(--g3)&quot;, &quot;end&quot;));
   }
 
