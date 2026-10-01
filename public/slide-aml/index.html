@@ -353,7 +353,8 @@ section.in .bar{animation:gy .55s cubic-bezier(.2,.8,.2,1) forwards;animation-de
 .dark p{font:400 16.5px/1.45 var(--body);color:#E5E7EB}
 .side ul{list-style:none} .side li{font:400 16px/1.42 var(--body);color:var(--ink2);padding-left:20px;position:relative;margin-bottom:6px;text-align:justify}
 .side li:before{content:"";position:absolute;left:2px;top:11px;width:7px;height:7px;border-radius:50%;background:var(--red)}
-.side .callout{flex:none;padding:14px 24px}
+.side .callout{flex:1 1 0;padding:14px 24px;display:flex;flex-direction:column;justify-content:center}
+.side .dark{flex:1 1 0;display:flex;flex-direction:column;justify-content:center}
 .side .callout .hd{margin:6px 0 8px}
 .side .callout .hd b{font-size:24px}
 .side .callout .sep{margin-bottom:10px}
