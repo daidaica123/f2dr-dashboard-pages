@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Thực trạng F2DR và phương án cắt chuyển sang AML</title>
 <style>
@@ -158,8 +158,9 @@
   --head:'Lexend',sans-serif; --body:'Be Vietnam Pro',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#0d1220;font-family:var(--body);color:var(--ink);overflow:hidden}
-.stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;background:var(--bg);overflow:hidden;transform-origin:center}
+html,body{height:100%;overscroll-behavior:none;background:#0d1220;font-family:var(--body);color:var(--ink);overflow:hidden}
+.vp{position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden}
+.stage{position:absolute;left:0;top:0;width:1600px;height:900px;background:var(--bg);overflow:hidden;transform-origin:0 0}
 section{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .3s ease}
 section.on{opacity:1;visibility:visible}
 .logo{position:absolute;right:90px;top:46px;width:140px}
@@ -489,7 +490,7 @@ body.static .nav,body.static .hint{display:none}
 </style>
 </head>
 <body>
-<div class="stage" id="stage">
+<div class="vp" id="vp"><div class="stage" id="stage">
 
 <!-- 1 -->
 <section>
@@ -874,7 +875,7 @@ body.static .nav,body.static .hint{display:none}
   <div class="foot"><span>Phòng Quản trị rủi ro  ·  Tháng 10/2026</span><span class="pg">14</span></div>
 </section>
 
-</div>
+</div></div>
 <div class="nav"><i id="prog"></i></div>
 
 <script>
@@ -901,8 +902,16 @@ document.getElementById('cmp').insertAdjacentHTML('beforeend',rows.map(r=>
   `<div class="m a"><span class="ico t">✓</span><span>${r[3]}${r[4]?`<small>Chưa có thông tin: ${r[4]}</small>`:''}</span></div>`).join(''));
 document.querySelectorAll('.foot .pg').forEach(el=>{el.innerHTML=`<b>${el.textContent.trim()}</b><i>/ ${String(S.length).padStart(2,'0')}</i>`});
 S.forEach(s=>{let i=0;s.querySelectorAll('.a,.pop,.grow').forEach(el=>{if(!el.style.getPropertyValue('--i'))el.style.setProperty('--i',i++)})});
-function fit(){const k=Math.min(innerWidth/1600,innerHeight/900);document.getElementById('stage').style.transform=`translate(-50%,-50%) scale(${k})`}
-addEventListener('resize',fit);fit();
+function fit(){
+  const vv=window.visualViewport, W=vv?vv.width:innerWidth, H=vv?vv.height:innerHeight;
+  const vp=document.getElementById('vp'); vp.style.width=W+'px'; vp.style.height=H+'px';
+  if(vv){vp.style.left=vv.offsetLeft+'px';vp.style.top=vv.offsetTop+'px'}
+  const k=Math.min(W/1600,H/900), x=(W-1600*k)/2, y=(H-900*k)/2;
+  document.getElementById('stage').style.transform=`translate(${x}px,${y}px) scale(${k})`;
+}
+addEventListener('resize',fit); addEventListener('orientationchange',()=>setTimeout(fit,250));
+if(window.visualViewport){visualViewport.addEventListener('resize',fit);visualViewport.addEventListener('scroll',fit)}
+addEventListener('load',fit); fit(); [60,250,600,1200,2500].forEach(t=>setTimeout(fit,t));
 function placeVS(){const b=document.getElementById('vcsbox'),v=document.getElementById('vsb');if(b&&v)v.style.top=(b.offsetTop+b.offsetHeight+8-26)+'px'}
 function count(s){if(document.body.classList.contains('static'))return;
   s.querySelectorAll('.cnt').forEach(el=>{const to=+el.dataset.to,t0=performance.now()+200,dur=650;
