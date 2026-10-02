@@ -257,6 +257,7 @@ section.in .cv-red{animation:slideL .55s cubic-bezier(.2,.8,.2,1) both}
 .cv-flow .new .mk{background:var(--red);color:#fff} .cv-flow .new small{color:var(--red)} .cv-flow .new b{color:var(--ink)} .cv-flow .new span{color:var(--gray)}
 .cv-flow svg{width:64px;height:28px;flex:none}
 .cv-org{position:absolute;left:90px;bottom:54px;display:flex;align-items:center;gap:14px;font:500 18px var(--body);color:var(--gray)}
+.cv-foot .pg{background:#fff;box-shadow:0 6px 16px rgba(120,0,25,.25)} .cv-foot .pg b{color:var(--red)} .cv-foot .pg i{color:var(--red-l)}
 .cv-org b{width:46px;height:3px;background:var(--red);border-radius:2px}
 
 /* ---------- 2. timeline ---------- */
@@ -516,6 +517,7 @@ body.static .nav,body.static .hint{display:none}
     <div class="dl pop">Thời hạn quyết định: Tháng 10</div>
   </div>
   <div class="cv-org a"><b></b>Phòng Quản trị rủi ro  ·  Tháng 10/2026</div>
+  <div class="foot cv-foot"><span></span><span class="pg">01</span></div>
 </section>
 
 <!-- 2 -->
@@ -554,7 +556,7 @@ body.static .nav,body.static .hint{display:none}
       <div class="it a"><div class="num">01</div><div><h3>Dữ liệu</h3><p>Đầy đủ, chính xác, kịp thời; đối soát được bản ghi vào và ra</p></div></div>
       <div class="it a"><div class="num">02</div><div><h3>Vận hành ổn định</h3><p>Có cơ chế dự phòng, không gián đoạn giám sát khi xảy ra sự cố</p></div></div>
       <div class="it a"><div class="num">03</div><div><h3>Cấu hình linh hoạt</h3><p>Triển khai kịch bản mới nhanh, theo kịp tốc độ ra mắt sản phẩm</p></div></div>
-      <div class="it a"><div class="num">04</div><div><h3>Cảnh báo và điều tra</h3><p>Cảnh báo đến đúng người, có công cụ tra cứu và điều tra</p></div></div>
+      <div class="it a"><div class="num">04</div><div><h3 style="white-space:nowrap">Cảnh báo, điều tra</h3><p>Cảnh báo đến đúng người, có công cụ tra cứu và điều tra</p></div></div>
       <div class="it a"><div class="num">05</div><div><h3>Chấm điểm rủi ro</h3><p>Phản ánh đúng nghiệp vụ của VDF và điều chỉnh được</p></div></div>
       <div class="it a"><div class="num">06</div><div><h3>Tự chủ phát triển</h3><p>Chủ động sửa lỗi, mở rộng tính năng, tích hợp mô hình AI</p></div></div>
     </div>
@@ -612,7 +614,7 @@ body.static .nav,body.static .hint{display:none}
         <div class="vstep a"><div class="dotn" style="background:var(--ink)">1</div><div class="lab" style="color:var(--ink)">NGUYÊN NHÂN</div>
           <h4>Dữ liệu qua nhiều chặng, không đối soát</h4><p class="just">Không có cơ chế đối soát vào – ra tại từng chặng.</p></div>
         <div class="vstep a"><div class="dotn" style="background:var(--amber)">2</div><div class="lab" style="color:var(--amber-d)">HIỆN TƯỢNG</div>
-          <h4>Rơi rớt và trễ dữ liệu</h4><p class="just">Thiếu và trùng lặp (AlertID bị đẩy trùng qua nhiều lần chạy job); không biết rơi ở chặng nào nên phải tra soát thủ công; đầu vào trễ 2–3 ngày.</p></div>
+          <h4>Rơi rớt và trễ dữ liệu</h4><p class="just">Thiếu và trùng lặp: số bản ghi không khớp qua mỗi chặng; không biết rơi ở chặng nào nên phải tra soát thủ công; đầu vào trễ 2–3 ngày.</p></div>
         <div class="vstep a"><div class="dotn" style="background:var(--red)">3</div><div class="lab" style="color:var(--red)">HỆ QUẢ</div>
           <h4>Cảnh báo sai lệch, bỏ sót</h4><p class="just">Hình thành điểm mù giám sát; chỉ phát hiện khi rà soát thủ công hoặc khi vụ việc đã xảy ra.</p></div>
       </div>
