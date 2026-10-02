@@ -894,7 +894,7 @@ document.getElementById('bars').innerHTML=data.map((d,i)=>
   `<div class="bar d" style="height:${d[1]*.86}%;--i:${i*2+1}"><span>${fmt(d[1])}</span></div></div>`).join('');
 const rows=[
  ['01','Dữ liệu','Rơi rớt dữ liệu, không đối soát, trễ 2–3 ngày','Tích hợp trực tiếp từ hệ thống nguồn, gần thời gian thực','cơ chế đối soát số bản ghi vào và ra'],
- ['02','Vận hành ổn định','2 server chạy chung, không dự phòng, cao tải','Hạ tầng nội bộ, VDF tự vận hành','HA, năng lực xử lý 2.000–3.000 cảnh báo/ngày'],
+ ['02','Vận hành ổn định','2 server chạy chung, không dự phòng, cao tải','Hạ tầng nội bộ, VDF tự vận hành','HA, năng lực xử lý 2.500–4.000 cảnh báo/ngày'],
  ['03','Cấu hình','0,5–2 ngày mỗi kịch bản, qua 4 lớp chuyển đổi','Quy tắc viết trực tiếp bằng câu lệnh truy vấn','chạy truy vấn hiện hành trên vds.*, tần suất chạy'],
  ['04','Cảnh báo, điều tra','Dừng ở mức cảnh báo, xử lý thủ công','Cảnh báo qua hệ thống, email; có màn hình tra cứu, điều tra',''],
  ['05','Chấm điểm','Không phù hợp, không điều chỉnh được','Score NEW do VDF xây dựng, vận hành trên AML','cấu hình được công thức chấm điểm theo cảnh báo'],
