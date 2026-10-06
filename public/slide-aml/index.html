@@ -436,16 +436,16 @@ section.in .bar{animation:gy .55s cubic-bezier(.2,.8,.2,1) forwards;animation-de
 .redbar{margin-top:30px;background:var(--red-t);border:2px solid var(--red);color:var(--red-d);border-radius:999px;padding:16px 30px;text-align:center;font:700 19px var(--body)}
 
 /* ---------- 13. lộ trình ---------- */
-.ruler{display:grid;grid-template-columns:repeat(5,1fr);font:600 19px var(--head);color:var(--gray)}
+.ruler{display:grid;grid-template-columns:1.3fr 1fr .75fr .75fr 1fr;font:600 19px var(--head);color:var(--gray)}
 .ruler div{padding-left:4px} .ruler .nov{color:var(--red)}
-.rail{height:18px;margin-top:12px;border-radius:999px;background:#E4E7F0;overflow:hidden;display:grid;grid-template-columns:1fr 1fr 2fr 1fr;gap:3px}
+.rail{height:18px;margin-top:12px;border-radius:999px;background:#E4E7F0;overflow:hidden;display:grid;grid-template-columns:1.3fr 1fr 1.5fr 1fr;gap:3px}
 .rail i{display:block;height:100%;transform:scaleX(0);transform-origin:left}
 section.in .rail i{animation:gx .4s ease-out forwards}
 .rail i:nth-child(1){background:#4B5563;animation-delay:.15s!important}
 .rail i:nth-child(2){background:var(--ink2);animation-delay:.45s!important}
 .rail i:nth-child(3){background:var(--amber);animation-delay:.75s!important}
 .rail i:nth-child(4){background:var(--red);animation-delay:1.05s!important}
-.phases{flex:1;display:grid;grid-template-columns:1fr 1fr 2fr 1fr;gap:16px;margin-top:26px}
+.phases{flex:1;display:grid;grid-template-columns:1.3fr 1fr 1.5fr 1fr;gap:16px;margin-top:26px}
 .ph{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:24px 24px;position:relative}
 .ph:before{content:"";position:absolute;left:34px;top:-28px;width:2px;height:26px;background:#C9CEDB}
 .ph .top{display:flex;align-items:center;gap:14px;margin-bottom:10px}
