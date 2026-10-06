@@ -768,8 +768,7 @@ body.static .nav,body.static .hint{display:none}
       <div class="aright">
         <div class="card abox a" style="border-color:var(--teal);border-width:2px">
           <div class="hd"><span class="ico t">1</span><b>Giám sát giao dịch</b></div>
-          <p style="margin:8px 0 0 70px">Quy tắc cấu hình bằng câu lệnh truy vấn, đặt lịch chạy định kỳ</p><div class="sep"></div>
-          <div class="na"><span class="nt">CHƯA CÓ THÔNG TIN</span><span>Nguồn dữ liệu, engine truy vấn, lịch chạy tối thiểu</span></div>
+          <p style="margin:8px 0 0 70px">Quy tắc cấu hình bằng câu lệnh truy vấn, đặt lịch chạy định kỳ</p>
         </div>
         <div class="a2">
           <div class="card abox lift a"><div class="hd"><span class="ico t">2</span><b>Đánh giá rủi ro khách hàng</b></div><div class="sep"></div><p class="just">Tự động phân loại 4 mức rủi ro theo quy tắc cấu hình</p></div>
@@ -902,7 +901,7 @@ const rows=[
 document.getElementById('cmp').insertAdjacentHTML('beforeend',rows.map(r=>
   `<div class="cr a"><span class="num">${r[0]}</span><b>${r[1]}</b></div>`+
   `<div class="f a"><span class="ico r">×</span><span>${r[2]}</span></div>`+
-  `<div class="m a"><span class="ico t">✓</span><span>${r[3]}${r[4]?`<small>Chưa có thông tin: ${r[4]}</small>`:''}</span></div>`).join(''));
+  `<div class="m a"><span class="ico t">✓</span><span>${r[3]}</span></div>`).join(''));
 document.querySelectorAll('.foot .pg').forEach(el=>{el.innerHTML=`<b>${el.textContent.trim()}</b><i>/ ${String(S.length).padStart(2,'0')}</i>`});
 S.forEach(s=>{let i=0;s.querySelectorAll('.a,.pop,.grow').forEach(el=>{if(!el.style.getPropertyValue('--i'))el.style.setProperty('--i',i++)})});
 function fit(){
