@@ -950,7 +950,7 @@ const rows=[
  ['02','Vận hành ổn định','2 server chạy chung, không dự phòng, cao tải','Hạ tầng nội bộ, VDF tự vận hành','HA, năng lực xử lý 2.500–4.000 cảnh báo/ngày'],
  ['03','Cấu hình','0,5–2 ngày mỗi kịch bản, qua 4 lớp chuyển đổi','Quy tắc viết trực tiếp bằng câu lệnh truy vấn','chạy truy vấn hiện hành trên vds.*, tần suất chạy'],
  ['04','Cảnh báo, điều tra','Dừng ở mức cảnh báo, xử lý thủ công','Cảnh báo qua hệ thống, email; có màn hình tra cứu, điều tra',''],
- ['05','Chấm điểm','Không phù hợp, không điều chỉnh được','Score NEW do VDF xây dựng, vận hành trên AML','cấu hình được công thức chấm điểm theo cảnh báo'],
+ ['05','Chấm điểm','Không phù hợp, không điều chỉnh được','Model Scoring do VDF xây dựng, vận hành trên AML','cấu hình được công thức chấm điểm theo cảnh báo'],
  ['06','Tự chủ','Khai thác 6/12 module, phụ thuộc VCS','VDF tự phát triển, chủ động mở rộng, tích hợp được AI','']];
 document.getElementById('cmp').insertAdjacentHTML('beforeend',rows.map(r=>
   `<div class="cr a"><span class="num">${r[0]}</span><b>${r[1]}</b></div>`+
