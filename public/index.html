@@ -2075,7 +2075,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   }
   @media (prefers-color-scheme: dark){ :root:not([data-theme=&quot;light&quot;]){
     color-scheme: dark;
-    --nen:#0c1116; --canvas:#141b23; --cham:#242e3a; --khoi:#10171f;
+    --nen:#06090d; --canvas:#0a0e14; --cham:#1a222c; --khoi:#080c11;
     --giay:#1b232d; --vien:#2f3a47; --chu:#e9eef4; --chu-nhat:#a0aebd; --chu-mo:#6f7d8d;
     --kenh:#3d4956;
     --g1:#50cade; --g1n:#0f353d;
@@ -2087,7 +2087,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   }}
   :root[data-theme=&quot;dark&quot;]{
     color-scheme: dark;
-    --nen:#0c1116; --canvas:#141b23; --cham:#242e3a; --khoi:#10171f;
+    --nen:#06090d; --canvas:#0a0e14; --cham:#1a222c; --khoi:#080c11;
     --giay:#1b232d; --vien:#2f3a47; --chu:#e9eef4; --chu-nhat:#a0aebd; --chu-mo:#6f7d8d;
     --kenh:#3d4956;
     --g1:#50cade; --g1n:#0f353d;
@@ -2187,7 +2187,11 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 
   /* ── KHUNG AI AUTOMATION ── */
   .ai{ position:absolute; inset:5px; display:flex; flex-direction:column; gap:8px;
-       border-radius:10px; overflow:hidden; }
+       border-radius:10px; overflow:hidden;
+       background:radial-gradient(ellipse 60% 45% at 8% 0%, color-mix(in srgb,var(--g2) 10%,transparent), transparent 70%),
+                  radial-gradient(ellipse 50% 40% at 100% 100%, color-mix(in srgb,var(--g3) 7%,transparent), transparent 70%); }
+  .ai-nhan{ font:600 10px/1 &quot;IBM Plex Mono&quot;,monospace; letter-spacing:.16em; text-transform:uppercase;
+            color:var(--g2); margin-bottom:6px; }
   .ai[hidden]{ display:none; }
   .ai-dau{ display:flex; align-items:center; justify-content:space-between; gap:12px;
            padding:10px 14px 4px; flex-wrap:wrap; }
@@ -2195,64 +2199,105 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   .ai-phu{ font-size:11.5px; color:var(--chu-nhat); margin-top:2px; }
   .ai-dk{ display:flex; align-items:center; gap:8px; }
   .ai-gio{ font-family:&quot;IBM Plex Mono&quot;,monospace; font-weight:600; font-size:15px;
-           color:var(--g2); min-width:64px; text-align:right; font-variant-numeric:tabular-nums; }
+           color:var(--g2); min-width:64px; text-align:center; font-variant-numeric:tabular-nums;
+           padding:3px 10px; border-radius:9px; background:color-mix(in srgb,var(--g2) 13%,var(--giay));
+           border:1px solid color-mix(in srgb,var(--g2) 55%,transparent);
+           text-shadow:0 0 14px color-mix(in srgb,var(--g2) 60%,transparent); }
   .ai-cuon{ flex:1; min-height:0; overflow:auto; padding:0 14px 10px; }
   .ai-trong{ position:relative; min-width:780px; --nw:248px; }
-  .ai-truc{ position:sticky; top:0; z-index:5; height:26px; margin-left:var(--nw); border-bottom:1px solid var(--vien);
-            background:var(--canvas); }
-  .ai-truc span{ position:absolute; bottom:5px; transform:translateX(-50%);
+  .ai-truc{ position:sticky; top:0; z-index:5; height:26px; margin-left:var(--nw);
+            border-bottom:1px solid color-mix(in srgb,var(--g2) 35%,var(--vien)); background:var(--canvas); }
+  .ai-truc span{ position:absolute; bottom:6px; transform:translateX(-50%);
                  font:600 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-mo); white-space:nowrap; }
+  .ai-truc span.q{ color:var(--chu-nhat); }
+  /* che cột thẻ agent khi cuộn, để thẻ không lòi lên cạnh trục giờ */
+  .ai-truc::before{ content:&quot;&quot;; position:absolute; right:100%; top:0; bottom:-1px; width:calc(var(--nw) + 14px); background:var(--canvas); }
   .ai-luoi{ position:absolute; left:var(--nw); right:0; top:26px; bottom:0; pointer-events:none; }
-  .ai-luoi i{ position:absolute; top:0; bottom:0; width:1px; background:var(--vien); opacity:.55; }
+  .ai-luoi i{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed color-mix(in srgb,var(--vien) 75%,transparent); }
+  .ai-luoi i.q{ border-left:1px solid color-mix(in srgb,var(--vien) 90%,transparent); }
   .ai-noi{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; z-index:1; }
   .ai-kim{ position:absolute; top:22px; bottom:0; width:2px; margin-left:-1px; z-index:3; pointer-events:none;
-           background:linear-gradient(var(--g2),color-mix(in srgb,var(--g2) 15%,transparent)); }
-  .ai-kim::before{ content:&quot;&quot;; position:absolute; top:-3px; left:-4px; width:10px; height:10px; border-radius:50%;
-                   background:var(--g2); box-shadow:0 0 12px var(--g2); }
+           background:linear-gradient(var(--g2),color-mix(in srgb,var(--g2) 12%,transparent));
+           box-shadow:0 0 10px color-mix(in srgb,var(--g2) 55%,transparent); }
+  .ai-kim::before{ content:&quot;&quot;; position:absolute; top:-4px; left:-5px; width:12px; height:12px; border-radius:50%;
+                   background:var(--g2); box-shadow:0 0 0 3px color-mix(in srgb,var(--g2) 25%,transparent), 0 0 14px var(--g2); }
   .ai-kim[hidden]{ display:none; }
 
-  .lan{ position:relative; border-bottom:1px dashed color-mix(in srgb,var(--vien) 70%,transparent); }
+  .lan{ position:relative; }
   .lan-hang{ position:relative; z-index:2; display:grid; grid-template-columns:var(--nw) minmax(0,1fr); align-items:center; min-height:var(--lh,54px); }
-  .lan-ten{ all:unset; box-sizing:border-box; display:flex; align-items:center; gap:10px; padding:8px 10px 8px 4px;
-            cursor:pointer; border-radius:10px; min-width:0; }
-  .lan-ten:hover{ background:color-mix(in srgb,var(--m) 10%,transparent); }
-  .lan-ten:focus-visible{ outline:2px solid var(--m); outline-offset:-2px; }
-  .lan-ten.tinh{ cursor:default; } .lan-ten.tinh:hover{ background:none; }
-  .lan-cham{ flex:none; width:30px; height:30px; border-radius:9px; display:grid; place-items:center;
-             background:color-mix(in srgb,var(--m) 16%,var(--giay)); color:var(--m);
-             border:1.6px solid var(--m); font:700 11px &quot;IBM Plex Mono&quot;,monospace; }
+  /* dải màu nhạt chạy suốt làn: nhìn là biết vạch thuộc agent nào */
+  .lan-hang::before{ content:&quot;&quot;; position:absolute; z-index:-1; left:calc(var(--nw) - 18px); right:0; top:5px; bottom:5px;
+    border-radius:12px; pointer-events:none;
+    background:linear-gradient(90deg, color-mix(in srgb,var(--m) 11%,transparent), color-mix(in srgb,var(--m) 3%,transparent) 65%, transparent); }
+  /* thẻ agent: cùng kiểu hộp ở màn Tổng quan (nền ngả màu, viền màu, ô icon, chip) */
+  .lan-ten{ all:unset; box-sizing:border-box; position:relative; display:flex; align-items:center; gap:11px;
+            margin:6px 14px 6px 0; padding:6px 12px 6px 8px; min-height:calc(var(--lh,54px) - 12px); min-width:0;
+            border-radius:12px; cursor:pointer;
+            background:linear-gradient(135deg, color-mix(in srgb,var(--m) 17%,var(--giay)), color-mix(in srgb,var(--m) 5%,var(--giay)));
+            border:1.8px solid color-mix(in srgb,var(--m) 80%,transparent);
+            box-shadow:0 8px 20px -14px color-mix(in srgb,var(--m) 80%,transparent);
+            transition:transform .2s, box-shadow .2s, border-color .2s; }
+  .lan-ten:hover{ transform:translateY(-1px); border-color:var(--m);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 18%,transparent), 0 10px 24px -12px color-mix(in srgb,var(--m) 85%,transparent); }
+  .lan.mo .lan-ten{ border-color:var(--m);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 24%,transparent), 0 0 24px -6px color-mix(in srgb,var(--m) 70%,transparent); }
+  .lan-ten:focus-visible{ outline:2px solid var(--m); outline-offset:2px; }
+  .lan-ten.tinh{ cursor:default; background:var(--giay); border-color:color-mix(in srgb,var(--m) 50%,var(--vien)); box-shadow:none; }
+  .lan-ten.tinh:hover{ transform:none; box-shadow:none; border-color:color-mix(in srgb,var(--m) 50%,var(--vien)); }
+  .lan-cham{ flex:none; width:32px; height:32px; border-radius:10px; display:grid; place-items:center;
+             background:color-mix(in srgb,var(--m) 20%,var(--khoi)); color:var(--m);
+             box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--m) 40%,transparent); }
+  .lan-cham svg{ width:19px; height:19px; display:block; overflow:visible; }
   .lan-chu{ min-width:0; }
-  .lan-chu b{ display:block; font-size:13.5px; font-weight:700; color:var(--chu); white-space:nowrap; }
-  .lan-chu span{ display:block; font:500 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-nhat); white-space:nowrap;
+  .lan-chu b{ display:block; font-size:12.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+              color:var(--m); white-space:nowrap; }
+  .lan-ten.tinh .lan-chu b{ color:var(--chu); }
+  .lan-chu span{ display:block; margin-top:2px; font:500 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-nhat); white-space:nowrap;
                  overflow:hidden; text-overflow:ellipsis; }
-  .lan-mo{ margin-left:auto; flex:none; color:var(--chu-mo); font-size:11px; transition:transform .25s; }
+  .lan-mo{ margin-left:auto; flex:none; color:color-mix(in srgb,var(--m) 70%,var(--chu-mo)); font-size:10px; transition:transform .25s; }
   .lan.mo .lan-mo{ transform:rotate(90deg); color:var(--m); }
+  .lan-chip{ position:absolute; top:-9px; right:12px; padding:1px 8px; border-radius:9px; white-space:nowrap;
+             font:600 9.5px/15px &quot;IBM Plex Mono&quot;,monospace; letter-spacing:.04em; background:var(--m); color:var(--giay); }
+  .lan-chip.vien{ background:var(--giay); color:var(--m); box-shadow:inset 0 0 0 1.3px var(--m); }
   .lan-ray{ position:relative; height:var(--lh,54px); }
-  .vach{ position:absolute; top:calc(var(--lh,54px)/2 - 12px); height:24px; border-radius:7px; min-width:6px; cursor:pointer;
-         background:color-mix(in srgb,var(--m) 78%,var(--giay)); border:1.5px solid var(--m);
+  .vach{ position:absolute; top:calc(var(--lh,54px)/2 - 13px); height:26px; box-sizing:border-box; border-radius:8px; min-width:6px; cursor:pointer;
+         background:linear-gradient(180deg, color-mix(in srgb,var(--m) 78%,var(--giay)), color-mix(in srgb,var(--m) 52%,var(--giay)));
+         border:1.8px solid var(--m);
+         box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 0 14px -3px color-mix(in srgb,var(--m) 65%,transparent);
          transition:box-shadow .25s, filter .25s; }
-  .vach:hover{ filter:brightness(1.12); }
+  .vach:hover{ filter:brightness(1.18); }
   .vach.cho{ background:none; border:0; border-radius:0; height:12px; top:calc(var(--lh,54px)/2 - 6px); }
   .vach.cho::before{ content:&quot;&quot;; position:absolute; left:0; right:0; top:5px;
                      border-top:2px dotted color-mix(in srgb,var(--m) 60%,transparent); }
   .vach.cho:hover{ filter:none; } .vach.cho:hover::before{ border-top-color:var(--m); }
-  .vach.xam{ background:color-mix(in srgb,var(--chu-mo) 40%,var(--giay)); border-color:var(--chu-mo); }
-  .vach.dang{ box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 25%,transparent), 0 0 18px color-mix(in srgb,var(--m) 70%,transparent); }
-  .vach-nhan{ position:absolute; top:calc(var(--lh,54px)/2 - 8px); font:600 11px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-nhat);
-              white-space:nowrap; pointer-events:none; }
-  .moc{ position:absolute; top:calc(var(--lh,54px)/2 - 7px); width:14px; height:14px; margin-left:-7px; transform:rotate(45deg);
-        border-radius:3px; background:var(--m); box-shadow:0 0 10px color-mix(in srgb,var(--m) 60%,transparent); }
+  .vach.xam{ box-shadow:inset 0 1px 0 rgba(255,255,255,.12); }
+  .vach.dang{ filter:brightness(1.15);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 0 0 3px color-mix(in srgb,var(--m) 28%,transparent), 0 0 24px color-mix(in srgb,var(--m) 75%,transparent); }
+  .vach-nhan{ position:absolute; top:calc(var(--lh,54px)/2 - 11px); height:22px; box-sizing:border-box; padding:0 9px; border-radius:11px;
+              font:600 11px/20px &quot;IBM Plex Mono&quot;,monospace; white-space:nowrap; pointer-events:none;
+              color:color-mix(in srgb,var(--m) 55%,var(--chu)); background:color-mix(in srgb,var(--m) 11%,var(--canvas));
+              border:1px solid color-mix(in srgb,var(--m) 45%,transparent); }
+  .moc{ position:absolute; top:calc(var(--lh,54px)/2 - 8px); width:16px; height:16px; margin-left:-8px; transform:rotate(45deg);
+        box-sizing:border-box; border-radius:4px; background:var(--giay); border:2.4px solid var(--m);
+        box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 22%,transparent), 0 0 14px color-mix(in srgb,var(--m) 70%,transparent); }
 
   /* chi tiết từng agent: chuỗi bước, có hạt chạy giữa các bước */
-  .ct-ag{ display:none; position:relative; z-index:4; background:var(--canvas); padding:6px 4px 16px; }
+  .ct-ag{ display:none; position:relative; z-index:4; margin:2px 14px 12px 0; padding:12px 16px 14px; border-radius:16px;
+          background:color-mix(in srgb,var(--m) 5%,var(--canvas));
+          border:1.8px dashed color-mix(in srgb,var(--m) 65%,transparent); }
   .lan.mo .ct-ag{ display:block; animation:ctVao .32s cubic-bezier(.22,1,.36,1); }
   @keyframes ctVao{ from{ opacity:0; transform:translateY(-6px);} to{ opacity:1; transform:none; } }
-  .ct-tom{ display:flex; flex-wrap:wrap; gap:6px 18px; margin:0 0 10px; font-size:12px; color:var(--chu-nhat); }
+  .ct-tom{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 10px; font-size:12px; color:var(--chu-nhat); }
+  .ct-tom > span{ padding:4px 11px; border-radius:9px; background:var(--giay);
+                  border:1px solid color-mix(in srgb,var(--m) 35%,var(--vien)); }
   .ct-tom b{ color:var(--chu); font-weight:600; }
   .day-buoc{ display:flex; flex-wrap:wrap; align-items:stretch; gap:18px 0; padding:12px 2px 6px; }
-  .buoc{ flex:none; width:178px; box-sizing:border-box; padding:10px 11px 10px; border-radius:12px;
-         background:var(--giay); border:1.5px solid color-mix(in srgb,var(--m) 55%,var(--vien)); position:relative; }
-  .buoc.ai-b{ border-color:var(--m); background:color-mix(in srgb,var(--m) 9%,var(--giay)); }
+  .buoc{ flex:none; width:178px; box-sizing:border-box; padding:11px 11px 10px; border-radius:12px;
+         background:var(--giay); border:2px solid color-mix(in srgb,var(--m) 70%,var(--vien)); position:relative;
+         transition:transform .2s, box-shadow .2s; }
+  .buoc:hover{ transform:translateY(-1px); box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 16%,transparent), 0 10px 22px -14px var(--m); }
+  .buoc.ai-b{ border-color:var(--m); background:linear-gradient(135deg, color-mix(in srgb,var(--m) 18%,var(--giay)), color-mix(in srgb,var(--m) 6%,var(--giay)));
+              box-shadow:0 0 18px -8px color-mix(in srgb,var(--m) 70%,transparent); }
   .buoc .so{ font:700 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--m); }
   .buoc .ma{ font:600 10px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-mo); margin-left:4px; }
   .buoc b{ display:block; font-size:12.5px; line-height:1.3; margin:3px 0 4px; color:var(--chu); }
@@ -2273,7 +2318,9 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 
   .ai-chan{ display:flex; flex-wrap:wrap; gap:6px 18px; padding:6px 14px 10px; font-size:11px; color:var(--chu-nhat);
             border-top:1px solid var(--vien); }
-  .ai-chan i{ display:inline-block; width:22px; height:0; border-top:2px solid var(--chu-nhat); vertical-align:middle; margin-right:6px; }
+  .ai-chan i{ display:inline-block; width:22px; height:0; border-top:2px solid var(--g2); vertical-align:middle; margin-right:6px;
+              box-shadow:0 0 6px var(--g2); }
+  .ai-chan i.ch{ box-shadow:none; }
   .ai-chan i.ch{ border-top-style:dashed; }
   .ai-tip{ position:fixed; z-index:20; pointer-events:none; max-width:300px; padding:9px 11px; border-radius:10px;
            background:var(--giay); border:1px solid var(--vien); box-shadow:0 10px 28px -10px rgba(0,0,0,.45);
@@ -2403,6 +2450,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 <div class=&quot;ai&quot; id=&quot;aiView&quot; hidden>
   <div class=&quot;ai-dau&quot;>
     <div>
+      <div class=&quot;ai-nhan&quot;>AI Automation · 5 agents</div>
       <div class=&quot;ai-tieu&quot; id=&quot;aiTieu&quot;></div>
       <div class=&quot;ai-phu&quot; id=&quot;aiPhu&quot;></div>
     </div>
@@ -3077,7 +3125,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   };
 
   var AG = [
-    {id:&quot;chinh&quot;, ky:&quot;⚙&quot;, m:&quot;var(--chu-mo)&quot;, tinh:1, ten:L(&quot;Luồng chính&quot;, &quot;Main pipeline&quot;),
+    {id:&quot;chinh&quot;, ky:&quot;⚙&quot;, m:&quot;var(--chu-nhat)&quot;, tinh:1, ten:L(&quot;Luồng chính&quot;, &quot;Main pipeline&quot;),
      doan:[{a:&quot;07:00:00&quot;, b:&quot;07:08:02&quot;, xam:1, n:L(&quot;B0 → B8: chạy 50 query → gộp alert → chấm điểm → dựng và đẩy dashboard&quot;,
                                                   &quot;B0 → B8: run 50 queries → merge alerts → score → build and push the dashboard&quot;)}],
      nhan:L(&quot;≈8′ · không dùng AI&quot;, &quot;~8′ · no AI&quot;)},
@@ -3254,12 +3302,28 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   (function(){
     var tr = document.getElementById(&quot;aiTruc&quot;), lu = document.getElementById(&quot;aiLuoi&quot;), h1 = &quot;&quot;, h2 = &quot;&quot;;
     for(var t = T0; t <= T1; t += 300){
-      h1 += '<span style=&quot;left:' + pc(t) + '%&quot;>' + hh(t) + '</span>';
-      h2 += '<i style=&quot;left:' + pc(t) + '%&quot;></i>';
+      var q = t % 900 === 0 ? ' class=&quot;q&quot;' : '';
+      h1 += '<span' + q + ' style=&quot;left:' + pc(t) + '%&quot;>' + hh(t) + '</span>';
+      h2 += '<i' + q + ' style=&quot;left:' + pc(t) + '%&quot;></i>';
     }
     tr.innerHTML = h1; lu.innerHTML = h2;
   })();
 
+  /* icon lấy từ bộ icon của sơ đồ Tổng quan */
+  var ICO = {chinh:&quot;k-db&quot;, ver:&quot;k-ai&quot;, tra:&quot;k-target&quot;, det:&quot;k-radar&quot;, mail:&quot;k-mail&quot;, aud:&quot;k-shield&quot;, gra:&quot;k-git&quot;};
+  function icon(id){
+    var g = document.getElementById(ICO[id]); if(!g) return &quot;&quot;;
+    g = g.cloneNode(true); g.removeAttribute(&quot;id&quot;);
+    return '<svg viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;>' + g.outerHTML + '</svg>';
+  }
+  /* chip trên thẻ = mô hình AI agent dùng (lấy từ các bước), như chip &quot;AI AGENT&quot; ở Tổng quan */
+  function chip(a){
+    if(a.tinh || !a.buoc) return &quot;&quot;;
+    var m = [];
+    a.buoc.forEach(function(b){ if(b.llm &amp;&amp; m.indexOf(b.llm) < 0) m.push(b.llm); });
+    return m.length ? '<span class=&quot;lan-chip&quot;>' + esc(m.join(&quot; + &quot;)) + '</span>'
+                    : '<span class=&quot;lan-chip vien&quot;>' + esc(T(L(&quot;Không LLM&quot;, &quot;No LLM&quot;))) + '</span>';
+  }
   var VACH = [];
   function dung(){
     var mo = {};
@@ -3281,7 +3345,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     AG.forEach(function(a){
       var lan = document.createElement(&quot;div&quot;);
       lan.className = &quot;lan&quot; + (mo[&quot;lan-&quot; + a.id] ? &quot; mo&quot; : &quot;&quot;); lan.style.setProperty(&quot;--m&quot;, a.m); lan.id = &quot;lan-&quot; + a.id;
-      var ten = '<span class=&quot;lan-cham&quot;>' + esc(a.ky) + '</span><span class=&quot;lan-chu&quot;><b>' + esc(T(a.ten)) + '</b><span>' +
+      var ten = chip(a) + '<span class=&quot;lan-cham&quot;>' + icon(a.id) + '</span><span class=&quot;lan-chu&quot;><b>' + esc(T(a.ten)) + '</b><span>' +
         (a.doan ? hh(giay(a.doan[0].a)) + &quot; → &quot; + hh(giay(a.doan[a.doan.length-1].b)) : hh(giay(a.moc))) + '</span></span>' +
         (a.tinh ? '' : '<span class=&quot;lan-mo&quot;>▶</span>');
       var ray = '';
@@ -3386,7 +3450,9 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     if(V.hidden) return;
     var o = TRONG.getBoundingClientRect();
     NOIS.setAttribute(&quot;viewBox&quot;, &quot;0 0 &quot; + (o.width / SC) + &quot; &quot; + (o.height / SC));
-    NOIS.innerHTML = &quot;&quot;; DAY = [];
+    NOIS.innerHTML = '<defs><filter id=&quot;aiSang&quot; x=&quot;-20%&quot; y=&quot;-20%&quot; width=&quot;140%&quot; height=&quot;140%&quot;>' +
+      '<feGaussianBlur stdDeviation=&quot;2.2&quot; result=&quot;b&quot;/><feMerge><feMergeNode in=&quot;b&quot;/><feMergeNode in=&quot;SourceGraphic&quot;/></feMerge></filter></defs>';
+    DAY = [];
     NOI.forEach(function(n, i){
       var a = diem(n[0][0], n[0][1]), b = diem(n[1][0], n[1][1]);
       var k = 26 + (i % 3) * 10;
@@ -3394,9 +3460,13 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
               (b.x - k) + &quot;,&quot; + (b.y - (b.y - a.y) * .45) + &quot; &quot; + b.x + &quot;,&quot; + b.y;
       var m = MAP[n[1][0]].m;
       var p = document.createElementNS(NSV, &quot;path&quot;);
-      p.setAttribute(&quot;d&quot;, d); p.setAttribute(&quot;fill&quot;, &quot;none&quot;); p.setAttribute(&quot;stroke-width&quot;, &quot;1.6&quot;);
-      p.style.stroke = m; p.setAttribute(&quot;opacity&quot;, &quot;.55&quot;);
+      p.setAttribute(&quot;d&quot;, d); p.setAttribute(&quot;fill&quot;, &quot;none&quot;); p.setAttribute(&quot;stroke-width&quot;, &quot;1.8&quot;);
+      p.style.stroke = m; p.setAttribute(&quot;opacity&quot;, &quot;.8&quot;); p.setAttribute(&quot;filter&quot;, &quot;url(#aiSang)&quot;);
       NOIS.appendChild(p);
+      var dd = document.createElementNS(NSV, &quot;circle&quot;);
+      dd.setAttribute(&quot;cx&quot;, b.x); dd.setAttribute(&quot;cy&quot;, b.y); dd.setAttribute(&quot;r&quot;, 3.6);
+      dd.style.fill = m; dd.style.stroke = &quot;var(--canvas)&quot;; dd.setAttribute(&quot;stroke-width&quot;, &quot;1.5&quot;);
+      NOIS.appendChild(dd);
       var c1 = document.createElementNS(NSV, &quot;circle&quot;), c2 = document.createElementNS(NSV, &quot;circle&quot;);
       c1.setAttribute(&quot;r&quot;, 7); c2.setAttribute(&quot;r&quot;, 3.4); c1.style.fill = m; c2.style.fill = m;
       c1.setAttribute(&quot;opacity&quot;, 0); c2.setAttribute(&quot;opacity&quot;, 0);
