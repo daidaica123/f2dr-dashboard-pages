@@ -2186,10 +2186,21 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   #lop-hat circle{ pointer-events:none; }
 
   /* ── KHUNG AI AUTOMATION ── */
+  /* bảng màu riêng màn AI (Daicd 14/10): nền đen ánh navy, màu agent neon, tương phản mạnh — chỉ áp khi nền tối */
+  @media (prefers-color-scheme: dark){ :root:not([data-theme=&quot;light&quot;]) :is(.ai, #aiChuGiai, #aiSo, .ai-tip){
+    --canvas:#03060b; --giay:#070d19; --khoi:#050913; --vien:#1d2d4d;
+    --chu:#f4f8fd; --chu-nhat:#bac8e4; --chu-mo:#8a99b6;
+    --g1:#33e4ff; --g2:#b48dff; --g3:#ff78b6; --g4:#ffa24c; --g5:#34eb94; }}
+  :root[data-theme=&quot;dark&quot;] :is(.ai, #aiChuGiai, #aiSo, .ai-tip){
+    --canvas:#03060b; --giay:#070d19; --khoi:#050913; --vien:#1d2d4d;
+    --chu:#f4f8fd; --chu-nhat:#bac8e4; --chu-mo:#8a99b6;
+    --g1:#33e4ff; --g2:#b48dff; --g3:#ff78b6; --g4:#ffa24c; --g5:#34eb94; }
   .ai{ position:absolute; inset:5px; display:flex; flex-direction:column; gap:8px;
        border-radius:10px; overflow:hidden;
-       background:radial-gradient(ellipse 60% 45% at 8% 0%, color-mix(in srgb,var(--g2) 10%,transparent), transparent 70%),
-                  radial-gradient(ellipse 50% 40% at 100% 100%, color-mix(in srgb,var(--g3) 7%,transparent), transparent 70%); }
+       background:radial-gradient(rgba(122,136,165,.13) 1px, transparent 1.2px) 0 0/22px 22px,
+                  radial-gradient(1000px 420px at 8% -10%, color-mix(in srgb,var(--g2) 14%,#0a1630), transparent 62%),
+                  radial-gradient(ellipse 50% 40% at 100% 100%, color-mix(in srgb,var(--g3) 7%,transparent), transparent 70%),
+                  linear-gradient(180deg, #05080f, var(--canvas)); }
   .ai-nhan{ font:600 10px/1 &quot;IBM Plex Mono&quot;,monospace; letter-spacing:.16em; text-transform:uppercase;
             color:var(--g2); margin-bottom:6px; }
   .ai[hidden]{ display:none; }
@@ -2213,12 +2224,12 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   /* che cột thẻ agent khi cuộn, để thẻ không lòi lên cạnh trục giờ */
   .ai-truc::before{ content:&quot;&quot;; position:absolute; right:100%; top:0; bottom:-1px; width:calc(var(--nw) + 14px); background:var(--canvas); }
   .ai-luoi{ position:absolute; left:var(--nw); right:0; top:26px; bottom:0; pointer-events:none; }
-  .ai-luoi i{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed color-mix(in srgb,var(--vien) 75%,transparent); }
+  .ai-luoi i{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed color-mix(in srgb,var(--vien) 85%,transparent); }
   .ai-luoi i.q{ border-left:1px solid color-mix(in srgb,var(--vien) 90%,transparent); }
   .ai-noi{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; z-index:1; }
   .ai-kim{ position:absolute; top:22px; bottom:0; width:2px; margin-left:-1px; z-index:3; pointer-events:none;
-           background:linear-gradient(var(--g2),color-mix(in srgb,var(--g2) 12%,transparent));
-           box-shadow:0 0 10px color-mix(in srgb,var(--g2) 55%,transparent); }
+           background:linear-gradient(color-mix(in srgb,var(--g2) 55%,#fff),color-mix(in srgb,var(--g2) 15%,transparent));
+           box-shadow:0 0 16px color-mix(in srgb,var(--g2) 85%,transparent); }
   .ai-kim::before{ content:&quot;&quot;; position:absolute; top:-4px; left:-5px; width:12px; height:12px; border-radius:50%;
                    background:var(--g2); box-shadow:0 0 0 3px color-mix(in srgb,var(--g2) 25%,transparent), 0 0 14px var(--g2); }
   .ai-kim[hidden]{ display:none; }
@@ -2234,8 +2245,8 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
             margin:6px 14px 6px 0; padding:6px 12px 6px 8px; min-height:calc(var(--lh,54px) - 12px); min-width:0;
             border-radius:12px; cursor:pointer;
             background:linear-gradient(135deg, color-mix(in srgb,var(--m) 17%,var(--giay)), color-mix(in srgb,var(--m) 5%,var(--giay)));
-            border:1.8px solid color-mix(in srgb,var(--m) 80%,transparent);
-            box-shadow:0 8px 20px -14px color-mix(in srgb,var(--m) 80%,transparent);
+            border:1.8px solid color-mix(in srgb,var(--m) 88%,transparent);
+            box-shadow:0 0 18px -8px color-mix(in srgb,var(--m) 70%,transparent), 0 8px 20px -14px color-mix(in srgb,var(--m) 85%,transparent);
             transition:transform .2s, box-shadow .2s, border-color .2s; }
   .lan-ten:hover{ transform:translateY(-1px); border-color:var(--m);
     box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 18%,transparent), 0 10px 24px -12px color-mix(in srgb,var(--m) 85%,transparent); }
@@ -2261,7 +2272,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   .lan-chip.vien{ background:var(--giay); color:var(--m); box-shadow:inset 0 0 0 1.3px var(--m); }
   .lan-ray{ position:relative; height:var(--lh,54px); }
   .vach{ position:absolute; top:calc(var(--lh,54px)/2 - 13px); height:26px; box-sizing:border-box; border-radius:8px; min-width:6px; cursor:pointer;
-         background:linear-gradient(180deg, color-mix(in srgb,var(--m) 78%,var(--giay)), color-mix(in srgb,var(--m) 52%,var(--giay)));
+         background:linear-gradient(180deg, color-mix(in srgb,var(--m) 92%,#fff 8%), color-mix(in srgb,var(--m) 62%,var(--khoi)));
          border:1.8px solid var(--m);
          box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 0 14px -3px color-mix(in srgb,var(--m) 65%,transparent);
          transition:box-shadow .25s, filter .25s; }
@@ -2272,11 +2283,11 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   .vach.cho:hover{ filter:none; } .vach.cho:hover::before{ border-top-color:var(--m); }
   .vach.xam{ box-shadow:inset 0 1px 0 rgba(255,255,255,.12); }
   .vach.dang{ filter:brightness(1.15);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 0 0 3px color-mix(in srgb,var(--m) 28%,transparent), 0 0 24px color-mix(in srgb,var(--m) 75%,transparent); }
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 0 0 3px color-mix(in srgb,var(--m) 36%,transparent), 0 0 32px color-mix(in srgb,var(--m) 90%,transparent); }
   .vach-nhan{ position:absolute; top:calc(var(--lh,54px)/2 - 11px); height:22px; box-sizing:border-box; padding:0 9px; border-radius:11px;
               font:600 11px/20px &quot;IBM Plex Mono&quot;,monospace; white-space:nowrap; pointer-events:none;
-              color:color-mix(in srgb,var(--m) 55%,var(--chu)); background:color-mix(in srgb,var(--m) 11%,var(--canvas));
-              border:1px solid color-mix(in srgb,var(--m) 45%,transparent); }
+              color:color-mix(in srgb,var(--m) 45%,#fff); background:color-mix(in srgb,var(--m) 14%,var(--khoi));
+              border:1px solid color-mix(in srgb,var(--m) 62%,transparent); }
   .moc{ position:absolute; top:calc(var(--lh,54px)/2 - 8px); width:16px; height:16px; margin-left:-8px; transform:rotate(45deg);
         box-sizing:border-box; border-radius:4px; background:var(--giay); border:2.4px solid var(--m);
         box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 22%,transparent), 0 0 14px color-mix(in srgb,var(--m) 70%,transparent); }
@@ -2296,7 +2307,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
          background:var(--giay); border:2px solid color-mix(in srgb,var(--m) 70%,var(--vien)); position:relative;
          transition:transform .2s, box-shadow .2s; }
   .buoc:hover{ transform:translateY(-1px); box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 16%,transparent), 0 10px 22px -14px var(--m); }
-  .buoc.ai-b{ border-color:var(--m); background:linear-gradient(135deg, color-mix(in srgb,var(--m) 18%,var(--giay)), color-mix(in srgb,var(--m) 6%,var(--giay)));
+  .buoc.ai-b{ border-color:var(--m); background:linear-gradient(135deg, color-mix(in srgb,var(--m) 22%,var(--giay)), color-mix(in srgb,var(--m) 6%,var(--giay)));
               box-shadow:0 0 18px -8px color-mix(in srgb,var(--m) 70%,transparent); }
   .buoc .so{ font:700 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--m); }
   .buoc .ma{ font:600 10px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-mo); margin-left:4px; }
