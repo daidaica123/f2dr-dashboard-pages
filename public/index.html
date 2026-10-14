@@ -2049,9 +2049,9 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   <div class="card" style="padding:0;overflow:hidden">
     <div style="padding:11px 16px;border-bottom:1px solid var(--line);
                 font-size:12.5px;color:var(--mut)">
-      Mở ra là bản thu gọn, bấm <b>Xổ chi tiết</b> để xem đủ. Kéo hộp sắp lại được.
-      Phần <b>xử lý alert bằng AI</b> và <b>khiếu nại</b> là thiết kế, chưa chạy —
-      hiện chạy thật từ <b>Trigger</b> tới <b>Push &amp; Deploy</b>.
+      Ba chế độ xem ở cột trái: <b>Tổng quan</b> · <b>Chi tiết</b> (kéo hộp sắp lại được) ·
+      <b>AI Automation</b> — 5 AI agent chạy lúc nào, ai chờ ai, bấm từng agent để xem workflow.
+      Toàn bộ luồng đang chạy thật mỗi sáng, không thao tác tay.
     </div>
     <iframe id="wfFrame" title="Sơ đồ luồng chạy tự động"
             style="width:100%;height:calc(100vh - 110px);min-height:600px;border:0;display:block"
@@ -2169,6 +2169,119 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
                      color:var(--chu); background:var(--canvas);
                      border:1px solid var(--vien); border-radius:8px; padding:7px; }
   .hop-dan .hang{ display:flex; gap:7px; justify-content:flex-end; margin-top:8px; }
+  /* ── 3 chế độ xem (Daicd 14/10): Tổng quan · Chi tiết · AI Automation ── */
+  .che-do{ display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+  .che-do button{ padding:7px 8px; font-size:11px; }
+  .che-do button.ai-nut{ grid-column:1/-1; }
+  .che-do button[aria-pressed=&quot;true&quot;]{ color:var(--giay); background:var(--g3); border-color:var(--g3);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--g3) 22%,transparent); }
+  .che-do button.ai-nut[aria-pressed=&quot;true&quot;]{ background:var(--g2); border-color:var(--g2);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--g2) 24%,transparent); }
+  .chi-sd[hidden], .chi-ai[hidden]{ display:none!important; }
+
+  /* hạt chạy dọc dây: thấy tiền/dữ liệu đi theo chiều nào */
+  #lop-hat circle{ pointer-events:none; }
+
+  /* ── KHUNG AI AUTOMATION ── */
+  .ai{ position:absolute; inset:5px; display:flex; flex-direction:column; gap:8px;
+       border-radius:10px; overflow:hidden; }
+  .ai[hidden]{ display:none; }
+  .ai-dau{ display:flex; align-items:center; justify-content:space-between; gap:12px;
+           padding:10px 14px 4px; flex-wrap:wrap; }
+  .ai-tieu{ font-size:16px; font-weight:700; letter-spacing:-.01em; }
+  .ai-phu{ font-size:11.5px; color:var(--chu-nhat); margin-top:2px; }
+  .ai-dk{ display:flex; align-items:center; gap:8px; }
+  .ai-gio{ font-family:&quot;IBM Plex Mono&quot;,monospace; font-weight:600; font-size:15px;
+           color:var(--g2); min-width:64px; text-align:right; font-variant-numeric:tabular-nums; }
+  .ai-cuon{ flex:1; min-height:0; overflow:auto; padding:0 14px 10px; }
+  .ai-trong{ position:relative; min-width:780px; --nw:248px; }
+  .ai-truc{ position:sticky; top:0; z-index:5; height:26px; margin-left:var(--nw); border-bottom:1px solid var(--vien);
+            background:var(--canvas); }
+  .ai-truc span{ position:absolute; bottom:5px; transform:translateX(-50%);
+                 font:600 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-mo); white-space:nowrap; }
+  .ai-luoi{ position:absolute; left:var(--nw); right:0; top:26px; bottom:0; pointer-events:none; }
+  .ai-luoi i{ position:absolute; top:0; bottom:0; width:1px; background:var(--vien); opacity:.55; }
+  .ai-noi{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; z-index:1; }
+  .ai-kim{ position:absolute; top:22px; bottom:0; width:2px; margin-left:-1px; z-index:3; pointer-events:none;
+           background:linear-gradient(var(--g2),color-mix(in srgb,var(--g2) 15%,transparent)); }
+  .ai-kim::before{ content:&quot;&quot;; position:absolute; top:-3px; left:-4px; width:10px; height:10px; border-radius:50%;
+                   background:var(--g2); box-shadow:0 0 12px var(--g2); }
+  .ai-kim[hidden]{ display:none; }
+
+  .lan{ position:relative; border-bottom:1px dashed color-mix(in srgb,var(--vien) 70%,transparent); }
+  .lan-hang{ position:relative; z-index:2; display:grid; grid-template-columns:var(--nw) minmax(0,1fr); align-items:center; min-height:var(--lh,54px); }
+  .lan-ten{ all:unset; box-sizing:border-box; display:flex; align-items:center; gap:10px; padding:8px 10px 8px 4px;
+            cursor:pointer; border-radius:10px; min-width:0; }
+  .lan-ten:hover{ background:color-mix(in srgb,var(--m) 10%,transparent); }
+  .lan-ten:focus-visible{ outline:2px solid var(--m); outline-offset:-2px; }
+  .lan-ten.tinh{ cursor:default; } .lan-ten.tinh:hover{ background:none; }
+  .lan-cham{ flex:none; width:30px; height:30px; border-radius:9px; display:grid; place-items:center;
+             background:color-mix(in srgb,var(--m) 16%,var(--giay)); color:var(--m);
+             border:1.6px solid var(--m); font:700 11px &quot;IBM Plex Mono&quot;,monospace; }
+  .lan-chu{ min-width:0; }
+  .lan-chu b{ display:block; font-size:13.5px; font-weight:700; color:var(--chu); white-space:nowrap; }
+  .lan-chu span{ display:block; font:500 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-nhat); white-space:nowrap;
+                 overflow:hidden; text-overflow:ellipsis; }
+  .lan-mo{ margin-left:auto; flex:none; color:var(--chu-mo); font-size:11px; transition:transform .25s; }
+  .lan.mo .lan-mo{ transform:rotate(90deg); color:var(--m); }
+  .lan-ray{ position:relative; height:var(--lh,54px); }
+  .vach{ position:absolute; top:calc(var(--lh,54px)/2 - 12px); height:24px; border-radius:7px; min-width:6px; cursor:pointer;
+         background:color-mix(in srgb,var(--m) 78%,var(--giay)); border:1.5px solid var(--m);
+         transition:box-shadow .25s, filter .25s; }
+  .vach:hover{ filter:brightness(1.12); }
+  .vach.cho{ background:none; border:0; border-radius:0; height:12px; top:calc(var(--lh,54px)/2 - 6px); }
+  .vach.cho::before{ content:&quot;&quot;; position:absolute; left:0; right:0; top:5px;
+                     border-top:2px dotted color-mix(in srgb,var(--m) 60%,transparent); }
+  .vach.cho:hover{ filter:none; } .vach.cho:hover::before{ border-top-color:var(--m); }
+  .vach.xam{ background:color-mix(in srgb,var(--chu-mo) 40%,var(--giay)); border-color:var(--chu-mo); }
+  .vach.dang{ box-shadow:0 0 0 3px color-mix(in srgb,var(--m) 25%,transparent), 0 0 18px color-mix(in srgb,var(--m) 70%,transparent); }
+  .vach-nhan{ position:absolute; top:calc(var(--lh,54px)/2 - 8px); font:600 11px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-nhat);
+              white-space:nowrap; pointer-events:none; }
+  .moc{ position:absolute; top:calc(var(--lh,54px)/2 - 7px); width:14px; height:14px; margin-left:-7px; transform:rotate(45deg);
+        border-radius:3px; background:var(--m); box-shadow:0 0 10px color-mix(in srgb,var(--m) 60%,transparent); }
+
+  /* chi tiết từng agent: chuỗi bước, có hạt chạy giữa các bước */
+  .ct-ag{ display:none; position:relative; z-index:4; background:var(--canvas); padding:6px 4px 16px; }
+  .lan.mo .ct-ag{ display:block; animation:ctVao .32s cubic-bezier(.22,1,.36,1); }
+  @keyframes ctVao{ from{ opacity:0; transform:translateY(-6px);} to{ opacity:1; transform:none; } }
+  .ct-tom{ display:flex; flex-wrap:wrap; gap:6px 18px; margin:0 0 10px; font-size:12px; color:var(--chu-nhat); }
+  .ct-tom b{ color:var(--chu); font-weight:600; }
+  .day-buoc{ display:flex; flex-wrap:wrap; align-items:stretch; gap:18px 0; padding:12px 2px 6px; }
+  .buoc{ flex:none; width:178px; box-sizing:border-box; padding:10px 11px 10px; border-radius:12px;
+         background:var(--giay); border:1.5px solid color-mix(in srgb,var(--m) 55%,var(--vien)); position:relative; }
+  .buoc.ai-b{ border-color:var(--m); background:color-mix(in srgb,var(--m) 9%,var(--giay)); }
+  .buoc .so{ font:700 10.5px &quot;IBM Plex Mono&quot;,monospace; color:var(--m); }
+  .buoc .ma{ font:600 10px &quot;IBM Plex Mono&quot;,monospace; color:var(--chu-mo); margin-left:4px; }
+  .buoc b{ display:block; font-size:12.5px; line-height:1.3; margin:3px 0 4px; color:var(--chu); }
+  .buoc p{ margin:0; font-size:11px; line-height:1.4; color:var(--chu-nhat); }
+  .buoc .chip{ position:absolute; top:-10px; right:10px; font:600 10px &quot;IBM Plex Mono&quot;,monospace; padding:2px 7px;
+               border-radius:9px; background:var(--giay); border:1.3px solid var(--m); color:var(--m); white-space:nowrap; }
+  .buoc .chip.llm{ left:10px; right:auto; background:var(--m); color:var(--giay); }
+  .noi-buoc{ flex:none; width:34px; align-self:center; height:2px; position:relative; overflow:visible;
+             background:color-mix(in srgb,var(--m) 45%,transparent); }
+  .noi-buoc::after{ content:&quot;&quot;; position:absolute; right:-1px; top:-4px; border:5px solid transparent;
+                    border-left:7px solid var(--m); border-right:0; }
+  .noi-buoc i{ position:absolute; top:-3px; left:0; width:8px; height:8px; border-radius:50%; background:var(--m);
+               box-shadow:0 0 8px var(--m); animation:hatBuoc 1.6s linear infinite; }
+  .noi-buoc i:nth-child(2){ animation-delay:.8s; }
+  @keyframes hatBuoc{ from{ transform:translateX(-4px); opacity:0;} 20%{opacity:1;} 80%{opacity:1;} to{ transform:translateX(28px); opacity:0;} }
+  .ct-chan{ display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:8px; font-size:11.5px; color:var(--chu-nhat); }
+  .ct-chan em{ font-style:normal; color:var(--chu); font-weight:600; }
+
+  .ai-chan{ display:flex; flex-wrap:wrap; gap:6px 18px; padding:6px 14px 10px; font-size:11px; color:var(--chu-nhat);
+            border-top:1px solid var(--vien); }
+  .ai-chan i{ display:inline-block; width:22px; height:0; border-top:2px solid var(--chu-nhat); vertical-align:middle; margin-right:6px; }
+  .ai-chan i.ch{ border-top-style:dashed; }
+  .ai-tip{ position:fixed; z-index:20; pointer-events:none; max-width:300px; padding:9px 11px; border-radius:10px;
+           background:var(--giay); border:1px solid var(--vien); box-shadow:0 10px 28px -10px rgba(0,0,0,.45);
+           font-size:11.5px; color:var(--chu-nhat); line-height:1.45; }
+  .ai-tip b{ display:block; color:var(--chu); font-size:12.5px; margin-bottom:3px; }
+  .ai-tip[hidden]{ display:none; }
+  .ngon{ display:inline-flex; border:1px solid var(--vien); border-radius:8px; overflow:hidden; }
+  .ngon button{ border:0; border-radius:0; padding:5px 10px; background:var(--giay); }
+  .ngon button + button{ border-left:1px solid var(--vien); }
+  .ngon button[aria-pressed=&quot;true&quot;]{ background:var(--g2); color:var(--giay); }
+
   @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
 </style>
 
@@ -2177,15 +2290,21 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     <div class=&quot;nhan&quot;>Viettel Money · Quản trị rủi ro</div>
     <h1>Luồng F2DR 7h sáng</h1>
   </div>
-  <div class=&quot;so-lieu&quot;>
-    <div class=&quot;to&quot;><b>17′44″</b><span>TỔNG MỘT LƯỢT · LUỒNG CHÍNH 9′00″</span></div>
+  <div class=&quot;che-do&quot; role=&quot;group&quot; aria-label=&quot;Chế độ xem&quot;>
+    <button id=&quot;xemTQ&quot; type=&quot;button&quot; aria-pressed=&quot;true&quot;>Tổng quan</button>
+    <button id=&quot;xemCT&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot;>Chi tiết</button>
+    <button id=&quot;xemAI&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot; class=&quot;ai-nut&quot;>✦ AI Automation</button>
+  </div>
+  <div class=&quot;so-lieu chi-sd&quot;>
+    <div class=&quot;to&quot;><b>≈45′</b><span>TỪ 07:00 TỚI KHI XONG HẾT · LUỒNG CHÍNH 7′52″ · 14/10</span></div>
     <div><b id=&quot;soBuoc&quot;>15</b><span>bước</span></div>
-    <div><b>2</b><span>điểm khởi động</span></div>
-    <div><b>3</b><span>nhánh song song</span></div>
-    <div><b>48</b><span>kịch bản</span></div>
+    <div><b>3</b><span>điểm khởi động</span></div>
+    <div><b>3</b><span>nhánh chạy cùng lúc</span></div>
+    <div><b>50</b><span>kịch bản</span></div>
+    <div><b>5</b><span>AI agent</span></div>
     <div><b>0</b><span>thao tác tay</span></div>
   </div>
-  <div class=&quot;thanh&quot;>
+  <div class=&quot;thanh chi-sd&quot;>
     <div class=&quot;tieu&quot;>Chú thích màu</div>
     <span><i style=&quot;background:var(--g1n);border:2px solid var(--g1)&quot;></i>Thu thập &amp;amp; chấm điểm</span>
     <span><i style=&quot;background:var(--g2n);border:2px solid var(--g2)&quot;></i>Giám sát hằng ngày</span>
@@ -2193,13 +2312,15 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     <span><i style=&quot;background:var(--g4n);border:2px solid var(--g4)&quot;></i>Khiếu nại</span>
     <span><i style=&quot;background:var(--g5n);border:2px solid var(--g5)&quot;></i>Phát hành</span>
     <span><i style=&quot;background:var(--gxn);border:2px solid var(--gx)&quot;></i>Chặn lỗi</span>
+    <span style=&quot;margin-top:3px&quot;><i style=&quot;background:var(--chu-nhat);border-radius:50%;width:8px;height:8px;margin:0 10px 0 1px&quot;></i>Chấm chạy = chiều dữ liệu đi</span>
   </div>
+  <div class=&quot;so-lieu chi-ai&quot; id=&quot;aiSo&quot; hidden></div>
+  <div class=&quot;thanh chi-ai&quot; id=&quot;aiChuGiai&quot; hidden></div>
   <div class=&quot;nut-td&quot;>
-    <span class=&quot;keo-hint&quot;>Kéo hộp để sắp lại</span>
-    <button id=&quot;btnCheDo&quot; class=&quot;chinh&quot; type=&quot;button&quot;>Xổ chi tiết</button>
-    <button id=&quot;btnChep&quot; type=&quot;button&quot;>Sao chép bố cục</button>
-    <button id=&quot;btnDan&quot; type=&quot;button&quot;>Dán bố cục</button>
-    <button id=&quot;btnReset&quot; type=&quot;button&quot;>Bố cục gốc</button>
+    <span class=&quot;keo-hint chi-sd&quot;>Kéo hộp để sắp lại</span>
+    <button id=&quot;btnChep&quot; type=&quot;button&quot; class=&quot;chi-sd&quot;>Sao chép bố cục</button>
+    <button id=&quot;btnDan&quot; type=&quot;button&quot; class=&quot;chi-sd&quot;>Dán bố cục</button>
+    <button id=&quot;btnReset&quot; type=&quot;button&quot; class=&quot;chi-sd&quot;>Bố cục gốc</button>
   </div>
 </aside>
 
@@ -2242,9 +2363,34 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 
   <g id=&quot;lop-khoi&quot;></g>
   <g id=&quot;lop-day&quot;></g>
+  <g id=&quot;lop-hat&quot;></g>
   <g id=&quot;lop-chu&quot;></g>
   <g id=&quot;lop-nut&quot;></g>
 </svg>
+<div class=&quot;ai&quot; id=&quot;aiView&quot; hidden>
+  <div class=&quot;ai-dau&quot;>
+    <div>
+      <div class=&quot;ai-tieu&quot; id=&quot;aiTieu&quot;></div>
+      <div class=&quot;ai-phu&quot; id=&quot;aiPhu&quot;></div>
+    </div>
+    <div class=&quot;ai-dk&quot;>
+      <span class=&quot;ngon&quot; role=&quot;group&quot; aria-label=&quot;Language / Ngôn ngữ&quot;>
+        <button type=&quot;button&quot; data-ngon=&quot;en&quot;>EN</button><button type=&quot;button&quot; data-ngon=&quot;vi&quot;>VI</button>
+      </span>
+      <button id=&quot;aiPhat&quot; type=&quot;button&quot;></button>
+      <span class=&quot;ai-gio&quot; id=&quot;aiGio&quot;>07:00</span>
+    </div>
+  </div>
+  <div class=&quot;ai-cuon&quot;><div class=&quot;ai-trong&quot; id=&quot;aiTrong&quot;>
+    <div class=&quot;ai-truc&quot; id=&quot;aiTruc&quot;></div>
+    <div class=&quot;ai-luoi&quot; id=&quot;aiLuoi&quot;></div>
+    <svg class=&quot;ai-noi&quot; id=&quot;aiNoi&quot; aria-hidden=&quot;true&quot;></svg>
+    <div class=&quot;ai-kim&quot; id=&quot;aiKim&quot;></div>
+    <div id=&quot;aiLan&quot;></div>
+  </div></div>
+  <div class=&quot;ai-chan&quot; id=&quot;aiChan&quot;></div>
+  <div class=&quot;ai-tip&quot; id=&quot;aiTip&quot; hidden></div>
+</div>
 </div>
 
 <script>
@@ -2258,29 +2404,29 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 
   /* ct = vị trí ở bản CHI TIẾT · tq = bản TỔNG QUAN (null = ẩn ở tổng quan) */
   var NUT = [
-    {id:&quot;trg&quot;, g:&quot;g1&quot;, k:&quot;dau&quot;, i:&quot;k-clock&quot;,  t:&quot;SCHEDULE TRIGGER&quot;, s:&quot;07:00 · cổng dữ liệu nguồn&quot;,             gio:&quot;≈22s&quot;, w:320,h:88, ct:[46,151],   tq:[92,130]},
-    {id:&quot;qry&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-db&quot;,     t:&quot;RUN QUERY&quot;,        s:&quot;48 kịch bản · ClickHouse&quot;,   gio:&quot;208–452s&quot;,    w:320,h:88, ct:[460,151],  tq:null},
+    {id:&quot;trg&quot;, g:&quot;g1&quot;, k:&quot;dau&quot;, i:&quot;k-clock&quot;,  t:&quot;SCHEDULE TRIGGER&quot;, s:&quot;07:00 · cổng dữ liệu nguồn&quot;,             gio:&quot;1–22s&quot;, w:320,h:88, ct:[46,151],   tq:[92,130]},
+    {id:&quot;qry&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-db&quot;,     t:&quot;RUN QUERY&quot;,        s:&quot;50 kịch bản · ClickHouse&quot;,   gio:&quot;208–452s&quot;,    w:320,h:88, ct:[460,151],  tq:null},
     {id:&quot;rty&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-loop&quot;,   t:&quot;RETRY ON ERROR&quot;,   s:&quot;đọc lỗi rồi chạy lại&quot;,       gio:&quot;0–60s&quot;,   w:320,h:88, ct:[874,151],  tq:null},
     {id:&quot;abt&quot;, g:&quot;gx&quot;, k:&quot;lun&quot;, i:&quot;k-stop&quot;,   t:&quot;ABORT RUN&quot;,        s:&quot;&quot;,                           gio:&quot;&quot;,        w:240,h:46, ct:[1173,28],  tq:null},
-    {id:&quot;mrg&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-merge&quot;,  t:&quot;RAW ALERTS&quot;,       s:&quot;48 kịch bản · 4.203 cảnh báo&quot;,        gio:&quot;2s&quot;,      w:320,h:88, ct:[1288,151], tq:[575,130]},
+    {id:&quot;mrg&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-merge&quot;,  t:&quot;RAW ALERTS&quot;,       s:&quot;50 kịch bản · 5.060 cảnh báo&quot;,        gio:&quot;2s&quot;,      w:320,h:88, ct:[1288,151], tq:[575,130]},
     {id:&quot;cln&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;DATA CLEANING&quot;,    s:&quot;khử trùng · loại dòng lệch&quot;, gio:&quot;1s&quot;,      w:320,h:88, ct:[1288,324], tq:null},
     {id:&quot;map&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-map&quot;,    t:&quot;MAPPING&quot;,          s:&quot;tên KB · nhóm rủi ro&quot;,       gio:&quot;1s&quot;,      w:320,h:88, ct:[874,324],  tq:null},
-    {id:&quot;scr&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-score&quot;,  t:&quot;SCORING&quot;,          s:&quot;2.221 khách × ngày&quot;,         gio:&quot;2s&quot;,      w:320,h:88, ct:[460,324],  tq:[1058,130]},
+    {id:&quot;scr&quot;, g:&quot;g1&quot;, k:&quot;&quot;,    i:&quot;k-score&quot;,  t:&quot;SCORING&quot;,          s:&quot;3.052 khách × ngày&quot;,         gio:&quot;2s&quot;,      w:320,h:88, ct:[460,324],  tq:[1058,130]},
 
     {id:&quot;dch&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;DAILY CHARTS&quot;,     s:&quot;xu hướng · phân tầng&quot;,       gio:&quot;9s&quot;,      w:250,h:84, ct:[80,475],   tq:null},
 
-    {id:&quot;spk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-radar&quot;,  t:&quot;SPIKE DETECTION&quot;,  s:&quot;28 KB đột biến · 9 KB bàn đầy&quot;, gio:&quot;5s&quot;,  w:250,h:84, ct:[402,475],  tq:null},
-    {id:&quot;rnk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;CUSTOMER RANKING&quot;, s:&quot;1.602 người · 4 trục&quot;,       gio:&quot;8s&quot;,  w:250,h:84, ct:[724,475],  tq:null},
+    {id:&quot;spk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-radar&quot;,  t:&quot;SPIKE DETECTION&quot;,  s:&quot;KB đột biến · KB bàn đầy&quot;, gio:&quot;5s&quot;,  w:250,h:84, ct:[402,475],  tq:null},
+    {id:&quot;rnk&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;CUSTOMER RANKING&quot;, s:&quot;1.616 người · 4 trục&quot;,       gio:&quot;8s&quot;,  w:250,h:84, ct:[724,475],  tq:null},
 
     {id:&quot;mon&quot;, g:&quot;g2&quot;, k:&quot;&quot;,    i:&quot;k-chart&quot;,  t:&quot;MONITORING&quot;,       s:&quot;biểu đồ · đột biến · xếp hạng&quot;, gio:&quot;22s&quot;,      w:320,h:88, ct:null, tq:[644,432]},
-    {id:&quot;inv&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;INVESTIGATION&quot;,    s:&quot;hồ sơ · Claude nhận định · 2 lớp soát&quot;, gio:&quot;580s&quot;,     w:320,h:88, ct:null, tq:[644,626]},
-    {id:&quot;com&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;COMPLAINTS&quot;,       s:&quot;mail 7h · soát · nạp · băm&quot;,    gio:&quot;≤5s&quot;, w:320,h:88, ct:null, tq:[644,821]},
+    {id:&quot;inv&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;hồ sơ · Claude nhận định · Opus rà&quot;, gio:&quot;≈19′&quot;,     w:320,h:88, ct:null, tq:[644,626]},
+    {id:&quot;com&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;COMPLAINTS&quot;,       s:&quot;mail 7h · soát · nạp · băm&quot;,    gio:&quot;≤10s&quot;, w:320,h:88, ct:null, tq:[644,821]},
 
-    {id:&quot;tgt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-target&quot;, t:&quot;TRIAGE&quot;,           s:&quot;top 10+10 · dựng hồ sơ&quot;,              gio:&quot;156s&quot;,      w:250,h:84, ct:[80,648],   tq:null},
-    {id:&quot;ver&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;kiểm sự thật 2 lớp&quot;,         gio:&quot;63s&quot;,     w:250,h:78, ct:[402,596],  tq:null},
-    {id:&quot;det&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-radar&quot;,  t:&quot;AI DETECTION&quot;,     s:&quot;Claude viết nhận định&quot;,            gio:&quot;248s&quot;,     w:250,h:78, ct:[402,700],  tq:null},
-    {id:&quot;vdt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-verdict&quot;,t:&quot;RISK VERDICT&quot;,     s:&quot;gắn nhãn · sinh báo cáo&quot;,       gio:&quot;3s&quot;,      w:250,h:84, ct:[724,648],  tq:null},
-    {id:&quot;act&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-action&quot;, t:&quot;ACTION&quot;,           s:&quot;dựng lại · deploy riêng&quot;,  gio:&quot;110s&quot;,      w:250,h:84, ct:[1046,648], tq:null},
+    {id:&quot;tgt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-target&quot;, t:&quot;TRIAGE&quot;,           s:&quot;top 10+10 · hồ sơ · tờ số liệu&quot;,      gio:&quot;165s&quot;,      w:250,h:84, ct:[80,648],   tq:null},
+    {id:&quot;ver&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI VERIFICATION&quot;,  s:&quot;Claude viết nhận định&quot;,      gio:&quot;565s&quot;,     w:250,h:78, ct:[402,596],  tq:null},
+    {id:&quot;det&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-shield&quot;, t:&quot;OPUS REVIEWER&quot;,    s:&quot;rà lại ca Đỏ / Tím&quot;,         gio:&quot;197s&quot;,     w:250,h:78, ct:[402,700],  tq:null},
+    {id:&quot;vdt&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-verdict&quot;,t:&quot;RISK VERDICT&quot;,     s:&quot;báo cáo · kiểm sự thật · đề thi&quot;, gio:&quot;32s&quot;,      w:250,h:84, ct:[724,648],  tq:null},
+    {id:&quot;act&quot;, g:&quot;g3&quot;, k:&quot;&quot;,    i:&quot;k-action&quot;, t:&quot;ACTION&quot;,           s:&quot;dựng lại · test · deploy&quot;, gio:&quot;180s&quot;,      w:250,h:84, ct:[1046,648], tq:null},
 
     {id:&quot;eml&quot;, g:&quot;g4&quot;, k:&quot;dau&quot;, i:&quot;k-mail&quot;,   t:&quot;EMAIL TRIGGER&quot;,    s:&quot;Outlook · mail đồng nghiệp&quot;, gio:&quot;0,3s&quot;, w:250,h:84, ct:[80,853],   tq:null},
     {id:&quot;ccl&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-clean&quot;,  t:&quot;CLEANING&quot;,         s:&quot;soát · reply cùng thread&quot;,    gio:&quot;≤3s&quot;,      w:250,h:84, ct:[402,853],  tq:null},
@@ -2288,7 +2434,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     {id:&quot;cch&quot;, g:&quot;g4&quot;, k:&quot;&quot;,    i:&quot;k-pie&quot;,    t:&quot;COMPLAINT CHARTS&quot;, s:&quot;số đơn · tồn đọng (dựng ở B4)&quot;,          gio:&quot;trong B4&quot;,      w:250,h:84, ct:[1046,853], tq:null},
 
     {id:&quot;bot&quot;, g:&quot;g3&quot;, k:&quot;ai&quot;,  i:&quot;k-ai&quot;,     t:&quot;AI ASSISTANT&quot;,     s:&quot;hỏi đáp · chặn bịa số&quot;,      gio:&quot;theo yêu cầu&quot;, w:320,h:88, ct:[46,1026],  tq:null},
-    {id:&quot;bld&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;APPEND DASHBOARD&quot;, s:&quot;cộng dồn 90 ngày · 278.386 alert&quot;, gio:&quot;3s&quot;, w:280,h:84, ct:[1426,648], tq:[1242,626]},
+    {id:&quot;bld&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-stack&quot;,  t:&quot;APPEND DASHBOARD&quot;, s:&quot;cộng dồn 162 ngày&quot;,               gio:&quot;27s&quot;, w:280,h:84, ct:[1426,648], tq:[1242,626]},
     {id:&quot;sec&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-shield&quot;, t:&quot;SECURITY GATE&quot;,    s:&quot;quét khoá API · mã GD · SĐT&quot;,gio:&quot;1s&quot;,      w:320,h:88, ct:[1288,1026], tq:null},
     {id:&quot;dep&quot;, g:&quot;g5&quot;, k:&quot;&quot;,    i:&quot;k-cloud&quot;,  t:&quot;PUSH &amp; DEPLOY&quot;,    s:&quot;commit sạch · Cloudflare&quot;,   gio:&quot;35–55s&quot;,  w:320,h:88, ct:[874,1026],  tq:[1219,918]},
     {id:&quot;liv&quot;, g:&quot;g5&quot;, k:&quot;cuoi&quot;,i:&quot;k-globe&quot;,  t:&quot;LIVE&quot;,             s:&quot;đội vận hành mở là thấy&quot;,    gio:&quot;&quot;,        w:320,h:88, ct:[460,1026],   tq:null}
@@ -2314,8 +2460,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     {f:&quot;rnk&quot;,t:&quot;bld&quot;,m:&quot;rt&quot;,c:&quot;g2&quot;,ch:&quot;ct&quot;},
 
     {f:&quot;tgt&quot;,t:&quot;ver&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
-    {f:&quot;tgt&quot;,t:&quot;det&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
-    {f:&quot;ver&quot;,t:&quot;vdt&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
+    {f:&quot;ver&quot;,t:&quot;det&quot;,m:&quot;tb&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
     {f:&quot;det&quot;,t:&quot;vdt&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
     {f:&quot;vdt&quot;,t:&quot;act&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
     {f:&quot;act&quot;,t:&quot;bld&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
@@ -2330,27 +2475,28 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     {f:&quot;dep&quot;,t:&quot;liv&quot;,m:&quot;lr&quot;,c:&quot;g5&quot;,ch:&quot;ct&quot;},
     {f:&quot;liv&quot;,t:&quot;bot&quot;,m:&quot;lr&quot;,c:&quot;g3&quot;,ch:&quot;ct&quot;},
     {f:&quot;sec&quot;,t:&quot;sec&quot;,m:&quot;vong&quot;,c:&quot;g5&quot;,ch:&quot;ct&quot;},
-    {f:&quot;scr&quot;,t:&quot;mon&quot;,m:&quot;bl&quot;,c:&quot;g2&quot;,ch:&quot;tq&quot;,dy:60,ln:40},
-    {f:&quot;scr&quot;,t:&quot;inv&quot;,m:&quot;bl&quot;,c:&quot;g3&quot;,ch:&quot;tq&quot;,dy:60,ln:40},
-    {f:&quot;scr&quot;,t:&quot;com&quot;,m:&quot;bl&quot;,c:&quot;g4&quot;,ch:&quot;tq&quot;,dy:60,ln:40},
+    {f:&quot;scr&quot;,t:&quot;mon&quot;,m:&quot;bl&quot;,c:&quot;g2&quot;,ch:&quot;tq&quot;,dy:60,ln:96},
+    {f:&quot;scr&quot;,t:&quot;inv&quot;,m:&quot;bl&quot;,c:&quot;g3&quot;,ch:&quot;tq&quot;,dy:60,ln:128},
+    {f:&quot;scr&quot;,t:&quot;com&quot;,m:&quot;bl&quot;,c:&quot;g4&quot;,ch:&quot;tq&quot;,dy:60,ln:160},
     {f:&quot;mon&quot;,t:&quot;bld&quot;,m:&quot;rl&quot;,c:&quot;g2&quot;,ch:&quot;tq&quot;},
     {f:&quot;inv&quot;,t:&quot;bld&quot;,m:&quot;rl&quot;,c:&quot;g3&quot;,ch:&quot;tq&quot;},
-    {f:&quot;com&quot;,t:&quot;bld&quot;,m:&quot;rb&quot;,c:&quot;g4&quot;,ch:&quot;tq&quot;},
-    {f:&quot;bld&quot;,t:&quot;dep&quot;,m:&quot;tb&quot;,c:&quot;g5&quot;,ch:&quot;tq&quot;}
+    {f:&quot;com&quot;,t:&quot;bld&quot;,m:&quot;rb&quot;,c:&quot;g4&quot;,ch:&quot;tq&quot;,f1:0.28},
+    {f:&quot;bld&quot;,t:&quot;dep&quot;,m:&quot;tb&quot;,c:&quot;g5&quot;,ch:&quot;tq&quot;,f0:0.78,f1:0.75}
   ];
 
   var NHAN = [
     {neo:&quot;rty&quot;, dx:-96, dy:-64, t:&quot;lặp đến khi chạy được&quot;, c:&quot;g1&quot;, giua:1, ch:&quot;ct&quot;},
-    {neo:&quot;abt&quot;, dx:300, dy:30,  t:&quot;lỗi hệ thống · CSDL sập&quot;, c:&quot;gx&quot;, ch:&quot;ct&quot;}
+    {neo:&quot;abt&quot;, dx:300, dy:30,  t:&quot;lỗi hệ thống · CSDL sập&quot;, c:&quot;gx&quot;, ch:&quot;ct&quot;},
+    {neo:&quot;act&quot;, dx:0, dy:112, t:&quot;→ sau đó: 4 AI agent khác (nút AI Automation)&quot;, c:&quot;g2&quot;, ch:&quot;ct&quot;}
   ];
 
   var LAN = [
-    {t:&quot;01 · COLLECT &amp; SCORE — 480s&quot;, c:&quot;g1&quot;, neo:&quot;trg&quot;, dx:0, dy:-26, ch:&quot;ca&quot;},
-    {t:&quot;A · MONITORING — 22s&quot;,         c:&quot;g2&quot;, neo:&quot;dch&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
-    {t:&quot;B · INVESTIGATION — 580s&quot;,   c:&quot;g3&quot;, neo:&quot;tgt&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
-    {t:&quot;C · COMPLAINTS — 1–5s&quot;,        c:&quot;g4&quot;, neo:&quot;eml&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
-    {t:&quot;04 · PUBLISH — 40–60s&quot;,          c:&quot;g5&quot;, neo:&quot;liv&quot;, dx:0,   dy:-24, ch:&quot;ct&quot;},
-    {t:&quot;04 · PUBLISH — 40–60s&quot;,          c:&quot;g5&quot;, neo:&quot;sec&quot;, dx:320, dy:-22, cuoi:1, ch:&quot;tq&quot;}
+    {t:&quot;01 · COLLECT &amp; SCORE — ≈6′30″&quot;, c:&quot;g1&quot;, neo:&quot;trg&quot;, dx:0, dy:-26, ch:&quot;ca&quot;},
+    {t:&quot;A · MONITORING — ≈40s&quot;,         c:&quot;g2&quot;, neo:&quot;dch&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;B · AI VERIFICATION — ≈19′&quot;,   c:&quot;g3&quot;, neo:&quot;tgt&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;C · COMPLAINTS — 1–10s&quot;,        c:&quot;g4&quot;, neo:&quot;eml&quot;, dx:0, dy:-16, ch:&quot;ca&quot;},
+    {t:&quot;04 · PUBLISH — ≈1′30″&quot;,          c:&quot;g5&quot;, neo:&quot;liv&quot;, dx:0,   dy:-24, ch:&quot;ct&quot;},
+    {t:&quot;04 · PUBLISH — ≈1′30″&quot;,          c:&quot;g5&quot;, neo:&quot;sec&quot;, dx:320, dy:-22, cuoi:1, ch:&quot;tq&quot;}
   ];
 
   var IDS_KHOI = [&quot;mon&quot;,&quot;inv&quot;,&quot;com&quot;,&quot;spk&quot;,&quot;rnk&quot;,&quot;dch&quot;,&quot;tgt&quot;,&quot;enr&quot;,&quot;ver&quot;,&quot;det&quot;,&quot;vdt&quot;,&quot;act&quot;,&quot;eml&quot;,&quot;fch&quot;,&quot;ccl&quot;,&quot;hsh&quot;,&quot;cch&quot;];
@@ -2428,11 +2574,12 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     t.textContent = noi;
     return t;
   }
-  function cong(n, p){
+  function cong(n, p, f){
+    var fx = (f === undefined || f === null) ? 0.5 : f;
     if(p === &quot;r&quot;) return {x:n.x+n.w, y:n.y+n.h/2};
     if(p === &quot;l&quot;) return {x:n.x,     y:n.y+n.h/2};
-    if(p === &quot;t&quot;) return {x:n.x+n.w/2, y:n.y};
-    return {x:n.x+n.w/2, y:n.y+n.h};
+    if(p === &quot;t&quot;) return {x:n.x+n.w*fx, y:n.y};
+    return {x:n.x+n.w*fx, y:n.y+n.h};
   }
 
   function tuyChe(v, md){
@@ -2453,7 +2600,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     if(d.m === &quot;lr&quot;){ s=cong(a,&quot;l&quot;); e=cong(b,&quot;r&quot;);
       k = Math.max(34, Math.abs(s.x-e.x)/2);
       return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; C&quot;+(s.x-k)+&quot;,&quot;+s.y+&quot; &quot;+(e.x+k)+&quot;,&quot;+e.y+&quot; &quot;+e.x+&quot;,&quot;+e.y; }
-    if(d.m === &quot;tb&quot;){ s=cong(a,&quot;b&quot;); e=cong(b,&quot;t&quot;);
+    if(d.m === &quot;tb&quot;){ s=cong(a,&quot;b&quot;,d.f0); e=cong(b,&quot;t&quot;,d.f1);
       if(Math.abs(e.x-s.x) < 6) return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; V&quot;+e.y;   // cùng trục -> kẻ thẳng
       k = Math.max(26, Math.abs(e.y-s.y)/2);
       return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; C&quot;+s.x+&quot;,&quot;+(s.y+k)+&quot; &quot;+e.x+&quot;,&quot;+(e.y-k)+&quot; &quot;+e.x+&quot;,&quot;+e.y; }
@@ -2472,7 +2619,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       var ln = Math.min(s.x, e.x) - 44;
       return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; H&quot;+(ln+R)+&quot; Q&quot;+ln+&quot;,&quot;+s.y+&quot; &quot;+ln+&quot;,&quot;+(s.y+R)+
              &quot; V&quot;+(e.y-R)+&quot; Q&quot;+ln+&quot;,&quot;+e.y+&quot; &quot;+(ln+R)+&quot;,&quot;+e.y+&quot; H&quot;+e.x; }
-    if(d.m === &quot;rb&quot;){ s=cong(a,&quot;r&quot;); e=cong(b,&quot;b&quot;);   // phải → đáy hộp đích (đi lên)
+    if(d.m === &quot;rb&quot;){ s=cong(a,&quot;r&quot;); e=cong(b,&quot;b&quot;,d.f1);   // phải → đáy hộp đích (đi lên)
       return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; H&quot;+(e.x-R)+&quot; Q&quot;+e.x+&quot;,&quot;+s.y+&quot; &quot;+e.x+&quot;,&quot;+(s.y-R)+&quot; V&quot;+e.y; }
     if(d.m === &quot;rt&quot;){ s=cong(a,&quot;r&quot;); e=cong(b,&quot;t&quot;);
       return &quot;M&quot;+s.x+&quot;,&quot;+s.y+&quot; H&quot;+(e.x-R)+&quot; Q&quot;+e.x+&quot;,&quot;+s.y+&quot; &quot;+e.x+&quot;,&quot;+(s.y+R)+&quot; V&quot;+e.y; }
@@ -2499,6 +2646,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       LD.appendChild(el(&quot;path&quot;, {d:veDuong(d), fill:&quot;none&quot;,
         stroke:&quot;var(--&quot;+d.c+&quot;)&quot;, &quot;stroke-width&quot;: d.m===&quot;vong&quot; ? 2.4 : 2.6,
         &quot;stroke-dasharray&quot;: d.dash ? &quot;7 5&quot; : null,
+        &quot;data-chay&quot;: d.dash ? null : d.c,
         &quot;marker-end&quot;:&quot;url(#m&quot;+d.c+&quot;)&quot;}));
     });
   }
@@ -2519,7 +2667,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       height:(y2-y1)+p*2+14, rx:22, fill:&quot;var(--khoi)&quot;, stroke:&quot;var(--g3)&quot;,
       &quot;stroke-width&quot;:2.4, &quot;stroke-dasharray&quot;:&quot;10 8&quot;}));
     LK.appendChild(chu(x2+p-10, y1-p+12,
-      &quot;SONG SONG · nhánh dài nhất 580s&quot;,
+      &quot;CHẠY CÙNG LÚC · nhánh dài nhất ≈19′ (AI Verification)&quot;,
       &quot;t-lan&quot;, &quot;var(--g3)&quot;, &quot;end&quot;));
   }
 
@@ -2610,9 +2758,8 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 
   /* ── xổ ra / thu gọn, có chuyển động ── */
   var dangChay = false;
-  function doiChe(){
-    if(dangChay) return;
-    var moi = che === &quot;tq&quot; ? &quot;ct&quot; : &quot;tq&quot;;
+  function doiChe(moi){
+    if(dangChay || moi === che) return;
     var giam = !!(window.matchMedia &amp;&amp;
                   window.matchMedia(&quot;(prefers-reduced-motion: reduce)&quot;).matches);
     var buoc = NUT.map(function(n){
@@ -2620,8 +2767,6 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       return {n:n, x0:n.x, y0:n.y, x1:d[0], y1:d[1], m0:n.mo, m1:hien ? 1 : 0};
     });
     che = moi;
-    document.getElementById(&quot;btnCheDo&quot;).textContent =
-      che === &quot;tq&quot; ? &quot;Xổ chi tiết&quot; : &quot;Thu gọn&quot;;
     if(giam){
       buoc.forEach(function(b){ b.n.x=b.x1; b.n.y=b.y1; b.n.mo=b.m1; });
       veTatCa(); luu(); return;
@@ -2653,9 +2798,93 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       }
     })(t0);
   }
-  document.getElementById(&quot;btnCheDo&quot;).addEventListener(&quot;click&quot;, doiChe);
-  document.getElementById(&quot;btnCheDo&quot;).textContent =
-    che === &quot;tq&quot; ? &quot;Xổ chi tiết&quot; : &quot;Thu gọn&quot;;
+
+  /* ── HẠT CHẠY DỌC DÂY (Daicd 14/10: thấy được dòng chảy) ──
+     Mỗi dây có vài chấm cùng màu trôi từ hộp nguồn sang hộp đích, mờ dần ở
+     hai đầu. Dây vẽ lại liên tục khi kéo hộp / đổi chế độ nên đọc lại dây
+     MỖI khung hình, độ dài dây nhớ theo chính phần tử path. */
+  var LH = document.getElementById(&quot;lop-hat&quot;);
+  var DAI = typeof WeakMap === &quot;function&quot; ? new WeakMap() : null;
+  var HAT = [], hatBat = false, tHat = 0, tTruoc = 0, thayDuoc = true;
+  var GIAM = !!(window.matchMedia &amp;&amp; window.matchMedia(&quot;(prefers-reduced-motion: reduce)&quot;).matches);
+  function hat(i){
+    while(HAT.length <= i){
+      var q = el(&quot;circle&quot;, {r:9, opacity:0}), c = el(&quot;circle&quot;, {r:4.2, opacity:0});
+      LH.appendChild(q); LH.appendChild(c);
+      HAT.push([q, c]);
+    }
+    return HAT[i];
+  }
+  function vongHat(now){
+    if(!hatBat) return;
+    var dt = tTruoc ? Math.min(80, now - tTruoc) : 0; tTruoc = now; tHat += dt/1000;
+    var ds = LD.querySelectorAll(&quot;path[data-chay]&quot;), k = 0;
+    for(var i = 0; i < ds.length; i++){
+      var p = ds[i], len = DAI &amp;&amp; DAI.get(p);
+      if(len === undefined || len === null){
+        try{ len = p.getTotalLength(); }catch(e){ len = 0; }
+        if(DAI) DAI.set(p, len);
+      }
+      if(!(len > 20)) continue;
+      var mau = &quot;var(--&quot; + p.getAttribute(&quot;data-chay&quot;) + &quot;)&quot;;
+      var n = Math.max(1, Math.round(len/190)), v = 62;
+      for(var j = 0; j < n; j++){
+        var d = (tHat*v + j*len/n) % len;
+        var pt = p.getPointAtLength(d);
+        var a = Math.max(0, Math.min(1, d/40, (len-d)/40));
+        var h = hat(k++);
+        h[0].setAttribute(&quot;cx&quot;, pt.x); h[0].setAttribute(&quot;cy&quot;, pt.y);
+        h[1].setAttribute(&quot;cx&quot;, pt.x); h[1].setAttribute(&quot;cy&quot;, pt.y);
+        h[0].style.fill = mau; h[1].style.fill = mau;
+        h[0].setAttribute(&quot;opacity&quot;, (0.22*a).toFixed(3));
+        h[1].setAttribute(&quot;opacity&quot;, (0.95*a).toFixed(3));
+      }
+    }
+    for(; k < HAT.length; k++){ HAT[k][0].setAttribute(&quot;opacity&quot;, 0); HAT[k][1].setAttribute(&quot;opacity&quot;, 0); }
+    requestAnimationFrame(vongHat);
+  }
+  function batHat(){
+    if(GIAM || hatBat || !thayDuoc || document.hidden || xem === &quot;ai&quot;) return;
+    hatBat = true; tTruoc = 0; requestAnimationFrame(vongHat);
+  }
+  function tatHat(){ hatBat = false; }
+  document.addEventListener(&quot;visibilitychange&quot;, function(){ document.hidden ? tatHat() : batHat(); });
+  if(&quot;IntersectionObserver&quot; in window){
+    new IntersectionObserver(function(e){
+      thayDuoc = e[0].isIntersecting; thayDuoc ? batHat() : tatHat();
+    }).observe(document.querySelector(&quot;.sanh&quot;));
+  }
+
+  /* ── 3 nút chế độ: Tổng quan · Chi tiết · AI Automation ── */
+  var KHOA_XEM = KHOA + &quot;-xem&quot;;
+  var xem = che;
+  function datXem(v){
+    var cu = xem; xem = v;
+    var laAI = v === &quot;ai&quot;;
+    [[&quot;xemTQ&quot;,&quot;tq&quot;],[&quot;xemCT&quot;,&quot;ct&quot;],[&quot;xemAI&quot;,&quot;ai&quot;]].forEach(function(b){
+      document.getElementById(b[0]).setAttribute(&quot;aria-pressed&quot;, b[1] === v ? &quot;true&quot; : &quot;false&quot;);
+    });
+    document.querySelectorAll(&quot;.chi-sd&quot;).forEach(function(e){ e.hidden = laAI; });
+    document.querySelectorAll(&quot;.chi-ai&quot;).forEach(function(e){ e.hidden = !laAI; });
+    SVG.style.display = laAI ? &quot;none&quot; : &quot;&quot;;
+    document.getElementById(&quot;aiView&quot;).hidden = !laAI;
+    if(laAI){ tatHat(); dongHop(); if(window.AIV) window.AIV.bat(); }
+    else{
+      if(window.AIV) window.AIV.tat();
+      if(cu === &quot;ai&quot; &amp;&amp; v !== che){
+        /* từ AI quay về: đặt thẳng, không chạy hiệu ứng trượt */
+        che = v;
+        NUT.forEach(function(n){ var p = dich(n, che); n.x=p[0]; n.y=p[1]; n.mo = hienO(n, che) ? 1 : 0; });
+        veTatCa(); luu();
+      }else if(v !== che){ doiChe(v); }
+      batHat();
+    }
+    try{ localStorage.setItem(KHOA_XEM, v); }catch(e){}
+  }
+  document.getElementById(&quot;xemTQ&quot;).addEventListener(&quot;click&quot;, function(){ datXem(&quot;tq&quot;); });
+  document.getElementById(&quot;xemCT&quot;).addEventListener(&quot;click&quot;, function(){ datXem(&quot;ct&quot;); });
+  document.getElementById(&quot;xemAI&quot;).addEventListener(&quot;click&quot;, function(){ datXem(&quot;ai&quot;); });
+  window.SDXEM = datXem;
 
   /* ── kéo thả ── */
   var keo = null, lech = {x:0,y:0};
@@ -2767,6 +2996,426 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     });
     veTatCa();
   });
+
+  /* mở lại đúng chế độ lần trước; AI Automation dựng ở khối script sau nên chỉ hẹn */
+  var vx = null;
+  try{ vx = localStorage.getItem(KHOA_XEM); }catch(e){}
+  if(vx === &quot;ai&quot;){ window.__moAI = true; datXem(che); }
+  else{ datXem(che); }
+})();
+</script>
+<script>
+/* ═══ AI AUTOMATION (Daicd 14/10/2026) ═══
+   Mặc định: trục giờ 07:00 → 07:50, mỗi agent một làn, thấy ai chạy lúc nào,
+   ai chờ ai, ai chạy cùng lúc. Bấm tên/vạch một agent → xổ workflow của nó.
+   Hai thứ tiếng: mặc định TIẾNG ANH, nút EN | VI ở đầu khung (nhớ lựa chọn).
+   Giờ trên trục = NGÀY ĐIỂN HÌNH: trung vị các ngày không lỗi 07–14/10 (cách tính ở
+   Code rác/workflow_ai_20261014/sua_dien_hinh.py) — sửa ở mảng AG khi đổi. Số giây từng bước lấy ngày 14/10. */
+(function(){
+  &quot;use strict&quot;;
+  function L(vi, en){ return {vi:vi, en:en}; }
+  var NN = &quot;en&quot;;
+  try{ var _n = localStorage.getItem(&quot;f2dr-luong-ngon&quot;); if(_n === &quot;vi&quot; || _n === &quot;en&quot;) NN = _n; }catch(e){}
+  function T(x){ return (x &amp;&amp; typeof x === &quot;object&quot;) ? x[NN] : x; }
+
+  function giay(h){ var p = h.split(&quot;:&quot;); return (+p[0])*3600 + (+p[1])*60 + (+(p[2]||0)); }
+  var T0 = giay(&quot;07:00&quot;), T1 = giay(&quot;07:50&quot;);
+  function pc(t){ return (t - T0) / (T1 - T0) * 100; }
+  function d2(n){ return (n < 10 ? &quot;0&quot; : &quot;&quot;) + n; }
+  function hh(t, coGiay){ t = Math.round(t);
+    return d2(Math.floor(t/3600)) + &quot;:&quot; + d2(Math.floor(t%3600/60)) + (coGiay ? &quot;:&quot; + d2(t%60) : &quot;&quot;); }
+  function tl(a, b){ var d = Math.round(b - a); if(d < 60) return d + &quot;s&quot;;
+    var m = Math.floor(d/60), s = d%60; return m + &quot;′&quot; + (s ? d2(s) + &quot;″&quot; : &quot;&quot;); }
+  function esc(s){ return String(s).replace(/[&amp;<>&quot;]/g, function(c){ return {&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;<&quot;:&quot;&amp;lt;&quot;,&quot;>&quot;:&quot;&amp;gt;&quot;,'&quot;':&quot;&amp;quot;&quot;}[c]; }); }
+
+  var CHU = {
+    tieu: L(&quot;5 AI agent làm việc thế nào mỗi sáng&quot;, &quot;How the 5 AI agents run every morning&quot;),
+    phu:  L(&quot;Thời gian điển hình của một ngày chạy trơn tru (trung vị các ngày không lỗi, 07–14/10). Bấm tên một agent để xem các bước.&quot;,
+            &quot;Typical timing on a smooth day (median of error-free days, 7–14 Oct). Click an agent to see its steps.&quot;),
+    dung: L(&quot;⏸ Dừng&quot;, &quot;⏸ Pause&quot;), chay: L(&quot;▶ Chạy&quot;, &quot;▶ Play&quot;),
+    bam:  L(&quot;Bấm để xem các bước&quot;, &quot;Click to see the steps&quot;),
+    cg:   L(&quot;Bấm tên agent để xem các bước&quot;, &quot;Click an agent to see its steps&quot;),
+    tong: L(&quot;TỪ LÚC AI ĐẦU TIÊN CHẠY (≈07:06) TỚI KHI XONG HẾT · NGÀY ĐIỂN HÌNH&quot;, &quot;FROM FIRST AI START (~07:06) TO LAST FINISH · TYPICAL DAY&quot;),
+    soAg: L(&quot;AI agent&quot;, &quot;AI agents&quot;), usd: L(&quot;USD chi phí AI một ngày điển hình&quot;, &quot;USD AI cost on a typical day&quot;), tay: L(&quot;thao tác tay&quot;, &quot;manual steps&quot;),
+    chan: [L(&quot;kích hoạt bước sau (chấm chạy = chiều đi)&quot;, &quot;triggers the next agent (dots show direction)&quot;),
+           L(&quot;đang chờ điều kiện&quot;, &quot;waiting for a condition&quot;), L(&quot;◆ mốc gửi mail báo cáo&quot;, &quot;◆ report mail sent&quot;),
+           L(&quot;Ngày chậm: AI Detection có thể xong muộn (13/10 xong 09:29) — mail chờ tối đa 20′; AI Graph chờ tới 11:00 rồi bỏ.&quot;,
+             &quot;Slow days: Detection can finish late (09:29 on 13 Oct) — the mail waits at most 20′; AI Graph gives up at 11:00.&quot;)]
+  };
+
+  var AG = [
+    {id:&quot;chinh&quot;, ky:&quot;⚙&quot;, m:&quot;var(--chu-mo)&quot;, tinh:1, ten:L(&quot;Luồng chính&quot;, &quot;Main pipeline&quot;),
+     doan:[{a:&quot;07:00:00&quot;, b:&quot;07:08:02&quot;, xam:1, n:L(&quot;B0 → B8: chạy 50 query → gộp alert → chấm điểm → dựng và đẩy dashboard&quot;,
+                                                  &quot;B0 → B8: run 50 queries → merge alerts → score → build and push the dashboard&quot;)}],
+     nhan:L(&quot;≈8′ · không dùng AI&quot;, &quot;~8′ · no AI&quot;)},
+
+    {id:&quot;ver&quot;, ky:&quot;V&quot;, m:&quot;var(--g3)&quot;, usd:L(&quot;≈3,2&quot;, &quot;~$3.2&quot;), ten:L(&quot;AI Verification&quot;, &quot;AI Verification&quot;),
+     doan:[
+       {a:&quot;07:06:10&quot;, b:&quot;07:08:46&quot;, n:L(&quot;Chọn 20 ca, lập hồ sơ, tính sẵn số liệu (D1–D3)&quot;, &quot;Pick 20 cases, build files, pre-compute facts (D1–D3)&quot;)},
+       {a:&quot;07:08:46&quot;, b:&quot;07:17:39&quot;, n:L(&quot;AI kết luận 20 ca (D4)&quot;, &quot;AI writes verdicts for 20 cases (D4)&quot;)},
+       {a:&quot;07:17:39&quot;, b:&quot;07:20:45&quot;, n:L(&quot;AI thứ hai rà các ca Đỏ / Tím (R0)&quot;, &quot;Second AI reviews red / purple cases (R0)&quot;)},
+       {a:&quot;07:20:45&quot;, b:&quot;07:21:15&quot;, n:L(&quot;Viết báo cáo · đối chiếu số · bài kiểm tra (H1–H3)&quot;, &quot;Report · fact-check · data quiz (H1–H3)&quot;)},
+       {a:&quot;07:21:15&quot;, b:&quot;07:24:06&quot;, n:L(&quot;Dựng dashboard, test giao diện, đưa lên trang (H4–H5)&quot;, &quot;Build dashboard, UI test, deploy (H4–H5)&quot;)}],
+     nhan:L(&quot;≈18′ · 20 ca · ≈3,2 USD&quot;, &quot;~18′ · 20 cases · ~$3.2&quot;),
+     tom:[[L(&quot;Kích hoạt&quot;, &quot;Trigger&quot;), L(&quot;luồng chính chấm điểm xong (B3, ~07:06)&quot;, &quot;main pipeline finishes scoring (B3, ~07:06)&quot;)],
+          [L(&quot;Việc&quot;, &quot;Job&quot;), L(&quot;đọc hồ sơ, kết luận ca alert là Dương tính hay Âm tính&quot;, &quot;read each case file and decide true or false positive&quot;)],
+          [L(&quot;Đầu ra&quot;, &quot;Output&quot;), L(&quot;nhãn Đỏ / Xanh / Trắng + báo cáo chi tiết từng ca trên dashboard&quot;, &quot;red / green / white label + case report on the dashboard&quot;)]],
+     buoc:[
+       {ma:&quot;D1&quot;, g:&quot;147s&quot;, t:L(&quot;Chọn 20 ca cần xét&quot;, &quot;Pick 20 cases&quot;),
+        p:L(&quot;10 khách điểm cao nhất + 10 khách ngẫu nhiên; lấy lịch sử giao dịch&quot;, &quot;top 10 by score + 10 random; pull transaction history&quot;)},
+       {ma:&quot;D2&quot;, g:&quot;6s&quot;, t:L(&quot;Gom alert khác của khách&quot;, &quot;Gather other alerts&quot;),
+        p:L(&quot;mọi alert khác của cùng khách trong ngày&quot;, &quot;every other alert of the same customer that day&quot;)},
+       {ma:&quot;D3&quot;, g:&quot;11s&quot;, t:L(&quot;Tính sẵn số liệu&quot;, &quot;Pre-compute facts&quot;),
+        p:L(&quot;code tính trước các con số (tổng tiền, số người nhận…) để AI không phải tự tính&quot;, &quot;code computes the numbers first so the AI never does math&quot;)},
+       {ma:&quot;D4&quot;, g:&quot;565s&quot;, llm:&quot;Opus&quot;, t:L(&quot;AI kết luận Dương / Âm tính&quot;, &quot;AI verdict&quot;),
+        p:L(&quot;đọc hồ sơ, kết luận kèm lý do và hướng xử lý&quot;, &quot;reads the file, decides, gives reasons and next action&quot;)},
+       {ma:&quot;R0&quot;, g:&quot;197s&quot;, llm:&quot;Opus&quot;, t:L(&quot;AI thứ hai rà lại&quot;, &quot;Second-opinion review&quot;),
+        p:L(&quot;một lượt Opus khác rà riêng ca Đỏ / Tím, phân xử nếu lệch&quot;, &quot;another Opus pass re-checks red / purple cases&quot;)},
+       {ma:&quot;H1&quot;, g:&quot;3s&quot;, t:L(&quot;Viết báo cáo, che thông tin&quot;, &quot;Write report, mask data&quot;),
+        p:L(&quot;che tên và số tài khoản trước khi lên trang công khai&quot;, &quot;hides names and account numbers before publishing&quot;)},
+       {ma:&quot;H2&quot;, g:&quot;1s&quot;, t:L(&quot;Đối chiếu từng con số&quot;, &quot;Fact-check numbers&quot;),
+        p:L(&quot;code dò mọi con số AI viết với dữ liệu gốc&quot;, &quot;code checks every number the AI wrote against raw data&quot;)},
+       {ma:&quot;H3&quot;, g:&quot;28s&quot;, t:L(&quot;Bài kiểm tra số liệu&quot;, &quot;Data quiz&quot;),
+        p:L(&quot;159 câu hỏi về số liệu, so với đáp án tính độc lập&quot;, &quot;159 questions answered independently and compared&quot;)},
+       {ma:&quot;H4&quot;, g:&quot;143s&quot;, t:L(&quot;Dựng dashboard, test giao diện&quot;, &quot;Build &amp; UI test&quot;),
+        p:L(&quot;126 tiêu chí; trượt là không đưa lên trang&quot;, &quot;126 checks; any failure blocks the deploy&quot;)},
+       {ma:&quot;H5&quot;, g:&quot;37s&quot;, t:L(&quot;Đưa lên trang&quot;, &quot;Deploy&quot;),
+        p:L(&quot;đẩy lên trang công khai, kiểm lại trên mạng&quot;, &quot;push to the public page and verify online&quot;)}],
+     chan:[[L(&quot;Khi lỗi gọi AI&quot;, &quot;If an AI call fails&quot;), L(&quot;thử lại sau 2′; mail không chờ quá 12′; ca còn thiếu thử tiếp tới 18:00&quot;, &quot;retry after 2′; the mail waits ≤12′; missing cases retry until 18:00&quot;)],
+           [L(&quot;Số giây từng bước&quot;, &quot;Seconds per step&quot;), L(&quot;lấy theo ngày 14/10 (ngày không lỗi)&quot;, &quot;from 14 Oct, an error-free day&quot;)]]},
+
+    {id:&quot;tra&quot;, ky:&quot;T&quot;, m:&quot;var(--g4)&quot;, usd:L(&quot;≈0,27 / kịch bản&quot;, &quot;~$0.27 per rule&quot;), ten:L(&quot;AI Trace&quot;, &quot;AI Trace&quot;),
+     doan:[{a:&quot;07:24:06&quot;, b:&quot;07:25:50&quot;, n:L(&quot;Có 1 kịch bản tăng vọt: gom bằng chứng + AI tìm nguyên nhân ≈1′45″ (đo 13/10: 104 giây). Không có thì dừng sau 1 giây.&quot;,
+                                            &quot;With 1 spiking rule: gather evidence + AI root cause ~1′45″ (104s on 13 Oct). No spike: stops after 1s.&quot;)}],
+     nhan:L(&quot;≈1′45″ khi có kịch bản tăng vọt&quot;, &quot;~1′45″ when a rule spikes&quot;),
+     tom:[[L(&quot;Kích hoạt&quot;, &quot;Trigger&quot;), L(&quot;AI Verification đưa lên trang xong (~07:25), chạy cùng lúc với AI Detection&quot;, &quot;AI Verification deployed (~07:25); runs alongside AI Detection&quot;)],
+          [L(&quot;Việc&quot;, &quot;Job&quot;), L(&quot;tìm vì sao một kịch bản bỗng ra nhiều alert&quot;, &quot;find why a rule suddenly fires far more alerts&quot;)],
+          [L(&quot;Đầu ra&quot;, &quot;Output&quot;), L(&quot;nguyên nhân + đề xuất; ca đã xác minh lên dashboard thành dòng cam&quot;, &quot;root cause + proposal; verified cases show as orange rows&quot;)]],
+     buoc:[
+       {g:&quot;≈1s&quot;, t:L(&quot;Dò kịch bản tăng vọt&quot;, &quot;Detect spikes&quot;),
+        p:L(&quot;số alert ≥ 3 lần mức thường 14 ngày và tăng ≥ 100 dòng&quot;, &quot;alerts ≥ 3× the 14-day median and +100 rows&quot;)},
+       {t:L(&quot;Gom bằng chứng&quot;, &quot;Gather evidence&quot;),
+        p:L(&quot;file alert, điểm, giao dịch, câu SQL của kịch bản&quot;, &quot;alert file, scores, transactions, the rule's SQL&quot;)},
+       {llm:&quot;Opus&quot;, t:L(&quot;AI tìm nguyên nhân&quot;, &quot;Find root cause&quot;),
+        p:L(&quot;nhóm nguyên nhân, bằng chứng, điều đã loại trừ, đề xuất&quot;, &quot;cause type, evidence, what was ruled out, proposal&quot;)},
+       {t:L(&quot;Kiểm số AI đưa ra&quot;, &quot;Verify AI numbers&quot;),
+        p:L(&quot;số nào không có trong bằng chứng thì gắn cờ&quot;, &quot;flags any number not found in the evidence&quot;)},
+       {t:L(&quot;Lưu kết quả, đề xuất&quot;, &quot;Save &amp; propose&quot;),
+        p:L(&quot;chỉ đề xuất, không tự sửa kịch bản&quot;, &quot;proposes only, never edits the rule&quot;)}],
+     chan:[[L(&quot;Không có kịch bản tăng vọt&quot;, &quot;No spike&quot;), L(&quot;dừng ở bước 1 sau 1 giây, 0 USD&quot;, &quot;stops at step 1 after 1s, $0&quot;)],
+           [L(&quot;Mỗi kịch bản tăng vọt&quot;, &quot;Per spiking rule&quot;), L(&quot;≈1′45″ (đo 13/10) · ≈0,27 USD (10, 11, 13/10) · tối đa 4 kịch bản/ngày&quot;, &quot;~1′45″ (13 Oct) · ~$0.27 (10, 11, 13 Oct) · up to 4 rules a day&quot;)]]},
+
+    {id:&quot;det&quot;, ky:&quot;D&quot;, m:&quot;var(--g2)&quot;, usd:L(&quot;≈1,9&quot;, &quot;~$1.9&quot;), ten:L(&quot;AI Detection&quot;, &quot;AI Detection&quot;),
+     doan:[{a:&quot;07:24:06&quot;, b:&quot;07:37:19&quot;, n:L(&quot;Lọc ~39.000 ví → xét 16 khách → đề xuất → AI thứ hai duyệt lại&quot;, &quot;Screen ~39,000 wallets → review 16 → propose → second AI check&quot;)}],
+     nhan:L(&quot;≈13′ · ≈1,9 USD&quot;, &quot;~13′ · ~$1.9&quot;),
+     tom:[[L(&quot;Kích hoạt&quot;, &quot;Trigger&quot;), L(&quot;AI Verification đưa lên trang xong (~07:25)&quot;, &quot;AI Verification deployed (~07:25)&quot;)],
+          [L(&quot;Việc&quot;, &quot;Job&quot;), L(&quot;tìm khách CHƯA có alert nhưng đáng Đỏ / Tím&quot;, &quot;find customers with NO alert who still look red / purple&quot;)],
+          [L(&quot;Đầu ra&quot;, &quot;Output&quot;), L(&quot;khách đề xuất + đề xuất sửa hoặc thêm kịch bản&quot;, &quot;flagged customers + rule fixes or new rules&quot;)]],
+     buoc:[
+       {ma:&quot;A0&quot;, g:&quot;278s&quot;, llm:&quot;Sonnet&quot;, t:L(&quot;Lướt nhanh 120 ví&quot;, &quot;Quick scan&quot;),
+        p:L(&quot;đọc tóm tắt 120 ví, chọn 8 ví đáng xem kỹ&quot;, &quot;reads 120 wallet summaries, picks 8 for a deep look&quot;)},
+       {ma:&quot;S1&quot;, g:&quot;360s&quot;, t:L(&quot;Lọc ví theo dòng tiền&quot;, &quot;Cash-flow screen&quot;),
+        p:L(&quot;49.316 ví → bỏ ví đã có alert, ví lương… → 39.311 → lấy 16 ví đầu&quot;, &quot;49,316 wallets → drop already-alerted, payroll… → 39,311 → top 16&quot;)},
+       {ma:&quot;S2&quot;, g:&quot;108s&quot;, t:L(&quot;Lập hồ sơ khách&quot;, &quot;Build profiles&quot;),
+        p:L(&quot;giao dịch, số dư, tài khoản nhận của 16 khách&quot;, &quot;transactions, balances, payees of 16 customers&quot;)},
+       {ma:&quot;A1&quot;, g:&quot;293s&quot;, llm:&quot;Sonnet&quot;, t:L(&quot;AI xét từng khách&quot;, &quot;Review each customer&quot;),
+        p:L(&quot;16/16 khách · đề xuất 2 khách Đỏ / Tím&quot;, &quot;16/16 reviewed · 2 proposed red / purple&quot;)},
+       {ma:&quot;A2&quot;, g:&quot;78s&quot;, llm:&quot;Opus&quot;, t:L(&quot;AI thứ hai duyệt lại&quot;, &quot;Independent check&quot;),
+        p:L(&quot;giữ hay hạ từng đề xuất — 14/10 giữ 0&quot;, &quot;keeps or drops each proposal — kept 0 on 14 Oct&quot;)},
+       {ma:&quot;A3&quot;, llm:&quot;Opus&quot;, t:L(&quot;Gom nhóm, đề xuất kịch bản&quot;, &quot;Group &amp; propose rules&quot;),
+        p:L(&quot;chỉ chạy khi còn khách được giữ&quot;, &quot;only runs when someone is kept&quot;)},
+       {ma:&quot;A5&quot;, t:L(&quot;Đo số alert sẽ tăng&quot;, &quot;Measure impact&quot;),
+        p:L(&quot;chạy thử đề xuất trên dữ liệu đã lọc&quot;, &quot;dry-runs the proposal on screened data&quot;)},
+       {ma:&quot;A4&quot;, t:L(&quot;Đưa lên dashboard&quot;, &quot;Publish&quot;),
+        p:L(&quot;khách được giữ thành dòng AD, đưa trang lên lại&quot;, &quot;kept customers become AD rows; page redeployed&quot;)}],
+     chan:[[L(&quot;Thời gian&quot;, &quot;Timing&quot;), L(&quot;≈13′ (12 và 14/10) — lướt nhanh và lọc chạy cùng lúc; số giây từng bước theo 14/10&quot;, &quot;~13′ (12 &amp; 14 Oct) — quick scan and screen run in parallel; step seconds from 14 Oct&quot;)],
+           [L(&quot;Mail&quot;, &quot;Mail&quot;), L(&quot;chờ AI Detection tối đa 20′&quot;, &quot;waits for Detection up to 20′&quot;)],
+           [L(&quot;Ví đã bị AI thứ hai hạ&quot;, &quot;Dropped wallets&quot;), L(&quot;14 ngày sau mới xét lại&quot;, &quot;not reviewed again for 14 days&quot;)]]},
+
+    {id:&quot;mail&quot;, ky:&quot;✉&quot;, m:&quot;var(--chu-nhat)&quot;, tinh:1, moc:&quot;07:37:25&quot;, ten:L(&quot;Mail 7h&quot;, &quot;7am mail&quot;),
+     nhan:L(&quot;≈07:37 gửi mail báo cáo&quot;, &quot;~07:37 report mail sent&quot;)},
+
+    {id:&quot;aud&quot;, ky:&quot;A&quot;, m:&quot;var(--g5)&quot;, usd:L(&quot;≈1,3&quot;, &quot;~$1.3&quot;), ten:L(&quot;AI Auditing&quot;, &quot;AI Auditing&quot;),
+     doan:[{a:&quot;07:37:25&quot;, b:&quot;07:43:37&quot;, n:L(&quot;Chấm lại mù ca 7h và ca AI Detection · đối chiếu số liệu&quot;, &quot;Blind re-grade of 7am and Detection cases · number check&quot;)}],
+     nhan:L(&quot;≈6′ · ≈1,3 USD&quot;, &quot;~6′ · ~$1.3&quot;),
+     tom:[[L(&quot;Kích hoạt&quot;, &quot;Trigger&quot;), L(&quot;sau khi gửi mail 7h (AI Detection đã xong)&quot;, &quot;after the 7am mail (Detection done)&quot;)],
+          [L(&quot;Việc&quot;, &quot;Job&quot;), L(&quot;một AI khác chấm lại mà không thấy kết quả cũ&quot;, &quot;another AI re-grades without seeing earlier results&quot;)],
+          [L(&quot;Chế độ bóng&quot;, &quot;Shadow mode&quot;), L(&quot;chỉ ghi lại chỗ lệch, không đổi nhãn&quot;, &quot;logs disagreements, never changes labels&quot;)]],
+     buoc:[
+       {llm:&quot;Opus&quot;, t:L(&quot;Chấm lại mù ca 7h&quot;, &quot;Blind re-grade: 7am cases&quot;),
+        p:L(&quot;chấm lại 7 ca mà không xem nhãn — 14/10 lệch 2 ca&quot;, &quot;re-grades 7 cases without labels — 2 disagreed on 14 Oct&quot;)},
+       {llm:&quot;Opus&quot;, t:L(&quot;Chấm lại mù ca AI Detection&quot;, &quot;Blind re-grade: Detection&quot;),
+        p:L(&quot;chấm lại 2 ví được đề xuất — lệch 1&quot;, &quot;re-grades 2 proposed wallets — 1 disagreed&quot;)},
+       {t:L(&quot;Đối chiếu số liệu&quot;, &quot;Number check&quot;),
+        p:L(&quot;code dò 93 con số trong đề xuất — 0 số sai&quot;, &quot;code checks 93 numbers — 0 wrong&quot;)},
+       {t:L(&quot;Theo dõi kết cục thật&quot;, &quot;Track outcomes&quot;),
+        p:L(&quot;ví được giữ / bị hạ có lên alert sau đó không; theo dõi KB15 bản mới&quot;, &quot;do kept / dropped wallets get alerts later; tracks the new KB15&quot;)},
+       {llm:&quot;Opus&quot;, t:L(&quot;Rà soát cuối tuần (Chủ nhật)&quot;, &quot;Weekly review (Sun)&quot;),
+        p:L(&quot;3 agent: phân tích · thẩm định độc lập · cải tiến → đề xuất chờ duyệt&quot;, &quot;3 agents: analyse · audit · improve → proposals for approval&quot;)}],
+     chan:[[L(&quot;Thời gian&quot;, &quot;Timing&quot;), L(&quot;≈6′ (trung vị 08–14/10) · ≈1,3 USD&quot;, &quot;~6′ (median 8–14 Oct) · ~$1.3&quot;)],
+           [L(&quot;Nguyên tắc&quot;, &quot;Rule&quot;), L(&quot;chỉ đề xuất, người duyệt mới đổi&quot;, &quot;proposes only; a human approves&quot;)]]},
+
+    {id:&quot;gra&quot;, ky:&quot;G&quot;, m:&quot;var(--g1)&quot;, usd:L(&quot;0&quot;, &quot;$0&quot;), ten:L(&quot;AI Graph&quot;, &quot;AI Graph&quot;),
+     doan:[{a:&quot;07:25:00&quot;, b:&quot;07:37:50&quot;, cho:1, n:L(&quot;Task 07:25 bật, dò mỗi 60 giây xem AI Detection xong chưa&quot;, &quot;Task starts 07:25, polls every 60s until Detection is done&quot;)},
+           {a:&quot;07:37:50&quot;, b:&quot;07:38:56&quot;, n:L(&quot;Lần dòng tiền ~430 ví, lưu tối đa 50 case (≈1′, đo 57–76 giây)&quot;, &quot;Trace ~430 wallets, keep up to 50 cases (~1′, 57–76s)&quot;)}],
+     nhan:L(&quot;≈1′ · 0 USD&quot;, &quot;~1′ · $0&quot;),
+     tom:[[L(&quot;Kích hoạt&quot;, &quot;Trigger&quot;), L(&quot;task 07:25, chạy khi AI Detection hôm nay xong&quot;, &quot;07:25 task, runs once Detection is done&quot;)],
+          [L(&quot;Việc&quot;, &quot;Job&quot;), L(&quot;lần theo dòng tiền, tìm ví có hình trung chuyển&quot;, &quot;follow the money and find pass-through wallets&quot;)],
+          [L(&quot;Đầu ra&quot;, &quot;Output&quot;), L(&quot;trang lần dòng tiền theo case, mặc định hiện ca từ 85 điểm&quot;, &quot;money-trail page; shows cases scoring ≥85 by default&quot;)]],
+     buoc:[
+       {t:L(&quot;Chờ AI Detection xong&quot;, &quot;Wait for Detection&quot;),
+        p:L(&quot;dò mỗi 60 giây; lỗi hoặc quá 11:00 thì bỏ, giữ trang cũ&quot;, &quot;polls every 60s; gives up on error or after 11:00&quot;)},
+       {t:L(&quot;Gom ví cần xét&quot;, &quot;Build the pool&quot;),
+        p:L(&quot;ví AI Detection giữ + mọi ví có alert nhóm tiền trong ngày (14/10: 432)&quot;, &quot;Detection keeps + every money-flow alert wallet (432 on 14 Oct)&quot;)},
+       {t:L(&quot;Lần theo dòng tiền&quot;, &quot;Trace money flow&quot;),
+        p:L(&quot;xuôi và ngược tối đa 4 bước, ghép tiền vào – ra trong 48 giờ&quot;, &quot;up to 4 hops each way, matching in/out within 48h&quot;)},
+       {t:L(&quot;Chấm điểm, loại nhiễu&quot;, &quot;Score &amp; filter&quot;),
+        p:L(&quot;0–100 theo gom / toả, vào ≈ ra, ra trong 24 giờ; bỏ ví ít đối tác, tiền nhỏ, lệch (còn 83)&quot;, &quot;0–100 on fan-in / fan-out, in ≈ out, 24h exit; drops simple, small, unbalanced (83 left)&quot;)},
+       {t:L(&quot;Tìm tài khoản dùng chung&quot;, &quot;Find shared accounts&quot;),
+        p:L(&quot;các ví khác cùng gửi vào một tài khoản&quot;, &quot;other wallets paying into the same account&quot;)},
+       {t:L(&quot;Nhận dạng kiểu dòng tiền&quot;, &quot;Classify pattern&quot;),
+        p:L(&quot;gom về một mối · toả ra nhiều nơi · tiền qua nhanh · tài khoản thu gom&quot;, &quot;fan-in · fan-out · fast pass-through · collector account&quot;)},
+       {g:&quot;≈1′&quot;, t:L(&quot;Dựng trang xem&quot;, &quot;Build page&quot;),
+        p:L(&quot;lưu tối đa 50 case; 14/10: 7 case từ 85 điểm&quot;, &quot;keeps up to 50 cases; 7 scored ≥85 on 14 Oct&quot;)}],
+     chan:[[L(&quot;Không gọi LLM&quot;, &quot;No LLM&quot;), L(&quot;thuật toán đồ thị, 0 USD, 22 truy vấn&quot;, &quot;graph algorithms, $0, 22 queries&quot;)],
+           [L(&quot;Chạy&quot;, &quot;Runs&quot;), L(&quot;1 lần/ngày&quot;, &quot;once a day&quot;)]]}
+  ];
+  var NOI = [
+    [[&quot;chinh&quot;,&quot;07:06:10&quot;], [&quot;ver&quot;,&quot;07:06:10&quot;]],
+    [[&quot;ver&quot;,&quot;07:24:06&quot;], [&quot;tra&quot;,&quot;07:24:06&quot;]],
+    [[&quot;ver&quot;,&quot;07:24:06&quot;], [&quot;det&quot;,&quot;07:24:06&quot;]],
+    [[&quot;tra&quot;,&quot;07:25:50&quot;], [&quot;mail&quot;,&quot;07:37:25&quot;]],
+    [[&quot;det&quot;,&quot;07:37:19&quot;], [&quot;mail&quot;,&quot;07:37:25&quot;]],
+    [[&quot;mail&quot;,&quot;07:37:25&quot;], [&quot;aud&quot;,&quot;07:37:25&quot;]],
+    [[&quot;det&quot;,&quot;07:37:19&quot;], [&quot;gra&quot;,&quot;07:37:50&quot;]]
+  ];
+
+  var V = document.getElementById(&quot;aiView&quot;), TRONG = document.getElementById(&quot;aiTrong&quot;),
+      LAN = document.getElementById(&quot;aiLan&quot;), NOIS = document.getElementById(&quot;aiNoi&quot;),
+      KIM = document.getElementById(&quot;aiKim&quot;), GIO = document.getElementById(&quot;aiGio&quot;),
+      TIP = document.getElementById(&quot;aiTip&quot;), NUTP = document.getElementById(&quot;aiPhat&quot;);
+  var NSV = &quot;http://www.w3.org/2000/svg&quot;;
+  var GIAM = !!(window.matchMedia &amp;&amp; window.matchMedia(&quot;(prefers-reduced-motion: reduce)&quot;).matches);
+  var MAP = {};
+  AG.forEach(function(a){ MAP[a.id] = a; });
+
+  /* trục giờ + lưới 5 phút (không đổi theo ngôn ngữ) */
+  (function(){
+    var tr = document.getElementById(&quot;aiTruc&quot;), lu = document.getElementById(&quot;aiLuoi&quot;), h1 = &quot;&quot;, h2 = &quot;&quot;;
+    for(var t = T0; t <= T1; t += 300){
+      h1 += '<span style=&quot;left:' + pc(t) + '%&quot;>' + hh(t) + '</span>';
+      h2 += '<i style=&quot;left:' + pc(t) + '%&quot;></i>';
+    }
+    tr.innerHTML = h1; lu.innerHTML = h2;
+  })();
+
+  var VACH = [];
+  function dung(){
+    var mo = {};
+    [].forEach.call(LAN.querySelectorAll(&quot;.lan.mo&quot;), function(l){ mo[l.id] = 1; });
+    document.documentElement.lang = NN === &quot;en&quot; ? &quot;en&quot; : &quot;vi&quot;;
+    document.getElementById(&quot;aiTieu&quot;).textContent = T(CHU.tieu);
+    document.getElementById(&quot;aiPhu&quot;).textContent = T(CHU.phu);
+    [].forEach.call(document.querySelectorAll(&quot;.ngon button&quot;), function(b){
+      b.setAttribute(&quot;aria-pressed&quot;, b.getAttribute(&quot;data-ngon&quot;) === NN ? &quot;true&quot; : &quot;false&quot;); });
+    document.getElementById(&quot;aiChan&quot;).innerHTML =
+      '<span><i></i>' + esc(T(CHU.chan[0])) + '</span><span><i class=&quot;ch&quot;></i>' + esc(T(CHU.chan[1])) + '</span>' +
+      '<span>' + esc(T(CHU.chan[2])) + '</span><span>' + esc(T(CHU.chan[3])) + '</span>';
+    document.getElementById(&quot;aiSo&quot;).innerHTML =
+      '<div class=&quot;to&quot;><b style=&quot;color:var(--g2)&quot;>≈37′</b><span>' + esc(T(CHU.tong)) + '</span></div>' +
+      '<div><b>5</b><span>' + esc(T(CHU.soAg)) + '</span></div><div><b>' + (NN === &quot;en&quot; ? &quot;~6.4&quot; : &quot;≈6,4&quot;) + '</b><span>' +
+      esc(T(CHU.usd)) + '</span></div><div><b>0</b><span>' + esc(T(CHU.tay)) + '</span></div>';
+
+    LAN.innerHTML = &quot;&quot;;
+    AG.forEach(function(a){
+      var lan = document.createElement(&quot;div&quot;);
+      lan.className = &quot;lan&quot; + (mo[&quot;lan-&quot; + a.id] ? &quot; mo&quot; : &quot;&quot;); lan.style.setProperty(&quot;--m&quot;, a.m); lan.id = &quot;lan-&quot; + a.id;
+      var ten = '<span class=&quot;lan-cham&quot;>' + esc(a.ky) + '</span><span class=&quot;lan-chu&quot;><b>' + esc(T(a.ten)) + '</b><span>' +
+        (a.doan ? hh(giay(a.doan[0].a)) + &quot; → &quot; + hh(giay(a.doan[a.doan.length-1].b)) : hh(giay(a.moc))) + '</span></span>' +
+        (a.tinh ? '' : '<span class=&quot;lan-mo&quot;>▶</span>');
+      var ray = '';
+      (a.doan || []).forEach(function(d, j){
+        var x = pc(giay(d.a)), w = pc(giay(d.b)) - x;
+        ray += '<div class=&quot;vach' + (d.cho ? ' cho' : '') + (d.xam ? ' xam' : '') + '&quot; data-ag=&quot;' + a.id + '&quot; data-j=&quot;' + j +
+               '&quot; style=&quot;left:' + x + '%;width:' + w + '%&quot;></div>';
+      });
+      if(a.moc) ray += '<div class=&quot;moc&quot; style=&quot;left:' + pc(giay(a.moc)) + '%&quot;></div>';
+      var cuoi = a.doan ? giay(a.doan[a.doan.length-1].b) : giay(a.moc);
+      var dauCuoi = a.doan ? giay(a.doan[a.doan.length-1].a) : giay(a.moc);
+      ray += '<div class=&quot;vach-nhan&quot; data-trai=&quot;' + pc(dauCuoi) + '&quot; style=&quot;left:calc(' + pc(cuoi) + '% + 12px)&quot;>' + esc(T(a.nhan)) + '</div>';
+      var ct = '';
+      if(a.buoc){
+        ct = '<div class=&quot;ct-ag&quot;><div class=&quot;ct-tom&quot;>' + a.tom.map(function(x){ return '<span>' + esc(T(x[0])) + ': <b>' + esc(T(x[1])) + '</b></span>'; }).join(&quot;&quot;) +
+             '</div><div class=&quot;day-buoc&quot;>' + a.buoc.map(function(b, k){
+               return (k ? '<div class=&quot;noi-buoc&quot;><i></i><i></i></div>' : '') +
+                 '<div class=&quot;buoc' + (b.llm ? ' ai-b' : '') + '&quot;>' + (b.llm ? '<span class=&quot;chip llm&quot;>' + esc(b.llm) + '</span>' : '') +
+                 (b.g ? '<span class=&quot;chip&quot;>' + esc(b.g) + '</span>' : '') +
+                 '<span class=&quot;so&quot;>' + d2(k+1) + '</span>' + (b.ma ? '<span class=&quot;ma&quot;>' + esc(b.ma) + '</span>' : '') +
+                 '<b>' + esc(T(b.t)) + '</b><p>' + esc(T(b.p)) + '</p></div>';
+             }).join(&quot;&quot;) + '</div><div class=&quot;ct-chan&quot;>' + a.chan.map(function(x){ return '<span><em>' + esc(T(x[0])) + ':</em> ' + esc(T(x[1])) + '</span>'; }).join(&quot;&quot;) + '</div></div>';
+      }
+      lan.innerHTML = '<div class=&quot;lan-hang&quot;><button type=&quot;button&quot; class=&quot;lan-ten' + (a.tinh ? ' tinh' : '') + '&quot;' +
+        (a.tinh ? ' tabindex=&quot;-1&quot;' : ' aria-expanded=&quot;' + (mo[&quot;lan-&quot; + a.id] ? &quot;true&quot; : &quot;false&quot;) + '&quot;') + ' data-ag=&quot;' + a.id + '&quot;>' + ten +
+        '</button><div class=&quot;lan-ray&quot;>' + ray + '</div></div>' + ct;
+      LAN.appendChild(lan);
+    });
+
+    var CG = document.getElementById(&quot;aiChuGiai&quot;);
+    CG.innerHTML = '<div class=&quot;tieu&quot;>' + esc(T(CHU.cg)) + '</div>';
+    AG.forEach(function(a){
+      if(a.tinh) return;
+      var s = document.createElement(&quot;span&quot;);
+      s.innerHTML = '<i style=&quot;background:' + a.m + ';border:2px solid ' + a.m + '&quot;></i>' + esc(T(a.ten)) +
+                    ' <small style=&quot;color:var(--chu-mo)&quot;>· ' + (NN === &quot;en&quot; ? esc(T(a.usd)) : esc(T(a.usd)) + &quot; USD&quot;) + '</small>';
+      s.style.cursor = &quot;pointer&quot;; s.tabIndex = 0; s.setAttribute(&quot;role&quot;, &quot;button&quot;);
+      s.onclick = function(){ xo(a.id, true); };
+      s.onkeydown = function(e){ if(e.key === &quot;Enter&quot; || e.key === &quot; &quot;){ e.preventDefault(); xo(a.id, true); } };
+      CG.appendChild(s);
+    });
+
+    VACH = [].map.call(LAN.querySelectorAll(&quot;.vach&quot;), function(v){
+      var d = MAP[v.getAttribute(&quot;data-ag&quot;)].doan[+v.getAttribute(&quot;data-j&quot;)];
+      return {v:v, a:giay(d.a) - 20, b:giay(d.b) + 20, cho: !!d.cho};
+    });
+    nutPhat();
+    if(hien){ canNhan(); veNoi(); datKim(chay ? tKimGio() : KET); }
+  }
+
+  function xo(id, cuon){
+    var a = MAP[id]; if(!a || a.tinh) return;
+    var l = document.getElementById(&quot;lan-&quot; + id), mo = !l.classList.contains(&quot;mo&quot;);
+    l.classList.toggle(&quot;mo&quot;, mo);
+    l.querySelector(&quot;.lan-ten&quot;).setAttribute(&quot;aria-expanded&quot;, mo ? &quot;true&quot; : &quot;false&quot;);
+    requestAnimationFrame(veNoi);
+    if(mo &amp;&amp; cuon){
+      /* chỉ cuộn khung AI, không kéo cả trang cha (trang này nằm trong iframe của dashboard) */
+      var k = TRONG.parentNode, ct = l.querySelector(&quot;.ct-ag&quot;) || l;
+      requestAnimationFrame(function(){
+        var r = ct.getBoundingClientRect(), kr = k.getBoundingClientRect();
+        var lech = r.bottom > kr.bottom ? Math.min(r.bottom - kr.bottom + 8, l.getBoundingClientRect().top - kr.top - 30) : 0;
+        if(lech > 0) k.scrollBy({top: lech, behavior: GIAM ? &quot;auto&quot; : &quot;smooth&quot;});
+      });
+    }
+  }
+  LAN.addEventListener(&quot;click&quot;, function(e){
+    var t = e.target.closest(&quot;[data-ag]&quot;); if(t) xo(t.getAttribute(&quot;data-ag&quot;), true);
+  });
+  [].forEach.call(document.querySelectorAll(&quot;.ngon button&quot;), function(b){
+    b.addEventListener(&quot;click&quot;, function(){
+      NN = b.getAttribute(&quot;data-ngon&quot;);
+      try{ localStorage.setItem(&quot;f2dr-luong-ngon&quot;, NN); }catch(e){}
+      dung();
+    });
+  });
+
+  /* tooltip vạch */
+  LAN.addEventListener(&quot;mousemove&quot;, function(e){
+    var v = e.target.closest(&quot;.vach&quot;);
+    if(!v){ TIP.hidden = true; return; }
+    var a = MAP[v.getAttribute(&quot;data-ag&quot;)], d = a.doan[+v.getAttribute(&quot;data-j&quot;)];
+    TIP.innerHTML = '<b>' + esc(T(a.ten)) + '</b>' + esc(T(d.n)) + '<br><span style=&quot;font-family:IBM Plex Mono,monospace&quot;>' +
+      hh(giay(d.a), 1) + ' → ' + hh(giay(d.b), 1) + ' · ' + tl(giay(d.a), giay(d.b)) + '</span>' +
+      (a.tinh ? '' : '<br><span style=&quot;color:var(--chu-mo)&quot;>' + esc(T(CHU.bam)) + '</span>');
+    TIP.hidden = false;
+    var x = e.clientX + 14, y = e.clientY + 14, r = TIP.getBoundingClientRect();
+    if(x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+    if(y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+    TIP.style.left = x + &quot;px&quot;; TIP.style.top = y + &quot;px&quot;;
+  });
+  LAN.addEventListener(&quot;mouseleave&quot;, function(){ TIP.hidden = true; });
+
+  /* dây kích hoạt giữa các làn, có chấm chạy theo chiều kích hoạt */
+  var DAY = [];
+  function diem(id, t){
+    var l = document.getElementById(&quot;lan-&quot; + id), r = l.querySelector(&quot;.lan-ray&quot;).getBoundingClientRect(),
+        o = TRONG.getBoundingClientRect();
+    return {x: r.left - o.left + pc(giay(t)) / 100 * r.width, y: r.top - o.top + r.height / 2};
+  }
+  function veNoi(){
+    if(V.hidden) return;
+    var o = TRONG.getBoundingClientRect();
+    NOIS.setAttribute(&quot;viewBox&quot;, &quot;0 0 &quot; + o.width + &quot; &quot; + o.height);
+    NOIS.innerHTML = &quot;&quot;; DAY = [];
+    NOI.forEach(function(n, i){
+      var a = diem(n[0][0], n[0][1]), b = diem(n[1][0], n[1][1]);
+      var k = 26 + (i % 3) * 10;
+      var d = &quot;M&quot; + a.x + &quot;,&quot; + a.y + &quot; C&quot; + (a.x + k) + &quot;,&quot; + (a.y + (b.y - a.y) * .45) + &quot; &quot; +
+              (b.x - k) + &quot;,&quot; + (b.y - (b.y - a.y) * .45) + &quot; &quot; + b.x + &quot;,&quot; + b.y;
+      var m = MAP[n[1][0]].m;
+      var p = document.createElementNS(NSV, &quot;path&quot;);
+      p.setAttribute(&quot;d&quot;, d); p.setAttribute(&quot;fill&quot;, &quot;none&quot;); p.setAttribute(&quot;stroke-width&quot;, &quot;1.6&quot;);
+      p.style.stroke = m; p.setAttribute(&quot;opacity&quot;, &quot;.55&quot;);
+      NOIS.appendChild(p);
+      var c1 = document.createElementNS(NSV, &quot;circle&quot;), c2 = document.createElementNS(NSV, &quot;circle&quot;);
+      c1.setAttribute(&quot;r&quot;, 7); c2.setAttribute(&quot;r&quot;, 3.4); c1.style.fill = m; c2.style.fill = m;
+      c1.setAttribute(&quot;opacity&quot;, 0); c2.setAttribute(&quot;opacity&quot;, 0);
+      NOIS.appendChild(c1); NOIS.appendChild(c2);
+      DAY.push({p:p, c:[c1, c2], len: p.getTotalLength()});
+    });
+    if(GIAM || !chay) veHat(0.5);
+  }
+  function veHat(f){
+    DAY.forEach(function(d, i){
+      if(d.len < 4) return;
+      var s = ((f + i * 0.17) % 1) * d.len, pt = d.p.getPointAtLength(s);
+      var a = Math.max(0, Math.min(1, s / 12, (d.len - s) / 12));
+      d.c[0].setAttribute(&quot;cx&quot;, pt.x); d.c[0].setAttribute(&quot;cy&quot;, pt.y); d.c[0].setAttribute(&quot;opacity&quot;, (.25 * a).toFixed(3));
+      d.c[1].setAttribute(&quot;cx&quot;, pt.x); d.c[1].setAttribute(&quot;cy&quot;, pt.y); d.c[1].setAttribute(&quot;opacity&quot;, (.95 * a).toFixed(3));
+    });
+  }
+
+  /* kim giờ chạy qua buổi sáng: vạch nào kim đang đi qua thì sáng lên */
+  var CHU_KY = 20, GIU = 2.2, KET = giay(&quot;07:45&quot;);
+  var chay = !GIAM, hien = false, tCu = 0, tKim = 0, tHatAI = 0;
+  function tKimGio(){ return T0 + Math.min(1, tKim / CHU_KY) * (KET - T0); }
+  function datKim(t){
+    var r = LAN.querySelector(&quot;.lan-ray&quot;).getBoundingClientRect(), o = TRONG.getBoundingClientRect();
+    KIM.style.left = (r.left - o.left + pc(t) / 100 * r.width) + &quot;px&quot;;
+    GIO.textContent = hh(t);
+    VACH.forEach(function(x){ x.v.classList.toggle(&quot;dang&quot;, chay &amp;&amp; !x.cho &amp;&amp; t >= x.a &amp;&amp; t <= x.b); });
+  }
+  function vong(now){
+    if(!hien || !chay || document.hidden) return;
+    var dt = tCu ? Math.min(80, now - tCu) / 1000 : 0; tCu = now;
+    tKim = (tKim + dt) % (CHU_KY + GIU); tHatAI += dt;
+    datKim(tKimGio());
+    veHat((tHatAI / 2.4) % 1);
+    requestAnimationFrame(vong);
+  }
+  function batDau(){ if(hien &amp;&amp; chay &amp;&amp; !document.hidden){ tCu = 0; requestAnimationFrame(vong); } }
+  function nutPhat(){ NUTP.textContent = T(chay ? CHU.dung : CHU.chay); }
+  NUTP.addEventListener(&quot;click&quot;, function(){
+    chay = !chay; nutPhat();
+    if(chay) batDau(); else { datKim(KET); veHat(0.5); }
+  });
+
+  /* làn cao lên cho lấp khung (chỉ khi chưa xổ agent nào, tránh giật) + nhãn chạm mép phải thì lật sang trái vạch */
+  function doCao(){
+    if(LAN.querySelector(&quot;.lan.mo&quot;)) return;
+    var c = TRONG.parentNode.clientHeight - 26 - 14;
+    TRONG.style.setProperty(&quot;--lh&quot;, Math.max(54, Math.min(86, c / AG.length)) + &quot;px&quot;);
+  }
+  function canNhan(){
+    [].forEach.call(LAN.querySelectorAll(&quot;.vach-nhan&quot;), function(n){
+      var r = n.getBoundingClientRect(), ray = n.parentNode.getBoundingClientRect();
+      if(r.right > ray.right - 4){
+        n.style.left = &quot;auto&quot;;
+        n.style.right = &quot;calc(&quot; + (100 - (+n.getAttribute(&quot;data-trai&quot;))) + &quot;% + 10px)&quot;;
+      }
+    });
+  }
+  window.addEventListener(&quot;resize&quot;, function(){ if(hien){ doCao(); dung(); } });
+  document.addEventListener(&quot;visibilitychange&quot;, function(){ if(!document.hidden) batDau(); });
+
+  dung();
+  if(GIAM){ chay = false; NUTP.hidden = true; KIM.hidden = true; }
+  nutPhat();
+
+  window.AIV = {
+    bat: function(){ hien = true; doCao(); canNhan(); veNoi(); datKim(chay ? T0 : KET); batDau(); },
+    tat: function(){ hien = false; TIP.hidden = true; }
+  };
+  if(window.__moAI &amp;&amp; window.SDXEM) window.SDXEM(&quot;ai&quot;);
 })();
 </script>
 "></iframe>
