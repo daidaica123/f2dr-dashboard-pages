@@ -2025,6 +2025,9 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   .md-tr{max-height:none;overflow:visible}
   .mcard,.mkpi .kpi,.mucbar .mu{box-shadow:none}
 }
+/* Workflow phủ kín cửa sổ khi trình duyệt không cho fullscreen thật (Daicd 14/10) */
+#wfFrame.wf-pf{ position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important;
+  min-height:0 !important; z-index:2147483000 !important; background:#0c1116; }
 </style>
 </head>
 <body>
@@ -2053,7 +2056,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       <b>AI Automation</b> — 5 AI agent chạy lúc nào, ai chờ ai, bấm từng agent để xem workflow.
       Toàn bộ luồng đang chạy thật mỗi sáng, không thao tác tay.
     </div>
-    <iframe id="wfFrame" title="Sơ đồ luồng chạy tự động"
+    <iframe id="wfFrame" title="Sơ đồ luồng chạy tự động" allow="fullscreen" allowfullscreen
             style="width:100%;height:calc(100vh - 110px);min-height:600px;border:0;display:block"
             srcdoc="<title>Luồng F2DR 7h sáng</title>
 <link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap&quot;>
@@ -2282,6 +2285,30 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   .ngon button + button{ border-left:1px solid var(--vien); }
   .ngon button[aria-pressed=&quot;true&quot;]{ background:var(--g2); color:var(--giay); }
 
+  /* ── F = toàn màn hình (Daicd 14/10): ẩn cột trái, khung biểu đồ phủ kín ── */
+  /* cột trái ẩn hết, CHỈ giữ 3 nút chế độ thành dải nhỏ ở mép trên để vẫn chuyển được */
+  body.full .ben{ position:fixed; top:8px; left:12px; width:auto; padding:0; gap:0; z-index:50; overflow:visible; background:none; }
+  body.full .ben > :not(.che-do){ display:none; }
+  body.full .che-do{ display:flex; gap:5px; }
+  body.full .che-do button{ padding:5px 12px; }
+  body.full .sanh{ margin:0; border:0; border-radius:0; padding-top:44px; }
+  body.full .full-goi{ top:9px; }
+  body.full .ai{ top:44px; }
+  .full-goi{ position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:40; padding:6px 14px;
+             border-radius:20px; background:color-mix(in srgb,var(--giay) 92%,transparent); border:1px solid var(--vien);
+             font-size:12px; color:var(--chu-nhat); pointer-events:none; opacity:0; transition:opacity .4s; white-space:nowrap; }
+  .full-goi.hien{ opacity:1; }
+  /* nút biểu tượng toàn màn hình — để người xem biết có tính năng này (Daicd 14/10) */
+  .nut-full{ position:absolute; top:10px; right:12px; z-index:45; width:34px; height:34px; padding:0;
+             display:grid; place-items:center; border-radius:9px;
+             background:color-mix(in srgb,var(--giay) 88%,transparent); color:var(--chu-nhat); }
+  .nut-full svg{ width:18px; height:18px; display:block; }
+  .nut-full:hover{ color:var(--chu); border-color:var(--g2); box-shadow:0 0 0 3px color-mix(in srgb,var(--g2) 22%,transparent); }
+  .nut-full .dong, body.full .nut-full .mo{ display:none; }
+  body.full .nut-full .dong{ display:block; }
+  body.full .nut-full{ top:6px; }
+  .ai-dau{ padding-right:58px; }
+
   @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
 </style>
 
@@ -2317,6 +2344,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   <div class=&quot;so-lieu chi-ai&quot; id=&quot;aiSo&quot; hidden></div>
   <div class=&quot;thanh chi-ai&quot; id=&quot;aiChuGiai&quot; hidden></div>
   <div class=&quot;nut-td&quot;>
+    <span class=&quot;keo-hint&quot;>Nhấn <b>F</b> để xem toàn màn hình · <b>Esc</b> để thoát</span>
     <span class=&quot;keo-hint chi-sd&quot;>Kéo hộp để sắp lại</span>
     <button id=&quot;btnChep&quot; type=&quot;button&quot; class=&quot;chi-sd&quot;>Sao chép bố cục</button>
     <button id=&quot;btnDan&quot; type=&quot;button&quot; class=&quot;chi-sd&quot;>Dán bố cục</button>
@@ -2325,6 +2353,11 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 </aside>
 
 <div class=&quot;sanh&quot;>
+<div class=&quot;full-goi&quot; id=&quot;fullGoi&quot;>Nhấn F hoặc Esc để thoát toàn màn hình</div>
+<button type=&quot;button&quot; class=&quot;nut-full&quot; id=&quot;nutFull&quot; title=&quot;Xem toàn màn hình (F)&quot; aria-label=&quot;Xem toàn màn hình (F)&quot;>
+  <svg class=&quot;mo&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5&quot;/></svg>
+  <svg class=&quot;dong&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5&quot;/></svg>
+</button>
 <svg id=&quot;cv&quot; viewBox=&quot;0 0 1840 1070&quot; preserveAspectRatio=&quot;xMidYMid meet&quot; role=&quot;img&quot;
      aria-label=&quot;Sơ đồ luồng tự động hoá F2DR, kéo được và xổ ra chi tiết&quot;>
   <defs>
@@ -3198,6 +3231,24 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   var GIAM = !!(window.matchMedia &amp;&amp; window.matchMedia(&quot;(prefers-reduced-motion: reduce)&quot;).matches);
   var MAP = {};
   AG.forEach(function(a){ MAP[a.id] = a; });
+  /* tooltip nằm ngoài khung bị phóng (position:fixed trong phần tử có transform sẽ lệch chỗ) */
+  document.body.appendChild(TIP);
+  /* SC = hệ số phóng khi toàn màn hình; mọi toạ độ đo bằng getBoundingClientRect phải chia SC */
+  var SC = 1;
+  function datTL(){
+    var full = document.body.classList.contains(&quot;full&quot;);
+    SC = full ? Math.max(1, Math.min(1.35, innerWidth / 1400, innerHeight / 800)) : 1;
+    if(SC > 1.001){
+      var sa = V.parentNode;
+      var pt = parseFloat(getComputedStyle(sa).paddingTop) || 5;   /* chừa dải nút chế độ ở mép trên */
+      V.style.inset = &quot;auto&quot;; V.style.left = &quot;5px&quot;; V.style.top = pt + &quot;px&quot;;
+      V.style.width = ((sa.clientWidth - 10) / SC) + &quot;px&quot;; V.style.height = ((sa.clientHeight - pt - 5) / SC) + &quot;px&quot;;
+      V.style.transform = &quot;scale(&quot; + SC + &quot;)&quot;; V.style.transformOrigin = &quot;0 0&quot;;
+    }else{
+      SC = 1;
+      V.style.inset = V.style.left = V.style.top = V.style.width = V.style.height = V.style.transform = V.style.transformOrigin = &quot;&quot;;
+    }
+  }
 
   /* trục giờ + lưới 5 phút (không đổi theo ngôn ngữ) */
   (function(){
@@ -3329,12 +3380,12 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   function diem(id, t){
     var l = document.getElementById(&quot;lan-&quot; + id), r = l.querySelector(&quot;.lan-ray&quot;).getBoundingClientRect(),
         o = TRONG.getBoundingClientRect();
-    return {x: r.left - o.left + pc(giay(t)) / 100 * r.width, y: r.top - o.top + r.height / 2};
+    return {x: (r.left - o.left + pc(giay(t)) / 100 * r.width) / SC, y: (r.top - o.top + r.height / 2) / SC};
   }
   function veNoi(){
     if(V.hidden) return;
     var o = TRONG.getBoundingClientRect();
-    NOIS.setAttribute(&quot;viewBox&quot;, &quot;0 0 &quot; + o.width + &quot; &quot; + o.height);
+    NOIS.setAttribute(&quot;viewBox&quot;, &quot;0 0 &quot; + (o.width / SC) + &quot; &quot; + (o.height / SC));
     NOIS.innerHTML = &quot;&quot;; DAY = [];
     NOI.forEach(function(n, i){
       var a = diem(n[0][0], n[0][1]), b = diem(n[1][0], n[1][1]);
@@ -3370,7 +3421,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   function tKimGio(){ return T0 + Math.min(1, tKim / CHU_KY) * (KET - T0); }
   function datKim(t){
     var r = LAN.querySelector(&quot;.lan-ray&quot;).getBoundingClientRect(), o = TRONG.getBoundingClientRect();
-    KIM.style.left = (r.left - o.left + pc(t) / 100 * r.width) + &quot;px&quot;;
+    KIM.style.left = ((r.left - o.left + pc(t) / 100 * r.width) / SC) + &quot;px&quot;;
     GIO.textContent = hh(t);
     VACH.forEach(function(x){ x.v.classList.toggle(&quot;dang&quot;, chay &amp;&amp; !x.cho &amp;&amp; t >= x.a &amp;&amp; t <= x.b); });
   }
@@ -3404,7 +3455,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       }
     });
   }
-  window.addEventListener(&quot;resize&quot;, function(){ if(hien){ doCao(); dung(); } });
+  window.addEventListener(&quot;resize&quot;, function(){ datTL(); if(hien){ doCao(); dung(); } });
   document.addEventListener(&quot;visibilitychange&quot;, function(){ if(!document.hidden) batDau(); });
 
   dung();
@@ -3412,10 +3463,54 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   nutPhat();
 
   window.AIV = {
-    bat: function(){ hien = true; doCao(); canNhan(); veNoi(); datKim(chay ? T0 : KET); batDau(); },
+    bat: function(){ hien = true; datTL(); doCao(); canNhan(); veNoi(); datKim(chay ? T0 : KET); batDau(); },
     tat: function(){ hien = false; TIP.hidden = true; }
   };
   if(window.__moAI &amp;&amp; window.SDXEM) window.SDXEM(&quot;ai&quot;);
+})();
+</script>
+<script>
+/* ═══ F = TOÀN MÀN HÌNH (Daicd 14/10) ═══
+   Trong dashboard (trang này nằm trong iframe): F nhắn trang cha phóng CẢ iframe ra toàn
+   màn hình; trang cha nhắn lại {f2drFull:true/false} để trang này ẩn cột trái + phóng chữ.
+   Mở file riêng: tự gọi requestFullscreen; bị trình duyệt chặn thì vẫn phủ kín cửa sổ. */
+(function(){
+  &quot;use strict&quot;;
+  var trongKhung = window.parent !== window;
+  var GOI = document.getElementById(&quot;fullGoi&quot;), tGoi = 0;
+  function datFull(b){
+    document.body.classList.toggle(&quot;full&quot;, b);
+    clearTimeout(tGoi);
+    if(b){ GOI.classList.add(&quot;hien&quot;); tGoi = setTimeout(function(){ GOI.classList.remove(&quot;hien&quot;); }, 2200); }
+    else GOI.classList.remove(&quot;hien&quot;);
+    var nf = document.getElementById(&quot;nutFull&quot;), nhan = b ? &quot;Thoát toàn màn hình (F / Esc)&quot; : &quot;Xem toàn màn hình (F)&quot;;
+    nf.title = nhan; nf.setAttribute(&quot;aria-label&quot;, nhan);
+    requestAnimationFrame(function(){ window.dispatchEvent(new Event(&quot;resize&quot;)); });
+  }
+  window.SDFULL = datFull;
+  function laGo(e){ var t = e.target; return t &amp;&amp; (t.tagName === &quot;TEXTAREA&quot; || t.tagName === &quot;INPUT&quot; || t.isContentEditable); }
+  function doi(){
+    if(trongKhung){ try{ parent.postMessage({f2drWF:&quot;full&quot;}, &quot;*&quot;); }catch(x){} return; }
+    if(document.body.classList.contains(&quot;full&quot;)){
+      if(document.fullscreenElement &amp;&amp; document.exitFullscreen) document.exitFullscreen();
+      datFull(false);
+    }else{
+      var p = document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : null;
+      datFull(true);
+      if(p &amp;&amp; p.catch) p.catch(function(){});
+    }
+  }
+  document.addEventListener(&quot;keydown&quot;, function(e){
+    if(e.ctrlKey || e.metaKey || e.altKey || laGo(e)) return;
+    if(e.key === &quot;f&quot; || e.key === &quot;F&quot;){ e.preventDefault(); doi(); }
+    else if(e.key === &quot;Escape&quot; &amp;&amp; document.body.classList.contains(&quot;full&quot;)){
+      if(trongKhung){ try{ parent.postMessage({f2drWF:&quot;thoat&quot;}, &quot;*&quot;); }catch(x){} }
+      else{ if(document.fullscreenElement &amp;&amp; document.exitFullscreen) document.exitFullscreen(); datFull(false); }
+    }
+  });
+  document.getElementById(&quot;nutFull&quot;).addEventListener(&quot;click&quot;, function(){ this.blur(); doi(); });
+  document.addEventListener(&quot;fullscreenchange&quot;, function(){ if(!trongKhung &amp;&amp; !document.fullscreenElement) datFull(false); });
+  window.addEventListener(&quot;message&quot;, function(e){ var d = e.data; if(d &amp;&amp; typeof d.f2drFull === &quot;boolean&quot;) datFull(d.f2drFull); });
 })();
 </script>
 "></iframe>
@@ -4412,6 +4507,43 @@ function epNenToiChoSoDo(){
   dat();
   f.addEventListener('load', dat, {once:true});
 }
+
+/* ── Workflow: F = toàn màn hình (Daicd 14/10) ──
+   Phóng CẢ iframe sơ đồ (trang cha có quyền gọi fullscreen, iframe con thì cần thao tác
+   người dùng ngay trong nó). Báo cho iframe biết để nó ẩn cột trái + phóng chữ.
+   Trình duyệt từ chối fullscreen → phủ kín cửa sổ bằng lớp .wf-pf, Esc thoát. */
+(function(){
+  const khung = () => $('wfFrame');
+  const bao = b => { try{ khung().contentWindow.postMessage({f2drFull:b}, '*'); }catch(e){} };
+  const dangFull = () => document.fullscreenElement === khung() || khung().classList.contains('wf-pf');
+  function vao(){
+    const el = khung(); if(!el) return;
+    const phuKin = () => { el.classList.add('wf-pf'); document.body.style.overflow = 'hidden'; bao(true); };
+    if(!el.requestFullscreen){ phuKin(); return; }
+    el.requestFullscreen().then(() => bao(true)).catch(phuKin);
+  }
+  function ra(){
+    const el = khung(); if(!el) return;
+    if(document.fullscreenElement === el && document.exitFullscreen) document.exitFullscreen();
+    el.classList.remove('wf-pf'); document.body.style.overflow = ''; bao(false);
+  }
+  document.addEventListener('fullscreenchange', () => {
+    const el = khung();
+    if(el && document.fullscreenElement !== el && !el.classList.contains('wf-pf')) bao(false);
+  });
+  window.addEventListener('message', e => {
+    const d = e.data; if(!d || !d.f2drWF) return;
+    if(d.f2drWF === 'full') (dangFull() ? ra : vao)();
+    else if(d.f2drWF === 'thoat') ra();
+  });
+  document.addEventListener('keydown', e => {
+    if(CHE_DO !== 'wf' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target;
+    if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+    if(e.key === 'f' || e.key === 'F'){ e.preventDefault(); (dangFull() ? ra : vao)(); }
+    else if(e.key === 'Escape' && khung().classList.contains('wf-pf')) ra();
+  });
+})();
 
 function datCheDo(v){
   CHE_DO = (v === 'bc' || v === 'wf') ? v : 'vh';
