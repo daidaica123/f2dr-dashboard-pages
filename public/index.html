@@ -2043,6 +2043,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       <button id="cdVH" class="on" onclick="datCheDo('vh')">⚙ Vận hành</button>
       <button id="cdBC" onclick="datCheDo('bc')">▤ Báo cáo</button>
       <button id="cdWF" onclick="datCheDo('wf')">⛓ Workflow</button>
+      <button id="cdGR" onclick="datCheDo('gr')" title="Graph AI — Dấu chân dòng tiền: truy vết tiền đi qua ví trung gian">⬡ Graph AI</button>
     </span>
     <span class="badge" id="hdrBadge"><i class="live"></i><span id="hdrClock"></span></span>
   </div>
@@ -3598,6 +3599,16 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   </div>
 </div>
 
+<!-- Tab GRAPH AI (Daicd 15/10): trang "Dấu chân dòng tiền" (bản CÔNG KHAI, đã bỏ lý do AD) là file riêng graph-ai/index.html,
+     nạp lười ở lần bấm đầu — giữ dashboard nhẹ và để Graph AI cập nhật độc lập (task 7:25 sau AD). -->
+<div id="grWrap" style="display:none">
+  <div class="card" style="padding:0;overflow:hidden">
+    <iframe id="grFrame" title="Graph AI — Dấu chân dòng tiền" allow="fullscreen" allowfullscreen
+            data-src="graph-ai/index.html"
+            style="width:100%;height:calc(100vh - 78px);min-height:640px;border:0;display:block;background:#060a12"></iframe>
+  </div>
+</div>
+
 <!-- ══════════ THANH CHỌN NGÀY ══════════
      Bản này gộp cả kỳ. Người đọc hằng ngày chỉ quan tâm ngày mới nhất —
      hôm qua họ xem hôm qua rồi. Mặc định vẫn là TỔNG QUAN (bấm là mở
@@ -4626,22 +4637,31 @@ function epNenToiChoSoDo(){
   });
 })();
 
+/* Tab Graph AI: nạp iframe ở lần mở đầu (src ghi ở data-src) */
+function napGraph(){
+  const f = $('grFrame');
+  if(f && !f.getAttribute('src')) f.setAttribute('src', f.dataset.src);
+}
+
 function datCheDo(v){
-  CHE_DO = (v === 'bc' || v === 'wf') ? v : 'vh';
-  const bc = CHE_DO === 'bc', wf = CHE_DO === 'wf', an = bc || wf;
+  CHE_DO = (v === 'bc' || v === 'wf' || v === 'gr') ? v : 'vh';
+  const bc = CHE_DO === 'bc', wf = CHE_DO === 'wf', gr = CHE_DO === 'gr', an = bc || wf || gr;
   $('cdVH').classList.toggle('on', CHE_DO === 'vh');
   $('cdBC').classList.toggle('on', bc);
   $('cdWF').classList.toggle('on', wf);
+  $('cdGR').classList.toggle('on', gr);
   $('bcWrap').style.display = bc ? '' : 'none';
   $('wfWrap').style.display = wf ? '' : 'none';
+  $('grWrap').style.display = gr ? '' : 'none';
   if(wf) epNenToiChoSoDo();
+  if(gr) napGraph();
   /* foldScore là khối công cụ điểm (⓪①②) — không phải .card nên vòng dưới
      không quét tới. Để hiện ở chế độ Báo cáo thì số khoanh tròn của nó đụng
      ①②③ của tab. */
   ['nav','ngaybar','kpis','chuy','foldScore','m0','m1','m2','m3','m4','m5','m6','m7','m8','m9']
     .forEach(id=>{ const e = $(id); if(e) e.style.display = an ? 'none' : ''; });
   document.querySelectorAll('.card').forEach(e=>{
-    if(!e.closest('#bcWrap') && !e.closest('#wfWrap')) e.style.display = an ? 'none' : '';
+    if(!e.closest('#bcWrap') && !e.closest('#wfWrap') && !e.closest('#grWrap')) e.style.display = an ? 'none' : '';
   });
   if(bc){ renderBaoCao(); }
   if(an){ window.scrollTo(0,0); }
