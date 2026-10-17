@@ -2231,11 +2231,12 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   .ai-luoi i{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed color-mix(in srgb,var(--vien) 85%,transparent); }
   .ai-luoi i.q{ border-left:1px solid color-mix(in srgb,var(--vien) 90%,transparent); }
   .ai-noi{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; z-index:1; }
-  .ai-kim{ position:absolute; top:22px; bottom:0; width:2px; margin-left:-1px; z-index:3; pointer-events:none;
-           background:linear-gradient(color-mix(in srgb,var(--g2) 55%,#fff),color-mix(in srgb,var(--g2) 15%,transparent));
-           box-shadow:0 0 16px color-mix(in srgb,var(--g2) 85%,transparent); }
-  .ai-kim::before{ content:&quot;&quot;; position:absolute; top:-4px; left:-5px; width:12px; height:12px; border-radius:50%;
-                   background:var(--g2); box-shadow:0 0 0 3px color-mix(in srgb,var(--g2) 25%,transparent), 0 0 14px var(--g2); }
+  /* thanh tím = KIM giờ: CÙNG màu, CÙNG hình với kim ở các chart Bot Telegram (Daicd 17/10) */
+  .ai-kim{ position:absolute; top:22px; bottom:0; width:0; margin-left:0; z-index:3; pointer-events:none;
+           border-left:2px solid #c8b9ff; box-shadow:0 0 16px rgba(185,168,255,.9);
+           will-change:left; transform:translateZ(0); backface-visibility:hidden; }
+  .ai-kim::before{ content:&quot;&quot;; position:absolute; top:-1px; left:-5px; width:0; height:0; border:5px solid transparent;
+                   border-top:7px solid #b9a8ff; background:none; border-radius:0; box-shadow:none; }
   .ai-kim[hidden]{ display:none; }
 
   .lan{ position:relative; }
@@ -2280,6 +2281,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
          border:1.8px solid var(--m);
          box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 0 14px -3px color-mix(in srgb,var(--m) 65%,transparent);
          transition:box-shadow .25s, filter .25s; }
+  .vach{ transition:filter .35s ease; }
   .vach:hover{ filter:brightness(1.18); }
   .vach.cho{ background:none; border:0; border-radius:0; height:12px; top:calc(var(--lh,54px)/2 - 6px); }
   .vach.cho::before{ content:&quot;&quot;; position:absolute; left:0; right:0; top:5px;
@@ -3523,12 +3525,12 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   }
 
   /* kim giờ chạy qua buổi sáng: vạch nào kim đang đi qua thì sáng lên */
-  var CHU_KY = 20, GIU = 2.2, KET = giay(&quot;07:45&quot;);
+  var CHU_KY = 15, GIU = 2.2, KET = giay(&quot;07:45&quot;);   /* 15s/lượt, giữ 2,2s: bằng chart «Gửi file → tải về PC» của Bot Telegram */
   var chay = !GIAM, hien = false, tCu = 0, tKim = 0, tHatAI = 0;
   function tKimGio(){ return T0 + Math.min(1, tKim / CHU_KY) * (KET - T0); }
   function datKim(t){
     var r = LAN.querySelector(&quot;.lan-ray&quot;).getBoundingClientRect(), o = TRONG.getBoundingClientRect();
-    KIM.style.left = ((r.left - o.left + pc(t) / 100 * r.width) / SC) + &quot;px&quot;;
+    KIM.style.left = Math.round((r.left - o.left + pc(t) / 100 * r.width) / SC) + &quot;px&quot;;
     GIO.textContent = hh(t);
     VACH.forEach(function(x){ x.v.classList.toggle(&quot;dang&quot;, chay &amp;&amp; !x.cho &amp;&amp; t >= x.a &amp;&amp; t <= x.b); });
   }
