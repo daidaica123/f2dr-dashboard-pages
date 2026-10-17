@@ -2054,7 +2054,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     <div style="padding:11px 16px;border-bottom:1px solid var(--line);
                 font-size:12.5px;color:var(--mut)">
       Ba chế độ xem ở cột trái: <b>Tổng quan</b> · <b>Chi tiết</b> (kéo hộp sắp lại được) ·
-      <b>AI Automation</b> — 5 AI agent chạy lúc nào, ai chờ ai, bấm từng agent để xem workflow.
+      <b>AI Automation</b> — 6 AI agent chạy lúc nào, ai chờ ai, bấm từng agent để xem workflow.
       Toàn bộ luồng đang chạy thật mỗi sáng, không thao tác tay.
     </div>
     <iframe id="wfFrame" title="Sơ đồ luồng chạy tự động" allow="fullscreen" allowfullscreen
@@ -2072,6 +2072,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     --g3:#a32a6b; --g3n:#fbe2ee;
     --g4:#9c5c0a; --g4n:#fbeacf;
     --g5:#1f7a4d; --g5n:#e0f0e7;
+    --g6:#2f5fd0; --g6n:#dfe8fb;
     --gx:#a82b25; --gxn:#fbe2df;
   }
   @media (prefers-color-scheme: dark){ :root:not([data-theme=&quot;light&quot;]){
@@ -2084,6 +2085,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     --g3:#f07ab2; --g3n:#3a1a2c;
     --g4:#e5aa52; --g4n:#3b2d12;
     --g5:#5ecd8b; --g5n:#14331f;
+    --g6:#7aa2ff; --g6n:#17244a;
     --gx:#f3776e; --gxn:#391b19;
   }}
   :root[data-theme=&quot;dark&quot;]{
@@ -2096,6 +2098,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     --g3:#f07ab2; --g3n:#3a1a2c;
     --g4:#e5aa52; --g4n:#3b2d12;
     --g5:#5ecd8b; --g5n:#14331f;
+    --g6:#7aa2ff; --g6n:#17244a;
     --gx:#f3776e; --gxn:#391b19;
   }
 
@@ -2191,11 +2194,11 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   @media (prefers-color-scheme: dark){ :root:not([data-theme=&quot;light&quot;]) :is(.ai, #aiChuGiai, #aiSo, .ai-tip){
     --canvas:#03060b; --giay:#070d19; --khoi:#050913; --vien:#1d2d4d;
     --chu:#f4f8fd; --chu-nhat:#bac8e4; --chu-mo:#8a99b6;
-    --g1:#33e4ff; --g2:#b48dff; --g3:#ff78b6; --g4:#ffa24c; --g5:#34eb94; }}
+    --g1:#33e4ff; --g2:#b48dff; --g3:#ff78b6; --g4:#ffa24c; --g5:#34eb94; --g6:#6c9bff; }}
   :root[data-theme=&quot;dark&quot;] :is(.ai, #aiChuGiai, #aiSo, .ai-tip){
     --canvas:#03060b; --giay:#070d19; --khoi:#050913; --vien:#1d2d4d;
     --chu:#f4f8fd; --chu-nhat:#bac8e4; --chu-mo:#8a99b6;
-    --g1:#33e4ff; --g2:#b48dff; --g3:#ff78b6; --g4:#ffa24c; --g5:#34eb94; }
+    --g1:#33e4ff; --g2:#b48dff; --g3:#ff78b6; --g4:#ffa24c; --g5:#34eb94; --g6:#6c9bff; }
   .ai{ position:absolute; inset:5px; display:flex; flex-direction:column; gap:8px;
        border-radius:10px; overflow:hidden;
        background:radial-gradient(rgba(122,136,165,.13) 1px, transparent 1.2px) 0 0/22px 22px,
@@ -2387,7 +2390,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
     <div><b>3</b><span>điểm khởi động</span></div>
     <div><b>3</b><span>nhánh chạy cùng lúc</span></div>
     <div><b>50</b><span>kịch bản</span></div>
-    <div><b>5</b><span>AI agent</span></div>
+    <div><b>6</b><span>AI agent</span></div>
     <div><b>0</b><span>thao tác tay</span></div>
   </div>
   <div class=&quot;thanh chi-sd&quot;>
@@ -2462,7 +2465,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 <div class=&quot;ai&quot; id=&quot;aiView&quot; hidden>
   <div class=&quot;ai-dau&quot;>
     <div>
-      <div class=&quot;ai-nhan&quot;>AI Automation · 5 agents</div>
+      <div class=&quot;ai-nhan&quot;>AI Automation · 6 agents</div>
       <div class=&quot;ai-tieu&quot; id=&quot;aiTieu&quot;></div>
       <div class=&quot;ai-phu&quot; id=&quot;aiPhu&quot;></div>
     </div>
@@ -2580,7 +2583,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   var NHAN = [
     {neo:&quot;rty&quot;, dx:-96, dy:-64, t:&quot;lặp đến khi chạy được&quot;, c:&quot;g1&quot;, giua:1, ch:&quot;ct&quot;},
     {neo:&quot;abt&quot;, dx:300, dy:30,  t:&quot;lỗi hệ thống · CSDL sập&quot;, c:&quot;gx&quot;, ch:&quot;ct&quot;},
-    {neo:&quot;act&quot;, dx:0, dy:112, t:&quot;→ sau đó: 4 AI agent khác (nút AI Automation)&quot;, c:&quot;g2&quot;, ch:&quot;ct&quot;}
+    {neo:&quot;act&quot;, dx:0, dy:112, t:&quot;→ sau đó: 5 AI agent khác (nút AI Automation)&quot;, c:&quot;g2&quot;, ch:&quot;ct&quot;}
   ];
 
   var LAN = [
@@ -3122,7 +3125,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   function esc(s){ return String(s).replace(/[&amp;<>&quot;]/g, function(c){ return {&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;<&quot;:&quot;&amp;lt;&quot;,&quot;>&quot;:&quot;&amp;gt;&quot;,'&quot;':&quot;&amp;quot;&quot;}[c]; }); }
 
   var CHU = {
-    tieu: L(&quot;5 AI agent làm việc thế nào mỗi sáng&quot;, &quot;How the 5 AI agents run every morning&quot;),
+    tieu: L(&quot;6 AI agent làm việc thế nào mỗi sáng&quot;, &quot;How the 6 AI agents run every morning&quot;),
     phu:  L(&quot;Thời gian điển hình của một ngày chạy trơn tru (trung vị các ngày không lỗi, 07–14/10). Bấm tên một agent để xem các bước.&quot;,
             &quot;Typical timing on a smooth day (median of error-free days, 7–14 Oct). Click an agent to see its steps.&quot;),
     dung: L(&quot;⏸ Dừng&quot;, &quot;⏸ Pause&quot;), chay: L(&quot;▶ Chạy&quot;, &quot;▶ Play&quot;),
@@ -3146,7 +3149,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
      doan:[
        {a:&quot;07:06:10&quot;, b:&quot;07:08:46&quot;, n:L(&quot;Chọn 20 ca, lập hồ sơ, tính sẵn số liệu (D1–D3)&quot;, &quot;Pick 20 cases, build files, pre-compute facts (D1–D3)&quot;)},
        {a:&quot;07:08:46&quot;, b:&quot;07:17:39&quot;, n:L(&quot;AI kết luận 20 ca (D4)&quot;, &quot;AI writes verdicts for 20 cases (D4)&quot;)},
-       {a:&quot;07:17:39&quot;, b:&quot;07:20:45&quot;, n:L(&quot;AI thứ hai rà các ca Đỏ / Tím (R0)&quot;, &quot;Second AI reviews red / purple cases (R0)&quot;)},
+       {a:&quot;07:17:39&quot;, b:&quot;07:20:45&quot;, cho:1, n:L(&quot;Chờ AI Reviewer rà các ca Đỏ / Tím (R0)&quot;, &quot;Waiting for the AI Reviewer to check red / purple cases (R0)&quot;)},
        {a:&quot;07:20:45&quot;, b:&quot;07:21:15&quot;, n:L(&quot;Viết báo cáo · đối chiếu số · bài kiểm tra (H1–H3)&quot;, &quot;Report · fact-check · data quiz (H1–H3)&quot;)},
        {a:&quot;07:21:15&quot;, b:&quot;07:24:06&quot;, n:L(&quot;Dựng dashboard, test giao diện, đưa lên trang (H4–H5)&quot;, &quot;Build dashboard, UI test, deploy (H4–H5)&quot;)}],
      nhan:L(&quot;≈18′ · 20 ca · ≈3,2 USD&quot;, &quot;~18′ · 20 cases · ~$3.2&quot;),
@@ -3162,8 +3165,8 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
         p:L(&quot;code tính trước các con số (tổng tiền, số người nhận…) để AI không phải tự tính&quot;, &quot;code computes the numbers first so the AI never does math&quot;)},
        {ma:&quot;D4&quot;, g:&quot;565s&quot;, llm:&quot;Opus&quot;, t:L(&quot;AI kết luận Dương / Âm tính&quot;, &quot;AI verdict&quot;),
         p:L(&quot;đọc hồ sơ, kết luận kèm lý do và hướng xử lý&quot;, &quot;reads the file, decides, gives reasons and next action&quot;)},
-       {ma:&quot;R0&quot;, g:&quot;197s&quot;, llm:&quot;Opus&quot;, t:L(&quot;AI thứ hai rà lại&quot;, &quot;Second-opinion review&quot;),
-        p:L(&quot;một lượt Opus khác rà riêng ca Đỏ / Tím, phân xử nếu lệch&quot;, &quot;another Opus pass re-checks red / purple cases&quot;)},
+       {ma:&quot;R0&quot;, g:&quot;197s&quot;, t:L(&quot;Chờ AI Reviewer rà lại&quot;, &quot;Wait for the AI Reviewer&quot;),
+        p:L(&quot;giao ca Đỏ / Tím cho agent AI Reviewer, nhận kết quả rồi mới viết báo cáo&quot;, &quot;hands red / purple cases to the AI Reviewer agent, then writes the report with its result&quot;)},
        {ma:&quot;H1&quot;, g:&quot;3s&quot;, t:L(&quot;Viết báo cáo, che thông tin&quot;, &quot;Write report, mask data&quot;),
         p:L(&quot;che tên và số tài khoản trước khi lên trang công khai&quot;, &quot;hides names and account numbers before publishing&quot;)},
        {ma:&quot;H2&quot;, g:&quot;1s&quot;, t:L(&quot;Đối chiếu từng con số&quot;, &quot;Fact-check numbers&quot;),
@@ -3176,6 +3179,23 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
         p:L(&quot;đẩy lên trang công khai, kiểm lại trên mạng&quot;, &quot;push to the public page and verify online&quot;)}],
      chan:[[L(&quot;Khi lỗi gọi AI&quot;, &quot;If an AI call fails&quot;), L(&quot;thử lại sau 2′; mail không chờ quá 12′; ca còn thiếu thử tiếp tới 18:00&quot;, &quot;retry after 2′; the mail waits ≤12′; missing cases retry until 18:00&quot;)],
            [L(&quot;Số giây từng bước&quot;, &quot;Seconds per step&quot;), L(&quot;lấy theo ngày 14/10 (ngày không lỗi)&quot;, &quot;from 14 Oct, an error-free day&quot;)]]},
+
+    {id:&quot;rev&quot;, ky:&quot;R&quot;, m:&quot;var(--g6)&quot;, usd:L(&quot;0&quot;, &quot;$0&quot;), usdTxt:L(&quot;chi phí đã tính trong AI Verification + AI Detection&quot;, &quot;cost counted in AI Verification + AI Detection&quot;),
+     ten:L(&quot;AI Reviewer&quot;, &quot;AI Reviewer&quot;),
+     doan:[
+       {a:&quot;07:17:39&quot;, b:&quot;07:20:45&quot;, n:L(&quot;Rà lại các ca Đỏ / Tím của AI Verification (R0)&quot;, &quot;Re-checks the red / purple cases of AI Verification (R0)&quot;)},
+       {a:&quot;07:36:01&quot;, b:&quot;07:37:19&quot;, n:L(&quot;Duyệt lại các ví AI Detection đề xuất (A2)&quot;, &quot;Re-checks the wallets AI Detection proposed (A2)&quot;)}],
+     nhan:L(&quot;≈3′ + 1′20″ · chạy 2 lần/ngày&quot;, &quot;~3′ + 1′20″ · runs twice a day&quot;),
+     tom:[[L(&quot;Kích hoạt&quot;, &quot;Trigger&quot;), L(&quot;AI Verification kết luận xong (~07:17) và AI Detection đề xuất xong (~07:36)&quot;, &quot;AI Verification finishes its verdicts (~07:17) and AI Detection finishes proposing (~07:36)&quot;)],
+          [L(&quot;Việc&quot;, &quot;Job&quot;), L(&quot;một AI Opus khác đọc lại kết luận của AI đầu tiên, phân xử nếu lệch&quot;, &quot;a second Opus reads the first AI's verdict again and arbitrates if they disagree&quot;)],
+          [L(&quot;Đầu ra&quot;, &quot;Output&quot;), L(&quot;giữ hoặc hạ nhãn: ca Đỏ / Tím (Verification), từng ví đề xuất (Detection)&quot;, &quot;keep or downgrade the label: red / purple cases (Verification), each proposed wallet (Detection)&quot;)]],
+     buoc:[
+       {ma:&quot;R0&quot;, g:&quot;197s&quot;, llm:&quot;Opus&quot;, t:L(&quot;Rà lại ca Đỏ / Tím (AI Verification)&quot;, &quot;Re-check red / purple cases (AI Verification)&quot;),
+        p:L(&quot;đọc lại hồ sơ và kết luận của AI đầu tiên (D4), phân xử nếu lệch&quot;, &quot;re-reads the case file and the first AI's verdict (D4), arbitrates if they differ&quot;)},
+       {ma:&quot;A2&quot;, g:&quot;78s&quot;, llm:&quot;Opus&quot;, t:L(&quot;Duyệt lại đề xuất (AI Detection)&quot;, &quot;Re-check proposals (AI Detection)&quot;),
+        p:L(&quot;giữ hay hạ từng ví được đề xuất — 14/10 giữ 0; ví bị hạ 14 ngày sau mới xét lại&quot;, &quot;keeps or drops each proposed wallet — kept 0 on 14 Oct; dropped wallets are not reviewed again for 14 days&quot;)}],
+     chan:[[L(&quot;Khác «AI verdict» (D4)&quot;, &quot;Not the «AI verdict» (D4)&quot;), L(&quot;AI verdict viết kết luận đầu tiên cho từng ca; AI Reviewer đọc lại kết luận đó chứ không viết lại từ đầu&quot;, &quot;the AI verdict writes the first verdict on each case; the AI Reviewer re-reads that verdict instead of starting over&quot;)],
+           [L(&quot;Khác AI Auditing&quot;, &quot;Not AI Auditing&quot;), L(&quot;Reviewer chạy TRƯỚC mail và quyết định giữ / hạ nhãn; Auditing chấm lại mù SAU mail, chế độ bóng, không đổi nhãn&quot;, &quot;the Reviewer runs BEFORE the mail and decides keep / downgrade; Auditing re-grades blind AFTER the mail in shadow mode and never changes labels&quot;)]]},
 
     {id:&quot;tra&quot;, ky:&quot;T&quot;, m:&quot;var(--g4)&quot;, usd:L(&quot;≈0,27 / kịch bản&quot;, &quot;~$0.27 per rule&quot;), ten:L(&quot;AI Trace&quot;, &quot;AI Trace&quot;),
      doan:[{a:&quot;07:24:06&quot;, b:&quot;07:25:50&quot;, n:L(&quot;Có 1 kịch bản tăng vọt: gom bằng chứng + AI tìm nguyên nhân ≈1′45″ (đo 13/10: 104 giây). Không có thì dừng sau 1 giây.&quot;,
@@ -3199,7 +3219,8 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
            [L(&quot;Mỗi kịch bản tăng vọt&quot;, &quot;Per spiking rule&quot;), L(&quot;≈1′45″ (đo 13/10) · ≈0,27 USD (10, 11, 13/10) · tối đa 4 kịch bản/ngày&quot;, &quot;~1′45″ (13 Oct) · ~$0.27 (10, 11, 13 Oct) · up to 4 rules a day&quot;)]]},
 
     {id:&quot;det&quot;, ky:&quot;D&quot;, m:&quot;var(--g2)&quot;, usd:L(&quot;≈1,9&quot;, &quot;~$1.9&quot;), ten:L(&quot;AI Detection&quot;, &quot;AI Detection&quot;),
-     doan:[{a:&quot;07:24:06&quot;, b:&quot;07:37:19&quot;, n:L(&quot;Lọc ~39.000 ví → xét 16 khách → đề xuất → AI thứ hai duyệt lại&quot;, &quot;Screen ~39,000 wallets → review 16 → propose → second AI check&quot;)}],
+     doan:[{a:&quot;07:24:06&quot;, b:&quot;07:36:01&quot;, n:L(&quot;Lọc ~39.000 ví → xét 16 khách → đề xuất&quot;, &quot;Screen ~39,000 wallets → review 16 → propose&quot;)},
+           {a:&quot;07:36:01&quot;, b:&quot;07:37:19&quot;, cho:1, n:L(&quot;Chờ AI Reviewer duyệt lại các ví đề xuất (A2)&quot;, &quot;Waiting for the AI Reviewer to re-check the proposed wallets (A2)&quot;)}],
      nhan:L(&quot;≈13′ · ≈1,9 USD&quot;, &quot;~13′ · ~$1.9&quot;),
      tom:[[L(&quot;Kích hoạt&quot;, &quot;Trigger&quot;), L(&quot;AI Verification đưa lên trang xong (~07:25)&quot;, &quot;AI Verification deployed (~07:25)&quot;)],
           [L(&quot;Việc&quot;, &quot;Job&quot;), L(&quot;tìm khách CHƯA có alert nhưng đáng Đỏ / Tím&quot;, &quot;find customers with NO alert who still look red / purple&quot;)],
@@ -3213,8 +3234,8 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
         p:L(&quot;giao dịch, số dư, tài khoản nhận của 16 khách&quot;, &quot;transactions, balances, payees of 16 customers&quot;)},
        {ma:&quot;A1&quot;, g:&quot;293s&quot;, llm:&quot;Sonnet&quot;, t:L(&quot;AI xét từng khách&quot;, &quot;Review each customer&quot;),
         p:L(&quot;16/16 khách · đề xuất 2 khách Đỏ / Tím&quot;, &quot;16/16 reviewed · 2 proposed red / purple&quot;)},
-       {ma:&quot;A2&quot;, g:&quot;78s&quot;, llm:&quot;Opus&quot;, t:L(&quot;AI thứ hai duyệt lại&quot;, &quot;Independent check&quot;),
-        p:L(&quot;giữ hay hạ từng đề xuất — 14/10 giữ 0&quot;, &quot;keeps or drops each proposal — kept 0 on 14 Oct&quot;)},
+       {ma:&quot;A2&quot;, g:&quot;78s&quot;, t:L(&quot;Chờ AI Reviewer duyệt lại&quot;, &quot;Wait for the AI Reviewer&quot;),
+        p:L(&quot;AI Reviewer giữ hay hạ từng đề xuất — 14/10 giữ 0&quot;, &quot;the AI Reviewer keeps or drops each proposal — kept 0 on 14 Oct&quot;)},
        {ma:&quot;A3&quot;, llm:&quot;Opus&quot;, t:L(&quot;Gom nhóm, đề xuất kịch bản&quot;, &quot;Group &amp; propose rules&quot;),
         p:L(&quot;chỉ chạy khi còn khách được giữ&quot;, &quot;only runs when someone is kept&quot;)},
        {ma:&quot;A5&quot;, t:L(&quot;Đo số alert sẽ tăng&quot;, &quot;Measure impact&quot;),
@@ -3223,7 +3244,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
         p:L(&quot;khách được giữ thành dòng AD, đưa trang lên lại&quot;, &quot;kept customers become AD rows; page redeployed&quot;)}],
      chan:[[L(&quot;Thời gian&quot;, &quot;Timing&quot;), L(&quot;≈13′ (12 và 14/10) — lướt nhanh và lọc chạy cùng lúc; số giây từng bước theo 14/10&quot;, &quot;~13′ (12 &amp; 14 Oct) — quick scan and screen run in parallel; step seconds from 14 Oct&quot;)],
            [L(&quot;Mail&quot;, &quot;Mail&quot;), L(&quot;chờ AI Detection tối đa 20′&quot;, &quot;waits for Detection up to 20′&quot;)],
-           [L(&quot;Ví đã bị AI thứ hai hạ&quot;, &quot;Dropped wallets&quot;), L(&quot;14 ngày sau mới xét lại&quot;, &quot;not reviewed again for 14 days&quot;)]]},
+           [L(&quot;Ví đã bị AI Reviewer hạ&quot;, &quot;Wallets dropped by the AI Reviewer&quot;), L(&quot;14 ngày sau mới xét lại&quot;, &quot;not reviewed again for 14 days&quot;)]]},
 
     {id:&quot;mail&quot;, ky:&quot;✉&quot;, m:&quot;var(--chu-nhat)&quot;, tinh:1, moc:&quot;07:37:25&quot;, ten:L(&quot;Mail 7h&quot;, &quot;7am mail&quot;),
      nhan:L(&quot;≈07:37 gửi mail báo cáo&quot;, &quot;~07:37 report mail sent&quot;)},
@@ -3275,9 +3296,13 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   ];
   var NOI = [
     [[&quot;chinh&quot;,&quot;07:06:10&quot;], [&quot;ver&quot;,&quot;07:06:10&quot;]],
+    [[&quot;ver&quot;,&quot;07:17:39&quot;], [&quot;rev&quot;,&quot;07:17:39&quot;]],
+    [[&quot;rev&quot;,&quot;07:20:45&quot;], [&quot;ver&quot;,&quot;07:20:45&quot;]],
     [[&quot;ver&quot;,&quot;07:24:06&quot;], [&quot;tra&quot;,&quot;07:24:06&quot;]],
     [[&quot;ver&quot;,&quot;07:24:06&quot;], [&quot;det&quot;,&quot;07:24:06&quot;]],
     [[&quot;tra&quot;,&quot;07:25:50&quot;], [&quot;mail&quot;,&quot;07:37:25&quot;]],
+    [[&quot;det&quot;,&quot;07:36:01&quot;], [&quot;rev&quot;,&quot;07:36:01&quot;]],
+    [[&quot;rev&quot;,&quot;07:37:19&quot;], [&quot;det&quot;,&quot;07:37:19&quot;]],
     [[&quot;det&quot;,&quot;07:37:19&quot;], [&quot;mail&quot;,&quot;07:37:25&quot;]],
     [[&quot;mail&quot;,&quot;07:37:25&quot;], [&quot;aud&quot;,&quot;07:37:25&quot;]],
     [[&quot;det&quot;,&quot;07:37:19&quot;], [&quot;gra&quot;,&quot;07:37:50&quot;]]
@@ -3322,7 +3347,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   })();
 
   /* icon lấy từ bộ icon của sơ đồ Tổng quan */
-  var ICO = {chinh:&quot;k-db&quot;, ver:&quot;k-ai&quot;, tra:&quot;k-target&quot;, det:&quot;k-radar&quot;, mail:&quot;k-mail&quot;, aud:&quot;k-shield&quot;, gra:&quot;k-git&quot;};
+  var ICO = {chinh:&quot;k-db&quot;, ver:&quot;k-ai&quot;, rev:&quot;k-shield&quot;, tra:&quot;k-target&quot;, det:&quot;k-radar&quot;, mail:&quot;k-mail&quot;, aud:&quot;k-shield&quot;, gra:&quot;k-git&quot;};
   function icon(id){
     var g = document.getElementById(ICO[id]); if(!g) return &quot;&quot;;
     g = g.cloneNode(true); g.removeAttribute(&quot;id&quot;);
@@ -3350,7 +3375,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       '<span>' + esc(T(CHU.chan[2])) + '</span><span>' + esc(T(CHU.chan[3])) + '</span>';
     document.getElementById(&quot;aiSo&quot;).innerHTML =
       '<div class=&quot;to&quot;><b style=&quot;color:var(--g2)&quot;>≈37′</b><span>' + esc(T(CHU.tong)) + '</span></div>' +
-      '<div><b>5</b><span>' + esc(T(CHU.soAg)) + '</span></div><div><b>' + (NN === &quot;en&quot; ? &quot;~6.4&quot; : &quot;≈6,4&quot;) + '</b><span>' +
+      '<div><b>6</b><span>' + esc(T(CHU.soAg)) + '</span></div><div><b>' + (NN === &quot;en&quot; ? &quot;~6.4&quot; : &quot;≈6,4&quot;) + '</b><span>' +
       esc(T(CHU.usd)) + '</span></div><div><b>0</b><span>' + esc(T(CHU.tay)) + '</span></div>';
 
     LAN.innerHTML = &quot;&quot;;
@@ -3393,7 +3418,7 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
       if(a.tinh) return;
       var s = document.createElement(&quot;span&quot;);
       s.innerHTML = '<i style=&quot;background:' + a.m + ';border:2px solid ' + a.m + '&quot;></i>' + esc(T(a.ten)) +
-                    ' <small style=&quot;color:var(--chu-mo)&quot;>· ' + (NN === &quot;en&quot; ? esc(T(a.usd)) : esc(T(a.usd)) + &quot; USD&quot;) + '</small>';
+                    ' <small style=&quot;color:var(--chu-mo)&quot;>· ' + (a.usdTxt ? esc(T(a.usdTxt)) : (NN === &quot;en&quot; ? esc(T(a.usd)) : esc(T(a.usd)) + &quot; USD&quot;)) + '</small>';
       s.style.cursor = &quot;pointer&quot;; s.tabIndex = 0; s.setAttribute(&quot;role&quot;, &quot;button&quot;);
       s.onclick = function(){ xo(a.id, true); };
       s.onkeydown = function(e){ if(e.key === &quot;Enter&quot; || e.key === &quot; &quot;){ e.preventDefault(); xo(a.id, true); } };
