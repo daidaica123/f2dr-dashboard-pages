@@ -852,6 +852,45 @@ body.static .nav,body.static .hint{display:none}
 .dec .d .act{width:150px;display:flex;justify-content:center;padding-left:0;padding-right:0}
 .needs .it .ico{display:grid!important;place-items:center;margin-top:0}
 .needs .it{align-items:center}
+/* slide đối chiếu: 2 thẻ cạnh nhau */
+.vs2c{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.vp2{background:#fff;border-radius:22px;box-shadow:0 10px 28px rgba(17,24,39,.06);border:1.5px solid #EDF0F5;display:flex;flex-direction:column;overflow:hidden}
+.vp2 .hd{display:flex;align-items:baseline;gap:12px;padding:18px 28px;background:var(--ink);color:#fff}
+.vp2 .hd b{font:600 24px var(--head)} .vp2 .hd span{font:500 17px var(--body);color:#C3CCDC}
+.vp2 .hd small{margin-left:auto;font:700 12.5px var(--body);letter-spacing:2px;color:#9AA3B8}
+.vp2 .rows{flex:1;display:flex;flex-direction:column;padding:4px 28px}
+.vr{flex:1;display:grid;grid-template-columns:56px 1fr 112px;align-items:center;border-bottom:1.5px dashed #E1E4ED}
+.vr:last-child{border:0}
+.vr .n{font:600 24px var(--head);color:var(--muted)}
+.vr .tx b{display:block;font:700 21px var(--body);color:var(--ink)}
+.vr .tx span{display:block;font:400 17.5px/1.35 var(--body);color:var(--gray);margin-top:3px}
+.vr .tx span em{font-style:normal;font-weight:700;color:var(--amber-d)}
+.vr .st{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.vr .st em{font-style:normal;color:#B9BED0;font-weight:700}
+.vr .st i,.lgd i{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:800 16px var(--body);font-style:normal;color:#fff}
+i.x{background:var(--red);font-size:22px!important;line-height:1} .lgd i.x{font-size:16px!important} i.p{background:var(--amber)} i.ok{background:var(--teal)} i.w{background:var(--amber)}
+.lgd{display:flex;align-items:center;gap:22px;margin-top:16px;flex:none;font:600 15px var(--body);color:var(--ink2)}
+.lgd span{display:flex;align-items:center;gap:8px} .lgd i{width:22px;height:22px;font-size:12px}
+.lgd em{margin-left:auto;font:400 14.5px var(--body);font-style:normal;color:var(--muted)}
+/* radar 2 nửa */
+.radw{position:relative}
+.radw svg.rad{position:absolute;left:0;top:0;width:1420px;height:600px}
+.radw .side{position:absolute;top:-6px;display:block!important}
+.radw .side.L{left:0} .radw .side.R{right:0;text-align:right}
+.radw .side small{display:inline;font:600 30px var(--head);color:var(--ink);letter-spacing:-.5px}
+.radw .side span{font:500 17px var(--body);color:var(--muted);margin-left:10px}
+.rlb{position:absolute;transform:translateY(-50%);width:470px}
+.rlb em em{color:var(--amber-d);font-weight:700}
+.radw svg.rad{height:560px!important}
+.rlb.L{text-align:right}
+.rlb b{display:block;font:700 20px var(--body);color:var(--ink)}
+.rlb b span{font:600 18px var(--head);color:var(--muted);margin-right:8px}
+.rlb.L b span{margin-right:8px}
+.rlb b i{font:700 10.5px var(--body);font-style:normal;letter-spacing:1.2px;padding:3px 9px;border-radius:999px;margin-left:10px;vertical-align:3px}
+.rlb b i.cx{background:var(--red-t);color:var(--red-d)} .rlb b i.cp{background:var(--amber-t);color:var(--amber-d)}
+.rlb em{display:block;font:400 16.5px/1.35 var(--body);font-style:normal;color:var(--teal-d);margin-top:3px}
+.lgd i.cr{width:26px;height:14px;border-radius:4px;background:rgba(238,0,50,.22);border:2px solid var(--red)}
+.lgd i.cv{width:26px;height:14px;border-radius:4px;background:rgba(14,159,142,.18);border:2px solid var(--teal)}
 /* slide AML gộp */
 .s34{display:grid;grid-template-columns:600px 1fr;gap:64px}
 .s34 .lft{display:flex;flex-direction:column;justify-content:center}
@@ -882,6 +921,10 @@ body.static .nav,body.static .hint{display:none}
 .ask .nx{display:flex;align-items:center;gap:16px;background:var(--ink);color:#fff;border-radius:999px;padding:15px 30px;font:600 20px var(--body)}
 .ask .nx span{font:700 13px var(--body);letter-spacing:2.4px;color:#C3CCDC}
 .ask .q small{font-size:28px;letter-spacing:5px}
+.ask .q .gain{position:relative;margin-top:26px;padding-top:20px;border-top:1.5px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.ask .q .gain small{font:700 13px var(--body)!important;letter-spacing:2.4px!important;color:var(--teal-d)!important}
+.ask .q .gain span{display:flex;align-items:center;gap:14px;font:600 22px var(--body);color:var(--ink2)}
+.ask .q .gain i{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font:800 15px var(--body);font-style:normal}
 .ask .q h3{font-size:50px;margin-top:16px;max-width:660px}
 .tk .tp,.tk .bt{flex:1;display:flex;flex-direction:column;justify-content:center}
 .tk .tp b{font-size:76px} .tk .tp span{font-size:18px}
@@ -906,6 +949,8 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
 }
 .arch{height:340px} .arch li{font-size:21px}
 .ph.p3 .dur{color:#F8DFB5} .ph.p4 .dur{color:#F7B8C4}
+.ph .dur{color:var(--ink2)!important} .ph.p3 .dur{color:var(--amber)!important} .ph.p4 .dur{color:var(--red)!important}
+.ph .dur small{color:var(--gray)}
 </style>
 </head>
 <body>
@@ -1048,8 +1093,9 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
   <h1 class="a">Vanguard đáp ứng các tiêu chí mà F2DR và AML chưa đạt</h1>
   <div class="body">
 
-    <div class="tb a"><div class="h">TIÊU CHÍ</div><div class="h">HIỆN TRẠNG</div><div class="h">VANGUARD (THEO TÀI LIỆU VÀ DEMO INNOTECH)</div><div class="g">GIAN LẬN · SO VỚI F2DR</div><div class="c"><span class="n">01</span><b>Dữ liệu</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>Kiểm tra số dòng, checksum; không ghi trùng</span></div><div class="c"><span class="n">02</span><b>Vận hành ổn định</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>3 vùng, mất 1 máy chủ vẫn chạy</span></div><div class="c"><span class="n">03</span><b>Cấu hình linh hoạt</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>Dựng rule trực quan; dùng lại rule hiện có</span></div><div class="c"><span class="n">04</span><b>Cảnh báo và điều tra</b></div><div class="c"><span class="pl p">Một phần</span></div><div class="c"><span class="ico t">✓</span><span>AI agent hỗ trợ cả 6 bước xử lý case</span></div><div class="c"><span class="n">05</span><b>Chấm điểm rủi ro</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>Kết hợp hai chiều với score VDF</span></div><div class="c"><span class="n">06</span><b>Tự chủ phát triển</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico a">!</span><span>Chạy tại VDF · <em>Bàn giao mã nguồn: chưa có thông tin</em></span></div><div class="g">RỬA TIỀN · SO VỚI AML</div><div class="c"><span class="n">C1</span><b>Nhận diện, sàng lọc KH</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>Hồ sơ KYC, sàng lọc liên tục</span></div><div class="c"><span class="n">C2</span><b>Lưu trữ danh sách</b></div><div class="c"><span class="pl p">Một phần</span></div><div class="c"><span class="ico t">✓</span><span>Tải danh sách đen của VDF; có sẵn PEP, cấm vận</span></div><div class="c"><span class="n">C3</span><b>Phân loại rủi ro KH</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>Chấm điểm KH vi phạm rule AML theo tiêu chí VDF</span></div><div class="c"><span class="n">C4</span><b>Quản lý tài liệu, lưu trữ</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>Nhật ký bất biến, sẵn sàng thanh tra</span></div><div class="c"><span class="n">C5</span><b>Báo cáo tuân thủ</b></div><div class="c"><span class="pl no">Không đáp ứng</span></div><div class="c"><span class="ico t">✓</span><span>STR, CTR, EFT, CBWTR theo mẫu NHNN</span></div></div>
-    <div class="tbnote a">! Cần làm rõ trong PoC · Cột Vanguard theo tài liệu và demo InnoTech, chưa kiểm chứng trên dữ liệu VDF</div>
+    <div class="vs2c fill"><div class="vp2 a"><div class="hd"><b>GIAN LẬN</b><span>so với F2DR</span><small>F2DR → VANGUARD</small></div><div class="rows"><div class="vr"><span class="n">01</span><div class="tx"><b>Dữ liệu</b><span>Kiểm tra số dòng, checksum; không ghi trùng</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">02</span><div class="tx"><b>Vận hành ổn định</b><span>3 vùng, mất 1 máy chủ vẫn chạy</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">03</span><div class="tx"><b>Cấu hình linh hoạt</b><span>Dựng rule trực quan; dùng lại rule hiện có</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">04</span><div class="tx"><b>Cảnh báo và điều tra</b><span>AI agent hỗ trợ cả 6 bước xử lý case</span></div><div class="st"><i class="p">½</i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">05</span><div class="tx"><b>Chấm điểm rủi ro</b><span>Kết hợp hai chiều với score VDF</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">06</span><div class="tx"><b>Tự chủ phát triển</b><span>Chạy tại VDF; VDF tự đưa tri thức, model lên hệ thống</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="w">!</i></div></div></div></div><div class="vp2 a"><div class="hd"><b>RỬA TIỀN</b><span>so với AML</span><small>AML → VANGUARD</small></div><div class="rows"><div class="vr"><span class="n">C1</span><div class="tx"><b>Nhận diện, sàng lọc KH</b><span>Hồ sơ KYC, sàng lọc liên tục</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">C2</span><div class="tx"><b>Lưu trữ danh sách</b><span>Tải danh sách đen của VDF; có sẵn PEP, cấm vận</span></div><div class="st"><i class="p">½</i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">C3</span><div class="tx"><b>Phân loại rủi ro KH</b><span>Chấm điểm KH vi phạm rule AML theo tiêu chí VDF</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">C4</span><div class="tx"><b>Quản lý tài liệu, lưu trữ</b><span>Nhật ký bất biến, sẵn sàng thanh tra</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div><div class="vr"><span class="n">C5</span><div class="tx"><b>Báo cáo tuân thủ</b><span>STR, CTR, EFT, CBWTR theo mẫu NHNN</span></div><div class="st"><i class="x"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i><em>→</em><i class="ok">✓</i></div></div></div></div></div>
+    <div class="lgd a"><span><i class="x"><svg width="9" height="9" viewBox="0 0 14 14"><path d="M3 3l8 8M11 3l-8 8" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg></i>Không đáp ứng</span><span><i class="p">½</i>Một phần</span><span><i class="ok">✓</i>Vanguard đáp ứng</span>
+      <span><i class="w">!</i>Cần làm rõ trong PoC</span><em>Cột Vanguard theo tài liệu và demo InnoTech, chưa kiểm chứng trên dữ liệu VDF</em></div>
   </div>
   <div class="foot"><span>Nguồn: Đánh giá F2DR, AML (Phòng QTRR, 10/2026); Tài liệu InnoTech Vanguard – Agentic AML (10/2026)</span><span class="pg"></span></div>
 </section>
@@ -1114,7 +1160,10 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
       <div class="ask">
         <div class="q a"><small>XIN Ý KIẾN</small>
           <h3>Thực hiện PoC giải pháp <em>Vanguard</em> với InnoTech</h3>
-          <p>Thử nghiệm trên dữ liệu VDF, gần 5 tuần</p></div>
+          <p>Gần 5 tuần, trên dữ liệu thật của VDF</p>
+          <div class="gain"><small>GIÁ TRỊ PoC</small>
+            <span><i>✓</i>Đẩy nhanh thay thế F2DR, AML: hai hệ thống giám sát trọng yếu</span>
+            <span><i>✓</i>Học hỏi tri thức, mô hình từ hệ thống InnoTech</span></div></div>
         <div class="fx">
           <div class="a"><small>HẠ TẦNG</small><b>TT Vận hành Khai thác</b></div>
           <div class="a"><small>DỮ LIỆU</small><b>Trung tâm Dữ liệu</b></div>
