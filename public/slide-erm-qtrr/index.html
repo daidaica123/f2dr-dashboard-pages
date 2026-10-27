@@ -1026,11 +1026,11 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
 .e2{display:grid;grid-template-columns:560px 1fr;grid-template-rows:minmax(0,1fr);gap:30px}
 .e2 .col{display:flex;flex-direction:column;min-height:0}
 .e2 .elab{font:700 14px var(--body);letter-spacing:2.6px;color:var(--muted);margin:0 0 10px 4px}
-.e2 .tools{flex:1;display:flex;flex-direction:column;gap:12px}
-.e2 .etl{flex:1;display:flex;align-items:center;gap:18px;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:10px 22px}
+.e2 .tools{flex:1;display:flex;flex-direction:column;gap:8px;min-height:0}
+.e2 .etl{flex:1;display:flex;align-items:center;gap:18px;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:6px 22px}
 .e2 .etl i{flex:none;min-width:92px;text-align:center;font:700 19px var(--head);font-style:normal;color:var(--ink2);background:#EEF0F6;border-radius:12px;padding:10px 12px}
 .e2 .etl span{font:500 19px/1.4 var(--body);color:var(--ink2)}
-.e2 .gap{margin-top:14px;display:flex;align-items:center;gap:14px;background:var(--red-t);border:1.5px solid var(--red-l);border-radius:18px;padding:16px 22px;flex:none}
+.e2 .gap{margin-top:10px;display:flex;align-items:center;gap:14px;background:var(--red-t);border:1.5px solid var(--red-l);border-radius:18px;padding:12px 22px;flex:none}
 .e2 .gap small{font:700 13px var(--body);letter-spacing:2.2px;color:var(--red)}
 .e2 .gap b{font:600 21px/1.3 var(--head);color:var(--red-d)}
 .e2 .gp{flex:1;display:flex;flex-direction:column;background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:6px 28px;box-shadow:0 8px 24px rgba(17,24,39,.05)}
@@ -1096,6 +1096,9 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
 .cov .axy{position:absolute;left:1500px;top:410px;font:700 13px var(--body);letter-spacing:3px;color:var(--muted);transform-origin:left top;transform:rotate(-90deg) translate(0,0)}
 .cov .axx{position:absolute;left:974px;top:690px;font:700 13px var(--body);letter-spacing:3px;color:var(--muted)}
 
+.cb2{display:flex;align-items:center;gap:22px;margin-top:16px;background:var(--red);color:#fff;border-radius:22px;padding:12px 30px;flex:none;box-shadow:0 12px 28px rgba(238,0,50,.24)}
+.cb2 span{font:700 13.5px var(--body);letter-spacing:2.6px;color:#FFD3DC;white-space:nowrap}
+.cb2 b{font:600 22px/1.3 var(--head);letter-spacing:-.3px}
 .e4{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr);gap:22px}
 .e4 .k{display:flex;flex-direction:column;background:#fff;border:1.5px solid var(--line);border-top:7px solid var(--red);border-radius:22px;padding:26px 30px;box-shadow:0 10px 28px rgba(17,24,39,.06)}
 .e4 .k.p2{border-top-color:var(--teal)} .e4 .k.p3{border-top-color:var(--ink2)}
@@ -1106,59 +1109,62 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
 .e4 .k li i{flex:none;width:12px;height:12px;border-radius:50%;background:var(--red);margin-top:10px}
 .e4 .k.p2 li i{background:var(--teal)} .e4 .k.p3 li i{background:var(--ink2)}
 
-/* ---- S tính năng: tiêu chí bên trái ---- */
-.fv{display:flex;flex-direction:column;gap:10px;min-height:0}
-.fv .hd{position:relative;display:grid;grid-template-columns:320px 1fr 1fr;column-gap:10px;align-items:stretch;flex:none}
-.fv .hd .tc{display:flex;flex-direction:column;justify-content:center;padding:14px 24px;border-radius:20px;background:#E9ECF4;font:600 30px/1.1 var(--head);letter-spacing:-.5px;color:var(--ink)}
-.fv .hd .tc span{font:500 15.5px/1.35 var(--body);letter-spacing:0;color:var(--gray);margin-top:4px}
-.fv .vd{display:flex;align-items:center;padding:14px 24px;border-radius:20px;color:#fff}
-.fv .vd.ib{background:var(--ink2)} .fv .vd.ar{background:var(--teal-d);padding-left:44px}
-.fv .vd b{display:block;font:600 30px/1.1 var(--head);letter-spacing:-.5px}
-.fv .vd span{display:block;font:500 15.5px/1.35 var(--body);opacity:.85;margin-top:4px}
-.fv .vx{position:absolute;left:834px;top:50%;margin-top:-36px;width:72px;height:72px;border-radius:50%;background:#fff;border:3px solid var(--line);display:grid;place-items:center;
-  font:700 23px var(--head);color:var(--red);box-shadow:0 10px 24px rgba(17,24,39,.12);z-index:2}
-.fv .rows{flex:1;display:flex;flex-direction:column;gap:8px;min-height:0}
-.fv .r{flex:1;display:grid;grid-template-columns:320px 1fr 1fr;column-gap:10px;align-items:stretch}
-.fv .r>div{display:flex;align-items:center;border-radius:16px;padding:0 22px}
-.fv .r .m{gap:14px;background:#E9ECF4;font:600 19px/1.25 var(--head);color:var(--ink)}
-.fv .r .m i{flex:none;width:32px;height:32px;border-radius:10px;background:var(--red);display:grid;place-items:center;font:700 15px var(--head);font-style:normal;color:#fff}
-.fv .r .l,.fv .r .rr{background:#fff;border:1.5px solid var(--line);font:400 19.5px/1.35 var(--body);color:var(--ink2)}
-.fv .r .l{border-left:6px solid var(--ink2)} .fv .r .rr{border-left:6px solid var(--teal)}
-.fv .r b{font-weight:700;color:var(--ink)}
+/* ---- S4: mức đáp ứng tính năng (tick) ---- */
+.q4{display:flex;flex-direction:column;gap:10px;min-height:0}
+.q4 .vn{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:none}
+.q4 .vn>div{display:flex;flex-direction:column;justify-content:center;border-radius:18px;padding:11px 22px;color:#fff}
+.q4 .vn .ib{background:var(--ink2)} .q4 .vn .ar{background:var(--teal-d)}
+.q4 .vn b{font:600 25px/1.15 var(--head);white-space:nowrap}
+.q4 .vn span{font:500 15.5px/1.4 var(--body);opacity:.92;margin-top:3px}
+.q4 .th{display:grid;grid-template-columns:1fr 190px 190px;gap:10px;flex:none;margin-top:2px}
+.q4 .th div{font:700 14px var(--body);letter-spacing:2.4px;color:var(--muted);text-align:center;align-self:end}
+.q4 .th div:first-child{text-align:left;padding-left:6px}
+.q4 .th .i{color:var(--ink2)} .q4 .th .a{color:var(--teal-d)}
+.q4 .rs{flex:1;display:flex;flex-direction:column;gap:6px;min-height:0}
+.q4 .r{flex:1;display:grid;grid-template-columns:1fr 190px 190px;gap:10px;align-items:stretch}
+.q4 .r .c{display:flex;align-items:center;gap:16px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:0 20px}
+.q4 .r .c .n{flex:none;width:32px;height:32px;border-radius:10px;background:var(--red-t);color:var(--red);display:grid;place-items:center;font:700 15px var(--head)}
+.q4 .r .c b{display:block;font:600 19.5px/1.2 var(--head);color:var(--ink)}
+.q4 .r .c span.d{display:block;font:400 15.5px/1.3 var(--body);color:var(--gray);margin-top:2px}
+.q4 .r .t{display:grid;place-items:center;border-radius:14px;background:var(--teal-t);border:1.5px solid var(--teal-l)}
+.q4 .r .t i{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--teal)}
+.q4 .r .t svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
 
-/* ---- S công nghệ, chi phí ---- */
-.tc2{display:grid;grid-template-columns:520px 1fr;grid-template-rows:minmax(0,1fr);gap:24px}
-.tc2 .op{display:flex;flex-direction:column;gap:14px}
-.tc2 .sec{font:700 14px var(--body);letter-spacing:2.6px;color:var(--muted);margin-left:4px}
-.tc2 .vc{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:20px 26px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 8px 24px rgba(17,24,39,.05)}
-.tc2 .vc .t{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.tc2 .vc .t b{font:600 28px var(--head)}
-.tc2 .vc p{font:400 19.5px/1.45 var(--body);color:var(--ink2);margin-top:10px}
-.tc2 .vc.ar{border-left:7px solid var(--teal)} .tc2 .vc.ib{border-left:7px solid var(--ink2)}
-.tc2 .cost{display:flex;flex-direction:column;gap:14px;min-height:0}
-.tc2 .tl3{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:22px 28px;display:grid;grid-template-columns:150px 1fr 1fr 1fr;
-  grid-template-rows:auto 1fr 1fr;column-gap:10px;row-gap:14px;box-shadow:0 8px 24px rgba(17,24,39,.05)}
-.tc2 .tl3 .yr{font:700 14px var(--body);letter-spacing:2.4px;color:var(--muted);text-align:center;padding-bottom:6px;border-bottom:2px solid var(--line)}
-.tc2 .tl3 .who{display:flex;flex-direction:column;justify-content:center;font:600 24px/1.15 var(--head)}
-.tc2 .tl3 .who small{font:500 15px var(--body);color:var(--gray);margin-top:4px}
-.tc2 .tl3 .yb{border-radius:16px;display:flex;flex-direction:column;justify-content:center;padding:12px 20px}
-.tc2 .tl3 .yb b{font:600 34px/1.05 var(--head);letter-spacing:-.8px}
-.tc2 .tl3 .yb span{font:500 16px/1.35 var(--body);margin-top:5px}
-.tc2 .tl3 .yb.a1{background:var(--teal);color:#fff}
-.tc2 .tl3 .yb.na{border:2px dashed #C9CEDB;color:var(--muted);align-items:center;text-align:center}
-.tc2 .tl3 .yb.na span{font:500 16.5px var(--body)}
-.tc2 .tl3 .yb.i1{background:var(--ink2);color:#fff}
-.tc2 .tl3 .yb.i2{background:#E7EAF3;color:var(--ink2)}
-.tc2 .tl3 .yb span{opacity:.92}
-.tc2 .nt{flex:none;display:flex;align-items:center;gap:14px;background:var(--amber-t);border:1.5px solid var(--amber-l);border-radius:16px;padding:12px 22px;font:500 18px/1.4 var(--body);color:var(--amber-d)}
-.tc2 .nt b{font-weight:700;white-space:nowrap}
-.nd{display:grid;grid-template-columns:200px repeat(3,1fr);gap:22px;align-items:center;margin-top:16px;background:var(--ink);border-radius:22px;padding:18px 30px;flex:none}
-.nd small{font:700 13.5px var(--body);letter-spacing:2.4px;color:#C3CCDC}
-.nd div{font:500 18.5px/1.4 var(--body);color:#fff;border-left:2px solid rgba(255,255,255,.18);padding-left:20px}
-.nd div b{color:#7FE0D3;font-weight:700}
+/* ---- S5: kỹ thuật + chi phí ---- */
+.q5{display:flex;flex-direction:column;gap:14px;min-height:0}
+.q5 .need{flex:none;display:flex;align-items:center;gap:20px;background:var(--red);color:#fff;border-radius:18px;padding:14px 28px;box-shadow:0 10px 26px rgba(238,0,50,.22)}
+.q5 .need small{font:700 13.5px var(--body);letter-spacing:2.6px;color:#FFD3DC;white-space:nowrap}
+.q5 .need b{font:600 25px/1.3 var(--head);letter-spacing:-.3px}
+.q5 .main{flex:1;min-height:0;display:grid;grid-template-columns:470px 1fr;grid-template-rows:minmax(0,1fr);gap:18px}
+.q5 .tech{display:flex;flex-direction:column;gap:12px}
+.q5 .tc{flex:1;display:flex;flex-direction:column;justify-content:center;background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:16px 24px;box-shadow:0 8px 24px rgba(17,24,39,.05)}
+.q5 .tc.no{border:2.5px solid var(--red)} .q5 .tc.ok{border:2.5px solid var(--teal)}
+.q5 .tc .t{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.q5 .tc .t b{font:600 25px/1.15 var(--head)}
+.q5 .tc .stt{font:700 22px/1 var(--head);padding:11px 20px;border-radius:999px;white-space:nowrap}
+.q5 .tc.no .stt{background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(238,0,50,.28)}
+.q5 .tc.ok .stt{background:var(--teal);color:#fff}
+.q5 .tc p{font:400 18.5px/1.45 var(--body);color:var(--ink2);margin-top:10px}
+.q5 .cost{background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:18px 22px;display:grid;grid-template-columns:130px repeat(3,1fr) 1.2fr;
+  grid-template-rows:auto 1fr 1fr auto;column-gap:10px;row-gap:10px;box-shadow:0 8px 24px rgba(17,24,39,.05)}
+.q5 .cost .yr{font:700 13.5px var(--body);letter-spacing:2.2px;color:var(--muted);text-align:center;padding-bottom:6px;border-bottom:2px solid var(--line);align-self:end}
+.q5 .cost .yr.tt{color:var(--red);border-color:var(--red)}
+.q5 .cost .who{display:flex;align-items:center;font:600 21px/1.15 var(--head)}
+.q5 .cost .v{border-radius:14px;display:flex;flex-direction:column;justify-content:center;padding:8px 16px}
+.q5 .cost .v b{font:600 34px/1.05 var(--head);letter-spacing:-.8px}
+.q5 .cost .ya{background:var(--teal);color:#fff} .q5 .cost .yb{background:var(--teal-t);color:var(--teal-d)}
+.q5 .cost .yc{background:var(--ink2);color:#fff} .q5 .cost .yd{background:#E7EAF3;color:var(--ink2)}
+.q5 .cost .sum{background:var(--amber-t);border:2px solid var(--amber);color:var(--amber-d)}
+.q5 .cost .sum b{font-size:40px;color:var(--amber-d)}
+.q5 .cost .inc{grid-column:1/-1;margin-top:2px;display:flex;align-items:center;gap:12px;font:500 16.5px/1.4 var(--body);color:var(--gray)}
+.q5 .cost .inc i{width:26px;height:26px;border-radius:50%;background:var(--amber);display:grid;place-items:center;font:700 15px var(--head);font-style:normal;color:#fff;flex:none}
+.q5 .nd{display:grid;grid-template-columns:170px 1fr 1fr 1.45fr;gap:20px;align-items:center;background:var(--ink);border-radius:20px;padding:14px 28px;flex:none}
+.q5 .nd small{font:700 13.5px var(--body);letter-spacing:2.4px;color:#C3CCDC}
+.q5 .nd div{font:500 17.5px/1.4 var(--body);color:#fff;border-left:2px solid rgba(255,255,255,.18);padding-left:18px}
+.q5 .nd div b{color:#7FE0D3;font-weight:700}
 
-/* ---- S xin ý kiến ---- */
-.xk{display:grid;grid-template-columns:1fr 470px;grid-template-rows:minmax(0,1fr);gap:28px}
+/* ---- S6: xin định hướng ---- */
+.xk{display:grid;grid-template-columns:1fr 480px;grid-template-rows:minmax(0,1fr);gap:28px}
 .xk .ask2{position:relative;overflow:hidden;background:#fff;border-radius:26px;padding:34px 42px;display:flex;flex-direction:column;box-shadow:0 12px 32px rgba(17,24,39,.07)}
 .xk .ask2:before{content:"?";position:absolute;right:26px;top:-50px;font:700 300px/1 var(--head);color:var(--red-t)}
 .xk .ask2 .q{position:relative;flex:1;display:flex;gap:24px;align-items:center;border-bottom:1.5px solid var(--line)}
@@ -1166,16 +1172,19 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
 .xk .ask2 .q .n{flex:none;font:600 54px/1 var(--head);color:var(--red);width:64px}
 .xk .ask2 .q small{display:block;font:700 13.5px var(--body);letter-spacing:2.4px;color:var(--muted)}
 .xk .ask2 .q b{display:block;font:600 27px/1.3 var(--head);letter-spacing:-.4px;margin-top:6px;max-width:720px}
-.xk .ask2 .q span{display:block;font:400 18.5px/1.45 var(--body);color:var(--gray);margin-top:6px;max-width:740px}
-.xk .rm{background:var(--ink);border-radius:26px;padding:28px 32px;display:flex;flex-direction:column;color:#fff}
-.xk .rm>small{font:700 13.5px var(--body);letter-spacing:2.4px;color:#C3CCDC}
-.xk .rm ol{list-style:none;flex:1;display:flex;flex-direction:column;justify-content:space-between;margin-top:16px;position:relative}
-.xk .rm ol:before{content:"";position:absolute;left:13px;top:14px;bottom:14px;width:2px;background:rgba(255,255,255,.18)}
-.xk .rm li{position:relative;display:flex;gap:18px;align-items:flex-start}
-.xk .rm li i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--ink);border:3px solid #7D849A;margin-top:2px}
-.xk .rm li.hot i{border-color:var(--red);background:var(--red);box-shadow:0 0 0 5px rgba(238,0,50,.25)}
-.xk .rm li b{display:block;font:600 21px/1.3 var(--head)}
-.xk .rm li span{display:block;font:400 16.5px/1.4 var(--body);color:#AEB8CC;margin-top:3px}
+.xk .ask2 .q span.d{display:block;font:400 18.5px/1.45 var(--body);color:var(--gray);margin-top:6px;max-width:740px}
+.xk .rm{background:var(--ink);border-radius:26px;padding:26px 28px;display:flex;flex-direction:column;color:#fff}
+.xk .rm>small{font:700 13.5px var(--body);letter-spacing:2.4px;color:#C3CCDC;margin-left:4px}
+.xk .rm ol{list-style:none;flex:1;display:flex;flex-direction:column;justify-content:space-between;margin-top:14px;position:relative;gap:6px}
+.xk .rm ol:before{content:"";position:absolute;left:25px;top:20px;bottom:20px;width:2px;background:rgba(255,255,255,.18)}
+.xk .rm li{position:relative;display:flex;gap:16px;align-items:center;padding:8px 12px;border-radius:16px;flex:1}
+.xk .rm li i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--ink);border:3px solid #7D849A;position:relative;z-index:1}
+.xk .rm li b{display:block;font:600 20.5px/1.3 var(--head)}
+.xk .rm li span.d{display:block;font:400 15.5px/1.4 var(--body);color:#AEB8CC;margin-top:2px}
+.xk .rm li.hot{background:var(--red);box-shadow:0 10px 24px rgba(238,0,50,.35)}
+.xk .rm li.hot i{background:#fff;border-color:#fff} .xk .rm li.hot span.d{color:#FFE0E6}
+.xk .rm li .st2{display:block;font:700 11px var(--body);letter-spacing:1.8px;color:#FFD3DC;margin-bottom:3px}
+.xk .rm li .st{margin-left:auto;font:700 11.5px var(--body);letter-spacing:1.6px;background:#fff;color:var(--red);padding:5px 10px;border-radius:999px;white-space:nowrap}
 .cov svg.ent{position:absolute;left:900px;top:90px;width:660px;height:720px}.cov .sweep{transform-origin:330px 360px;transform-box:view-box;animation:spin 7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.cov .pulse{transform-origin:center;transform-box:fill-box;animation:pl 1.8s ease-out infinite}@keyframes pl{0%{transform:scale(1);opacity:.45}100%{transform:scale(2.6);opacity:0}}body.static .cov .sweep,body.static .cov .pulse{animation:none}</style>
 </head>
 <body>
@@ -1228,24 +1237,23 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
       <div class="col"><div class="pro">Đã ban hành quy trình QTRR gồm 3 quy trình con: đánh giá, xử lý và báo cáo rủi ro. Còn các khoảng trống:</div>
         <div class="gp"><div class="r a"><b>Nhận diện và đánh giá</b><span>Mới ở cấp sản phẩm/quy trình, theo sự kiện, văn bản; cần góc nhìn danh mục rủi ro toàn Tổng công ty</span></div><div class="r a"><b>Xử lý rủi ro</b><span>Đã có quy trình nhưng chưa vận hành đầy đủ; thiếu cơ chế thúc đẩy và theo dõi tập trung</span></div><div class="r a"><b>Báo cáo</b><span>Theo sự vụ, dựa trên sự kiện đã phát sinh; <em>chưa có KRI và cảnh báo sớm</em></span></div><div class="r a"><b>Dữ liệu</b><span>Dữ liệu rủi ro, sự cố phân tán; <em>chưa có cơ sở dữ liệu tổn thất tập trung</em></span></div><div class="r a"><b>Nền tảng</b><span>Chưa có khẩu vị, thước đo, taxonomy chuẩn hóa gắn vào quy trình và công cụ</span></div></div></div>
     </div>
-    <div class="cb a"><span>KẾT LUẬN</span><b>Không chỉ bổ sung một công cụ báo cáo, mà cần nền tảng vận hành QTRR xuyên suốt, dữ liệu tập trung và cảnh báo sớm</b></div>
+    <div class="cb2 a"><span>KẾT LUẬN</span><b>Cần xây dựng công cụ ERM toàn trình, cung cấp bức tranh tổng quan về QTRR trên toàn đơn vị, hỗ trợ nhận diện và cảnh báo sớm rủi ro</b></div>
   </div>
   <div class="foot"><span>Phòng Quản trị rủi ro  ·  Tháng 10/2026</span><span class="pg"></span></div>
 </section>
 
 <section>
   <img class="logo" src="data:image/png;base64,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" alt=""><div class="steps" data-s="3"></div>
-  <h1 class="a">So sánh tính năng IBM OpenPages và Archer</h1>
+  <h1 class="a">Đánh giá mức đáp ứng về tính năng</h1>
   <div class="body">
 
-    <div class="fv fill">
-      <div class="hd a">
-        <div class="tc">Tiêu chí<span>7 nhóm tính năng QTRR</span></div>
-        <div class="vd ib"><div><b>IBM OpenPages</b><span>IBM · Leader IDC MarketScape GRC 2025</span></div></div>
-        <div class="vx pop">VS</div>
-        <div class="vd ar"><div><b>Archer</b><span>Archer IRM, triển khai qua EY · nhóm Leaders Gartner 2021</span></div></div>
+    <div class="q4 fill">
+      <div class="vn a">
+        <div class="ib"><b>IBM OpenPages</b><span>Nhà cung cấp giải pháp QTRR hàng đầu thị trường, nhiều năm kinh nghiệm triển khai</span></div>
+        <div class="ar"><b>Archer IRM</b><span>Hàng đầu thị trường, nhiều năm kinh nghiệm; đã và đang triển khai tại Vietcombank, PVN</span></div>
       </div>
-      <div class="rows"><div class="r a"><div class="m"><i>1</i><span>Rủi ro, đánh giá</span></div><div class="l"><span>ORM: rủi ro, kiểm soát, kịch bản, <b>ISO 31000</b></span></div><div class="rr"><span>Sổ rủi ro, <b>RCSA</b>, rủi ro vốn có và còn lại</span></div></div><div class="r a"><div class="m"><i>2</i><span>KRI, cảnh báo</span></div><div class="l"><span>Có KRI và KRI Value trong mô hình dữ liệu</span></div><div class="rr"><span><b>KRI/KCI</b>, giám sát ngưỡng, xu hướng (có demo)</span></div></div><div class="r a"><div class="m"><i>3</i><span>Sự cố, tổn thất</span></div><div class="l"><span>Loss event, issue, action; nhập tổn thất là add-on</span></div><div class="rr"><span>Tổn thất thực tế, <b>suýt xảy ra</b>; quản lý vấn đề</span></div></div><div class="r a"><div class="m"><i>4</i><span>Workflow, phân quyền</span></div><div class="l"><span>Workflow cấu hình được; user theo license</span></div><div class="rr"><span>Workflow trực quan; phân quyền đến <b>trường dữ liệu</b></span></div></div><div class="r a"><div class="m"><i>5</i><span>Báo cáo, dashboard</span></div><div class="l"><span><b>Cognos Analytics</b></span></div><div class="rr"><span>Dashboard, báo cáo tích hợp sẵn</span></div></div><div class="r a"><div class="m"><i>6</i><span>Mở rộng ERM</span></div><div class="l"><span><b>11 module</b>; 4 mô hình triển khai</span></div><div class="rr"><span>Nhiều module; <b>builder không cần lập trình</b></span></div></div><div class="r a"><div class="m"><i>7</i><span>Tích hợp, AI</span></div><div class="l"><span><b>27 use case AI</b>, BYOM, MCP server</span></div><div class="rr"><span>Import, Data Feed Manager, API</span></div></div></div>
+      <div class="th"><div>8 TIÊU CHÍ ĐÁNH GIÁ</div><div class="i">IBM OPENPAGES</div><div class="a">ARCHER IRM</div></div>
+      <div class="rs"><div class="r a"><div class="c"><span class="n">1</span><div><b>Thư viện rủi ro, thước đo rủi ro và bản đồ nhiệt</b><span class="d">Danh mục rủi ro chuẩn hóa, thang đo mức độ và bản đồ nhiệt trực quan</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div><div class="r a"><div class="c"><span class="n">2</span><div><b>Nhận diện, khai báo, đánh giá rủi ro</b><span class="d">Cho phép đơn vị tuyến 1 nhận diện, khai báo và đánh giá rủi ro</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div><div class="r a"><div class="c"><span class="n">3</span><div><b>Giám sát KRI và hiệu quả kiểm soát</b><span class="d">Theo dõi KRI theo ngưỡng, cảnh báo tự động; đánh giá hiệu quả kiểm soát</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div><div class="r a"><div class="c"><span class="n">4</span><div><b>Thu thập dữ liệu sự cố, tổn thất</b><span class="d">Ghi nhận, phân loại, phân tích sự cố và tổn thất tập trung</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div><div class="r a"><div class="c"><span class="n">5</span><div><b>Luồng công việc và phân quyền</b><span class="d">Phê duyệt theo ba tuyến phòng thủ, phân quyền theo vai trò</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div><div class="r a"><div class="c"><span class="n">6</span><div><b>Báo cáo, dashboard</b><span class="d">Báo cáo và dashboard tùy biến theo từng cấp quản lý</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div><div class="r a"><div class="c"><span class="n">7</span><div><b>Khả năng triển khai mở rộng</b><span class="d">Mở rộng từ Trung tâm lên Tổng công ty và các công ty con</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div><div class="r a"><div class="c"><span class="n">8</span><div><b>Tích hợp AI</b><span class="d">Ứng dụng AI hỗ trợ nhận diện, phân tích và cảnh báo rủi ro</span></div></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div><div class="t"><i><svg viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7"/></svg></i></div></div></div>
     </div>
   </div>
   <div class="foot"><span>Phòng Quản trị rủi ro  ·  Tháng 10/2026</span><span class="pg"></span></div>
@@ -1253,60 +1261,61 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
 
 <section>
   <img class="logo" src="data:image/png;base64,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" alt=""><div class="steps" data-s="4"></div>
-  <h1 class="a">Công nghệ và chi phí: hai bài toán khác nhau</h1>
+  <h1 class="a">Đánh giá mức đáp ứng về kỹ thuật và chi phí</h1>
   <div class="body">
 
-    <div class="tc2 fill">
-      <div class="op"><div class="sec a">TRIỂN KHAI ON-PREMISES</div>
-        <div class="vc ar a"><div class="t"><b>Archer</b><i class="tag no">Chưa đáp ứng</i></div>
-          <p>Tech stack hiện tại của VDF chưa đáp ứng yêu cầu on-premises của Archer</p></div>
-        <div class="vc ib a"><div class="t"><b>IBM OpenPages</b><i class="tag ok">4 mô hình</i></div>
-          <p>On-premises, SaaS, IBM Cloud, Cloud Pak; yêu cầu hạ tầng cụ thể chưa có trong tài liệu</p></div>
-      </div>
-      <div class="cost"><div class="sec a">CHI PHÍ ƯỚC TÍNH BAN ĐẦU</div>
-        <div class="tl3 a">
-          <span></span><div class="yr">NĂM 1</div><div class="yr">NĂM 2</div><div class="yr">NĂM 3</div>
-          <div class="who">Archer<small>license + tư vấn</small></div>
-          <div class="yb a1"><b>~10 tỷ</b><span>Năm đầu tiên</span></div>
-          <div class="yb na" style="grid-column:span 2"><span>Chưa có số liệu các năm sau</span></div>
-          <div class="who">IBM<small>tư vấn + license</small></div>
-          <div class="yb i1"><b>6 tỷ</b><span>Tư vấn và license năm đầu</span></div>
-          <div class="yb i2" style="grid-column:span 2"><b>~10 tỷ</b><span>Tổng 3 năm, đã gồm 6 tỷ năm đầu</span></div>
+    <div class="q5 fill">
+      <div class="need a"><small>NHU CẦU</small><b>Triển khai on-premises để đảm bảo tính bảo mật của dữ liệu</b></div>
+      <div class="main">
+        <div class="tech">
+          <div class="tc no a"><div class="t"><b>Archer IRM</b><span class="stt">Chưa đáp ứng</span></div>
+            <p>VDF chưa đáp ứng yêu cầu tech stack để triển khai Archer IRM on-premises</p></div>
+          <div class="tc ok a"><div class="t"><b>IBM OpenPages</b><span class="stt">Đáp ứng</span></div>
+            <p>Đáp ứng yêu cầu triển khai on-premises</p></div>
         </div>
-        <div class="nt a"><b>Lưu ý</b>Ước tính ban đầu, chưa phải báo giá. Kỳ tính giá khác nhau nên chưa so sánh trực tiếp được.</div>
+        <div class="cost a">
+          <span></span><div class="yr">NĂM 1</div><div class="yr">NĂM 2</div><div class="yr">NĂM 3</div><div class="yr tt">TỔNG 3 NĂM</div>
+          <div class="who">Archer IRM</div>
+          <div class="v ya"><b>~10 tỷ</b></div><div class="v yb"><b>~1,3 tỷ</b></div><div class="v yb"><b>~1,3 tỷ</b></div>
+          <div class="v sum"><b>~12,6 tỷ</b></div>
+          <div class="who">IBM OpenPages</div>
+          <div class="v yc"><b>6 tỷ</b></div><div class="v yd"><b>2 tỷ</b></div><div class="v yd"><b>2 tỷ</b></div>
+          <div class="v sum"><b>10 tỷ</b></div>
+          <div class="inc"><i>✓</i>Chi phí ước tính, đã bao gồm chi phí tư vấn triển khai và chi phí license</div>
+        </div>
       </div>
+      <div class="nd a"><small>NHẬN ĐỊNH SƠ BỘ</small>
+        <div>Cả hai giải pháp đáp ứng nhu cầu cốt lõi về tính năng QTRR</div>
+        <div><b>IBM</b> mạnh về công cụ AI, đáp ứng yêu cầu triển khai on-premises</div>
+        <div><b>EY</b> có kinh nghiệm triển khai tại Việt Nam nhưng tech stack tại VDF chưa đáp ứng, chi phí triển khai cao</div></div>
     </div>
-    <div class="nd a"><small>NHẬN ĐỊNH SƠ BỘ</small>
-      <div>Cả hai đáp ứng nhóm tính năng QTRR cốt lõi</div>
-      <div><b>IBM</b> mạnh về AI và linh hoạt mô hình triển khai</div>
-      <div><b>Archer</b> mạnh về KRI, có EY triển khai, nhưng vướng on-premises</div></div>
   </div>
   <div class="foot"><span>Phòng Quản trị rủi ro  ·  Tháng 10/2026</span><span class="pg"></span></div>
 </section>
 
 <section>
   <img class="logo" src="data:image/png;base64,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" alt=""><div class="steps" data-s="5"></div>
-  <h1 class="a">Xin ý kiến lãnh đạo</h1>
+  <h1 class="a">Xin định hướng xây dựng hệ thống QTRR tại VDF</h1>
   <div class="body">
 
     <div class="xk fill">
       <div class="ask2 a">
         <div class="q"><span class="n">01</span><div><small>ĐỊNH HƯỚNG GIẢI PHÁP</small>
-          <b>Thống nhất xây dựng nền tảng QTRR chuyên dụng, mở rộng được lên ERM toàn Tổng công ty</b></div></div>
+          <b>Cho định hướng xây dựng nền tảng QTRR chuyên dụng, mở rộng được lên ERM toàn Tổng công ty</b></div></div>
         <div class="q"><span class="n">02</span><div><small>LỰA CHỌN</small>
-          <b>Cho ý kiến về IBM OpenPages và Archer</b>
-          <span>Trên cơ sở tính năng, công nghệ, khả năng triển khai và chi phí</span></div></div>
+          <b>Cho định hướng về IBM OpenPages và Archer IRM</b>
+          <span class="d">Trên cơ sở tính năng, kỹ thuật và chi phí</span></div></div>
         <div class="q"><span class="n">03</span><div><small>CÁCH TRIỂN KHAI</small>
-          <b>Thí điểm tại 1 Trung tâm trước, sau đó nhân rộng</b>
-          <span>Phương án phù hợp hạ tầng, tech stack và nguồn lực công nghệ hiện có</span></div></div>
+          <b>Cho định hướng về phạm vi thí điểm và lộ trình nhân rộng</b>
+          <span class="d">Phương án phù hợp hạ tầng, tech stack và nguồn lực công nghệ hiện có</span></div></div>
       </div>
-      <div class="rm a"><small>SAU KHI CÓ Ý KIẾN</small>
+      <div class="rm a"><small>SAU KHI CÓ ĐỊNH HƯỚNG CỦA LÃNH ĐẠO</small>
         <ol>
-          <li><i></i><div><b>Xác nhận yêu cầu kỹ thuật</b><span>Mức độ đáp ứng của hai hãng</span></div></li>
-          <li><i></i><div><b>Làm rõ chi phí</b><span>Phạm vi license, phí tư vấn, TCO</span></div></li>
-          <li><i></i><div><b>Hoàn thiện phương án</b><span>Lộ trình, kế hoạch triển khai</span></div></li>
-          <li class="hot"><i></i><div><b>Thí điểm 1 Trung tâm</b><span>Khoảng 5–6 tháng</span></div></li>
-          <li><i></i><div><b>Nhân rộng toàn Tổng công ty</b><span>Trong khoảng 1 năm</span></div></li>
+          <li><i></i><div><b>Xác nhận yêu cầu kỹ thuật</b><span class="d">Đánh giá mức độ đáp ứng về hệ thống và tính năng</span></div></li>
+          <li><i></i><div><b>Làm rõ chi phí</b><span class="d">Phạm vi license, phí tư vấn, TCO</span></div></li>
+          <li class="hot"><i></i><div><small class="st2">ĐANG THỰC HIỆN</small><b>Hoàn thiện phương án</b><span class="d">Lộ trình, kế hoạch triển khai, thủ tục đấu thầu</span></div></li>
+          <li><i></i><div><b>Thí điểm tại Trung tâm Vận hành Khai thác</b><span class="d">Khoảng 5–6 tháng</span></div></li>
+          <li><i></i><div><b>Nhân rộng toàn Tổng công ty</b><span class="d">Trong khoảng 1 năm</span></div></li>
         </ol>
       </div>
     </div>
@@ -1318,7 +1327,7 @@ section.in .cov .draw{animation-duration:.25s!important;animation-delay:calc(var
 <script>
 if(location.search.includes('static')) document.body.classList.add('static');
 const S=[...document.querySelectorAll('section')];
-const STEPS=['01  Mục đích','02  Thực trạng','03  Tính năng','04  Công nghệ, chi phí','05  Xin ý kiến'];
+const STEPS=['01  Mục đích','02  Thực trạng','03  Tính năng','04  Kỹ thuật, chi phí','05  Xin ý kiến'];
 document.querySelectorAll('.steps').forEach(el=>{const on=+el.dataset.s;
   el.innerHTML=STEPS.map((t,i)=>`<span class="step${i+1===on?' on':''}">${t}</span>`).join('')});
 document.querySelectorAll('.foot .pg').forEach(el=>{const n=S.indexOf(el.closest('section'))+1;el.innerHTML=`<b>${String(n).padStart(2,'0')}</b><i>/ ${String(S.length).padStart(2,'0')}</i>`});
