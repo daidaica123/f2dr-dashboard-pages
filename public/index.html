@@ -8346,13 +8346,8 @@ function renderDay(){
     return `<span class="${cuoiTuan(x.ngay)?'we':''}">${hien?dLab(x.ngay):''}</span>`;
   }).join('');
 
-  $('daySub').innerHTML = `Đang xem: <b>${DAY_NHOM_TEN[DAY_NHOM]}</b> &nbsp;|&nbsp; Biểu đồ: ` + (theoKhoang
-      ? `khoảng <b>${dLab(NG[0].ngay)} – ${dLab(NG[n-1].ngay)}</b> (${n} ngày)`
-      : nd < D.tong.nd
-      ? `<b>${n}</b> ngày gần nhất (tổng kỳ có ${D.tong.nd} ngày)`
-      : `toàn kỳ <b>${n}</b> ngày`) +
-    ` · gạch cam = TB <b>${fmt(Math.round(tbN))}</b> alert/ngày · cột cam = cao nhất
-      &nbsp;|&nbsp; Bảng: <b>7 ngày ${theoKhoang ? 'cuối của khoảng' : 'gần nhất'}</b>`;
+  /* 28/10 Daicd: bỏ dòng phụ đề dài — nó đẩy hàng nút xuống dòng. Chú giải chuyển vào chữ i cạnh tiêu đề (tipText 'day'). */
+  $('daySub').innerHTML = '';
 
   /* Bảng bên phải LUÔN chỉ 7 ngày gần nhất, không chạy theo ô chọn của biểu
      đồ. Hai thứ trả lời hai câu khác nhau: biểu đồ để nhìn HÌNH DẠNG cả tháng
@@ -9478,7 +9473,9 @@ function tipText(key){
     return T('Alert mỗi ngày trong kỳ',
       `Cột = tổng alert trong ngày của <b>${DAY_NHOM_TEN[DAY_NHOM]}</b> (đổi bằng ba nút bên cạnh). Đường gạch cam = mức trung bình của kỳ.<br><br>
        Cột vượt hẳn đường cam thường do: một kịch bản đổi tham số, data về dồn sau ngày lỗi,
-       hoặc có ổ gian lận thật. Xem mục ⑥ để biết kịch bản nào gây ra.`,
+       hoặc có ổ gian lận thật. Xem mục ⑥ để biết kịch bản nào gây ra.<br><br>
+       <b>Cột cam</b> = ngày cao nhất · <b>gạch cam</b> = trung bình của đoạn đang vẽ.
+       Bảng bên phải: 7 ngày gần nhất (hoặc 7 ngày cuối của khoảng đã chọn). Kỳ có ${D.tong.nd} ngày.`,
       (()=>{ const a = ngayTheoNhom().map(x=>x.alert);
         return `<em>Trung bình</em> ${fmt(Math.round(a.reduce((s,v)=>s+v,0)/a.length))} alert/ngày ·
        cao nhất ${fmt(Math.max(...a))} ·
