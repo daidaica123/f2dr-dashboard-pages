@@ -4041,8 +4041,21 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
         <button data-k="g2" onclick="datDayNhom('g2')">Nhóm 2</button>
       </span>
       <i class="ic" data-i="dayNhom" style="margin-right:10px">i</i>
-      <span class="sub">Hiện</span>
-      <select id="dayNd" onchange="render()"></select>
+      <!-- 28/10 Daicd: bê nguyên cách chọn khoảng ngày của mục ⑥ (chọn nhanh + lịch). Hai nhóm luôn hiện cùng lúc,
+           nhóm không nắm quyền thì mờ đi (.tat). 'Hiện N ngày gần nhất' = cách cũ; chọn nhanh / lịch = khoảng ngày bất kỳ. -->
+      <span class="ndbox" id="dayHopN" onclick="datDayCach('cuoi')"
+            title="Số ngày gần nhất muốn xem">
+        <span class="ndlab">Hiện</span>
+        <select class="dmini" id="dayNd" onchange="datDayCach('cuoi')"></select>
+      </span>
+      <span class="ndbox tat" id="dayHopK" onclick="datDayCach('khoang')"
+            title="Chọn khoảng ngày bất kỳ trong kỳ">
+        <select class="dmini" id="dayNhanh" onchange="chonDayNhanh()"
+                title="Chọn nhanh trọn một tháng hoặc toàn bộ kỳ">
+          <option value="">— chọn nhanh —</option>
+        </select>
+        <span class="lich"><span class="lichnut" id="lich_dayTu" onclick="moLich('dayTu')"></span></span><input type="date" id="dayTu" hidden onchange="onDayKhoang()"><input type="date" id="dayDen" hidden onchange="onDayKhoang()">
+      </span>
     </div>
   </div>
   <div class="daygrid">
@@ -7713,6 +7726,7 @@ function render(){
 
   dungChonNhanh();          // danh sách tháng dựng từ D.days, phải có trước renderMat
   dungKhNhanh();            // ô chọn nhanh của mục ⑦ — cùng nguồn, luôn khớp ⑥
+  dungDayNhanh();           // ô chọn nhanh của mục ③ — cùng nguồn, luôn khớp ⑥
   renderDay(); veMkDuong(); renderNhom(); renderMat(); renderTopKH(); renderGC();
   renderFx(); renderWarn(); foldSum();
 }
@@ -8223,12 +8237,85 @@ function datDayNhom(k){
   renderDay();
 }
 
+/* ───────── ③ chọn KHOẢNG ngày: chọn nhanh + lịch (bê nguyên từ mục ⑥) ─────────
+   'cuoi' = N ngày gần nhất (ô "Hiện") · 'khoang' = từ ngày A đến ngày B. Hai nhóm luôn hiện;
+   nhóm không nắm quyền thì mờ đi (.tat). Đặt THẲNG chứ không bật/tắt. */
+let DAY_CACH = 'cuoi';
+function datDayCach(cach){
+  DAY_CACH = cach === 'khoang' ? 'khoang' : 'cuoi';
+  const kh = DAY_CACH === 'khoang';
+  $('dayHopN').classList.toggle('tat', kh);
+  $('dayHopK').classList.toggle('tat', !kh);
+  if(kh && !$('dayTu').value){
+    /* mở lần đầu: điền sẵn đúng đoạn ô "Hiện N ngày gần nhất" đang hiện */
+    const nd = Math.min(Math.max(1, +$('dayNd').value || D.tong.nd), D.tong.nd);
+    $('dayTu').value  = D.days[Math.max(0, D.tong.nd - nd)];
+    $('dayDen').value = D.days[D.tong.nd - 1];
+    veNhanLich('dayTu');
+  }
+  renderDay();
+}
+function onDayKhoang(){
+  /* gõ ngày ngoài kỳ thì kéo về mốc gần nhất CÓ dữ liệu */
+  ['dayTu','dayDen'].forEach(id=>{
+    const v = $(id).value;
+    if(v && D.days.indexOf(v) < 0){
+      let gan = D.days[0], min = Infinity;
+      D.days.forEach(x=>{
+        const d = Math.abs(new Date(x) - new Date(v));
+        if(d < min){ min = d; gan = x; }
+      });
+      $(id).value = gan;
+    }
+  });
+  $('dayNhanh').value = '';
+  if(DAY_CACH !== 'khoang'){ datDayCach('khoang'); return; }
+  renderDay();
+}
+function dungDayNhanh(){
+  const s = $('dayNhanh');
+  if(!s) return;
+  const thang = [];              // [{ma:'2026-08', tu, den}]
+  D.days.forEach(d=>{
+    const ma = d.slice(0,7);
+    const c = thang.find(x=>x.ma===ma);
+    if(c) c.den = d; else thang.push({ma, tu:d, den:d});
+  });
+  s.innerHTML = '<option value="">— chọn nhanh —</option>'
+    + `<option value="all">Toàn bộ ${D.tong.nd} ngày</option>`
+    + thang.map(x=>{
+        const sn = D.days.filter(d=>d.slice(0,7)===x.ma).length;
+        const [y,t] = x.ma.split('-');
+        return `<option value="${x.tu}|${x.den}">Tháng ${+t}/${y} (${sn} ngày)</option>`;
+      }).join('');
+}
+function chonDayNhanh(){
+  const v = $('dayNhanh').value;
+  if(!v) return;
+  if(v === 'all'){
+    $('dayTu').value  = D.days[0];
+    $('dayDen').value = D.days[D.tong.nd - 1];
+  } else {
+    const [a,b] = v.split('|');
+    $('dayTu').value = a; $('dayDen').value = b;
+  }
+  veNhanLich('dayTu');
+  /* Chọn nhanh một tháng tức là muốn xem khoảng đó — nắm quyền luôn. */
+  if(DAY_CACH !== 'khoang'){ datDayCach('khoang'); return; }
+  renderDay();
+}
+
 function renderDay(){
   document.querySelectorAll('#swDayNhom button').forEach(b=>b.classList.toggle('on', b.dataset.k===DAY_NHOM));
   const NGSRC = ngayTheoNhom();
   const kbCH  = DAY_NHOM==='g1' ? D.tong.kbCauHinh1 : DAY_NHOM==='g2' ? D.tong.kbCauHinh2 : D.tong.kbCauHinh;
   const nd  = +$('dayNd').value || D.tong.nd;
-  const NG  = nCuoi(NGSRC, nd);
+  /* Cách chọn ngày (bê từ mục ⑥): 'cuoi' = N ngày gần nhất · 'khoang' = từ ngày A đến ngày B (chọn nhanh / lịch).
+     Chưa đủ hai mốc hợp lệ thì quay về N ngày gần nhất, không để biểu đồ trống. */
+  const kA = $('dayTu').value, kB = $('dayDen').value;
+  const theoKhoang = DAY_CACH === 'khoang' && kA && kB;
+  const NG  = theoKhoang ? NGSRC.filter(x=>x.ngay >= kA && x.ngay <= kB) : nCuoi(NGSRC, nd);
+  if(!NG.length){ $('daySub').innerHTML = 'Khoảng ngày đã chọn không có dữ liệu'; $('dayChart').innerHTML = ''; $('dayX').innerHTML = ''; $('dayTbl').innerHTML = ''; return; }
   const n   = NG.length;
   const mx  = Math.max(...NG.map(x=>x.alert), 1);
   const tbN = NG.reduce((a,x)=>a+x.alert,0)/n;          // TB của đúng đoạn đang xem
@@ -8259,11 +8346,13 @@ function renderDay(){
     return `<span class="${cuoiTuan(x.ngay)?'we':''}">${hien?dLab(x.ngay):''}</span>`;
   }).join('');
 
-  $('daySub').innerHTML = `Đang xem: <b>${DAY_NHOM_TEN[DAY_NHOM]}</b> &nbsp;|&nbsp; Biểu đồ: ` + (nd < D.tong.nd
+  $('daySub').innerHTML = `Đang xem: <b>${DAY_NHOM_TEN[DAY_NHOM]}</b> &nbsp;|&nbsp; Biểu đồ: ` + (theoKhoang
+      ? `khoảng <b>${dLab(NG[0].ngay)} – ${dLab(NG[n-1].ngay)}</b> (${n} ngày)`
+      : nd < D.tong.nd
       ? `<b>${n}</b> ngày gần nhất (tổng kỳ có ${D.tong.nd} ngày)`
       : `toàn kỳ <b>${n}</b> ngày`) +
     ` · gạch cam = TB <b>${fmt(Math.round(tbN))}</b> alert/ngày · cột cam = cao nhất
-      &nbsp;|&nbsp; Bảng: luôn <b>7 ngày gần nhất</b>`;
+      &nbsp;|&nbsp; Bảng: <b>7 ngày ${theoKhoang ? 'cuối của khoảng' : 'gần nhất'}</b>`;
 
   /* Bảng bên phải LUÔN chỉ 7 ngày gần nhất, không chạy theo ô chọn của biểu
      đồ. Hai thứ trả lời hai câu khác nhau: biểu đồ để nhìn HÌNH DẠNG cả tháng
@@ -8271,7 +8360,7 @@ function renderDay(){
      từng ngày — 30 dòng số thì phải cuộn, mà tuần này mới là cái cần xem.
      Ngày cũ hơn vẫn xem được qua ô lịch ở thanh chọn ngày. */
   const BANG_SO_NGAY = 7;
-  const NGB = nCuoi(NGSRC, BANG_SO_NGAY);
+  const NGB = nCuoi(NG, BANG_SO_NGAY);   // 7 ngày cuối của đoạn đang vẽ (= 7 ngày gần nhất khi chưa chọn khoảng)
   /* TB của riêng 7 ngày này — cột "So TB" phải so với đúng đoạn đang liệt kê,
      không mượn tbN của biểu đồ (biểu đồ có thể đang xem 30 ngày). */
   const tbB = NGB.reduce((a,x)=>a+x.alert,0)/NGB.length;
@@ -9579,6 +9668,7 @@ ganLich('bcTu',  'bcDen',  onBcKhoang);
 ganLich('knTu',  'knDen',  onKnKhoang, knTruc);   // ③ chạy trên trục riêng
 ganLich('nhTu',  'nhDen',  onNhKhoang);
 ganLich('matTu', 'matDen', onKhoang);
+ganLich('dayTu', 'dayDen', onDayKhoang);
 ganLich('khTu',  'khDen',  onKhKhoang);
 
 $('pR').value = D.r*100; $('pK').value = D.k*100;
