@@ -4412,14 +4412,14 @@ const lvIdx  = s => LV_IDX[s] ?? 0;
    nổ 1 lần thì r^0 = 1 nên e = cap − (cap − base) = base, không sinh sai số.
    Vậy không cần ghim để bảo vệ chúng. */
 function chuanDiem(s){ return s; }
-/* Cắt xuống 1 chữ số CHỈ ĐỂ HIỂN THỊ. Epsilon 1e-9 ở đây chỉ gạt bụi của phép
-   nhân 10 (87,3 × 10 = 872,9999999999999, không có nó sẽ hiện 87,2). Nó không
-   đụng tới việc xếp mức vì mức so trên điểm thật, không so trên số hiển thị. */
+/* Cắt xuống 2 chữ số CHỈ ĐỂ HIỂN THỊ (Daicd chốt 29/10, cùng số chữ số thập phân với bảng alert VDF).
+   Epsilon 1e-9 ở đây chỉ gạt bụi của phép nhân 100 (87,3 × 100 = 8729,999999999999, không có nó sẽ
+   hiện 87,29). Nó không đụng tới việc xếp mức vì mức so trên điểm thật, không so trên số hiển thị. */
 function catDiem(s){
-  return Math.floor(s * 10 + 1e-9) / 10;
+  return Math.floor(s * 100 + 1e-9) / 100;
 }
-/* chuỗi để hiển thị, luôn một chữ số thập phân */
-const hienDiem = s => catDiem(s).toFixed(1);
+/* chuỗi để hiển thị, luôn hai chữ số thập phân */
+const hienDiem = s => catDiem(s).toFixed(2);
 
 /* ═══════════ CÔNG THỨC PP-D 2 TẦNG ═══════════ */
 function eff(base, cap, n, r){
@@ -8264,7 +8264,7 @@ function renderFx(){
      Trần theo Level: Low ${D.cap.Low} · Medium ${D.cap.Medium} · High ${D.cap.High} ·
      Very High ${D.cap['Very High']}.<br>
      Ví dụ <b>${esc(k0.ten)}</b> (${k0.lv}, gốc ${k0.sc}): nổ 1 lần = <b>${k0.sc}</b> ·
-     2 lần = <b>${e2.toFixed(1)}</b> · 3 lần = <b>${e3.toFixed(1)}</b> điểm.`;
+     2 lần = <b>${hienDiem(e2)}</b> · 3 lần = <b>${hienDiem(e3)}</b> điểm.`;
 }
 
 /* ───────── ③ theo ngày ─────────
@@ -9506,8 +9506,8 @@ function tipText(key){
        <b>Tầng 2</b> — dính nhiều kịch bản: <code>score = M + (100−M)·k·(1−∏(1−eⱼ/100))</code>,
        M là điểm của kịch bản nặng nhất.`,
       `<em>Ví dụ</em> <b>${esc(k0.ten)}</b> (${k0.lv}, gốc ${k0.sc}, trần ${k0.cap}):
-       nổ 1 lần <b>${k0.sc}</b> → 2 lần <b>${eff(k0.sc,k0.cap,2,r).toFixed(1)}</b>
-       → 3 lần <b>${eff(k0.sc,k0.cap,3,r).toFixed(1)}</b>.`);
+       nổ 1 lần <b>${k0.sc}</b> → 2 lần <b>${hienDiem(eff(k0.sc,k0.cap,2,r))}</b>
+       → 3 lần <b>${hienDiem(eff(k0.sc,k0.cap,3,r))}</b>.`);
   }
   case 'thr':
     return T('Ba vạch chia bốn mức Impact',
@@ -11774,9 +11774,9 @@ window.F2TriThuc = (function () {
   /* KHÔNG ghim khi so ngưỡng: 79,999999999966 là điểm THẬT của một kịch bản
      lặp ~75 lần, chưa chạm 80. Ghim lên là dựng lại đúng lỗi vừa sửa. */
   function chuanDiem(s) { return s; }
-  /* Cắt xuống 1 chữ số CHỈ để hiển thị; epsilon chỉ gạt bụi của phép nhân 10. */
+  /* Cắt xuống 2 chữ số CHỈ để hiển thị (Daicd chốt 29/10, giống bảng alert VDF); epsilon chỉ gạt bụi của phép nhân 100. */
   function catDiem(s) {
-    return Math.floor(s * 10 + 1e-9) / 10;
+    return Math.floor(s * 100 + 1e-9) / 100;
   }
   function mucDiem(diem, ng) {
     var s = chuanDiem(diem);
