@@ -1517,7 +1517,9 @@ body.vao .bck:nth-child(7){animation-delay:.24s}
 .foldbody{display:none;border:1px solid var(--border);border-top:0;
           border-radius:0 0 10px 10px;background:var(--panel);padding:2px 16px 14px}
 .fold.open>.foldbody{display:block}
-.foldbody>.card{border:0;background:none;padding:12px 0;margin:0}
+/* Lề trong 16px: khối ⓪ có khung viền riêng (#fxCard.newmode) nên lề 0 làm chữ dính sát viền; ①② lề cùng cỡ để thẳng hàng */
+.foldbody>.card{border:0;background:none;padding:12px 16px;margin:0}
+@media(max-width:700px){.foldbody>.card{padding:12px 8px}}
 .foldbody>.card+.card{border-top:1px solid var(--border)}
 
 /* ═══ MỤC ③ — biểu đồ trái, bảng phải ═══ */
@@ -1969,6 +1971,8 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
   border-radius:8px;border:1px solid rgba(70,110,175,.34);
   background:linear-gradient(180deg,rgba(24,38,66,.85),rgba(13,22,40,.85))}
 .nb-loc .lb{font-size:10.5px;color:var(--faint)}
+.nb-loc .lichnut{border:none;background:transparent;font-family:var(--mono);font-size:11.5px;padding:3px 6px}
+.nb-loc .lichnut:hover{background:rgba(46,232,255,.1)}
 #ngayChon{color-scheme:dark;background:transparent;border:none;color:var(--text);
   font-family:var(--mono);font-size:11.5px;padding:3px 2px;cursor:pointer}
 #ngayChon:focus{outline:none}
@@ -4917,10 +4921,11 @@ const LICH = {};            // id ô ↔ trạng thái đang mở
 let LICH_MO = null;
 
 /* Gắn lịch cho một cặp input đã có. truc = mảng ngày hợp lệ (mặc định D.days) */
-function ganLich(idTu, idDen, goi, layTruc){
+function ganLich(idTu, idDen, goi, layTruc, don){
   const nut = $('lich_' + idTu);
   if(!nut) return;
-  LICH[idTu] = {idTu, idDen, goi, layTruc, thang:null, chon:null};
+  /* don = true: lịch chọn ĐÚNG MỘT ngày (bấm một lần là xong) — dùng cho thanh "Xem theo ngày" của tab Vận hành */
+  LICH[idTu] = {idTu, idDen, goi, layTruc, thang:null, chon:null, don:!!don};
   veNhanLich(idTu);
 }
 
@@ -4935,6 +4940,10 @@ function veNhanLich(idTu){
   if(!st) return;
   const a = $(st.idTu).value, b = $(st.idDen).value;
   const nut = $('lich_' + idTu);
+  if(st.don){
+    nut.innerHTML = `<span class="ic2">▦</span><span>${a ? a.slice(8,10) + '/' + a.slice(5,7) + '/' + a.slice(0,4) : 'Chọn ngày'}</span>`;
+    return;
+  }
   const co = a && b;
   nut.innerHTML = `<span class="ic2">▦</span>`
     + `<span>${co ? dLab(a) + ' – ' + dLab(b) : 'Chọn khoảng ngày'}</span>`
@@ -5013,14 +5022,20 @@ function veBangLich(idTu){
     <div class="lichthu"><span>T2</span><span>T3</span><span>T4</span><span>T5</span>
       <span>T6</span><span>T7</span><span>CN</span></div>
     <div class="licho">${o}</div>
-    <div class="lichchan">
+    ${st.don ? `<div class="lichchan"><button onclick="nhanhLich('${idTu}',1)">Ngày mới nhất</button></div>
+    <div class="lichmach">Bấm một ngày để mở báo cáo ngày đó</div>` : `<div class="lichchan">
       <button onclick="nhanhLich('${idTu}',7)">7 ngày</button>
       <button onclick="nhanhLich('${idTu}',30)">30 ngày</button>
       <button onclick="nhanhLich('${idTu}',0)">Toàn bộ</button>
     </div>
     <div class="lichmach">${st.chon
       ? 'Đã chọn <b>' + dLab(st.chon) + '</b> — bấm tiếp ngày kết thúc'
-      : 'Bấm ngày bắt đầu, rồi bấm ngày kết thúc'}</div>`;
+      : 'Bấm ngày bắt đầu, rồi bấm ngày kết thúc'}</div>`}`;
+  /* Lịch một ngày nằm ở thanh ngang, có thể sát mép phải hoặc mép trái màn hình: mặc định mở sang phải, tràn thì lật sang trái */
+  if(st.don){
+    bang.style.left = '0'; bang.style.right = 'auto';
+    if(bang.getBoundingClientRect().right > innerWidth - 8){ bang.style.left = 'auto'; bang.style.right = '0'; }
+  }
 }
 
 function doiThangLich(idTu, b){
@@ -5033,6 +5048,12 @@ function doiThangLich(idTu, b){
 
 function chonNgayLich(idTu, v){
   const st = LICH[idTu];
+  if(st.don){                         // lịch một ngày: bấm là chốt luôn
+    st.chon = null;
+    $(st.idTu).value = v; $(st.idDen).value = v;
+    dongLich(); veNhanLich(idTu); st.goi();
+    return;
+  }
   if(!st.chon){                       // lần bấm 1 — ghi mốc đầu
     st.chon = v;
     veBangLich(idTu);
@@ -9825,19 +9846,14 @@ function renderNgayBar(){
      ${tu>0 ? `<span class="nb-cu">+${tu} ngày cũ hơn →</span>` : ''}
      ${chip}
      <span class="nb-loc"><span class="lb">Chọn ngày</span>
-       <input type="date" id="ngayChon" min="${D.days[0]}" max="${D.days[mn]}"
-         value="${D.days[mn]}" title="Bấm biểu tượng lịch để chọn bất kỳ ngày nào trong kỳ">
-     </span>
-     <span id="ngayLoi" class="nb-loi"></span>
-     <span class="nb-cach"></span>
-     <span class="nb-chu"><i><b style="color:var(--green)">✓</b> đã kết luận điều tra</i>
-       <i><b style="color:var(--yellow)">✎</b> mới có nháp</i>
-       <i>trống = chưa xem xét</i></span>`;
-  $('ngayChon').addEventListener('change', function(){
-    const j = D.days.indexOf(this.value);
-    if(j >= 0){ $('ngayLoi').textContent = ''; moNgay(j); }
-    else $('ngayLoi').textContent = 'Ngày ' + (this.value||'?') + ' không có trong dữ liệu';
-  });
+       <span class="lich"><span class="lichnut" id="lich_ngayChon" onclick="moLich('ngayChon')"></span></span>
+       <input type="date" id="ngayChon" hidden value="${D.days[mn]}">
+     </span>`;
+  /* Cùng lịch với các tab khác nhưng chỉ chọn MỘT ngày: bấm ngày nào là mở báo cáo riêng ngày đó. */
+  ganLich('ngayChon', 'ngayChon', ()=>{
+    const j = D.days.indexOf($('ngayChon').value);
+    if(j >= 0) moNgay(j);
+  }, null, true);
 }
 
 /* ───────── gom số liệu một ngày ───────── */
@@ -10580,6 +10596,7 @@ function moNgay(j){
   if(j<0 || j>=D.days.length) return;
   NGAY_MO = j;
   if(!CUR) buildCur();
+  const oc = $('ngayChon'); if(oc){ oc.value = D.days[j]; veNhanLich('ngayChon'); }   // nút lịch luôn hiện đúng ngày đang mở
   veNgay(j);
   $('mask').classList.add('mo');
   document.body.classList.add('dangmo');
