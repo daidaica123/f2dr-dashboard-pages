@@ -2043,9 +2043,14 @@ table.knbang tr.kbdt .btnbc:hover{background:rgba(255,149,80,.16);box-shadow:0 0
 .bllctl .dem{margin-left:auto;color:var(--dim);font-size:11.5px}
 .bllctl .dem b{color:var(--text);font-family:var(--mono)}
 .bllwrapbang{max-height:72vh}
-table.knbang.bllbang{table-layout:auto;min-width:1300px}
-table.bllbang td{white-space:nowrap}
-table.bllbang td.lydo{white-space:normal;min-width:300px;max-width:460px;color:var(--dim);line-height:1.4;font-size:11px;overflow-wrap:anywhere}
+/* Cột CỐ ĐỊNH (colgroup đặt độ rộng từng cột, cột lý do lấy phần còn lại): trước đây layout tự co theo nội dung từng trang nên Category phình ra thu lại tuỳ trang/kiểu sắp xếp */
+table.knbang.bllbang{table-layout:fixed;width:100%;min-width:1400px}
+table.bllbang td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.bllbang td.lydo{white-space:normal;color:var(--dim);line-height:1.4;font-size:11px;overflow-wrap:anywhere}
+table.bllbang td.xuong{white-space:normal;line-height:1.35}
+.bllai{display:inline-block;border:1px solid;border-radius:5px;padding:1px 7px;font:600 10px var(--sans);letter-spacing:.2px;white-space:nowrap}
+.bllai.chua{color:var(--faint);border-color:rgba(130,150,190,.35);border-style:dashed;font-weight:500}
+.bllai.cu{opacity:.55}
 .bllchip{display:inline-block;border:1px solid;border-radius:5px;padding:1px 7px;font:600 10px var(--sans);letter-spacing:.3px}
 .bllpg{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px;color:var(--dim);font-size:11.5px}
 .bllpg b{color:var(--text);font-family:var(--mono)}
@@ -3771,6 +3776,9 @@ table.bllbang td.lydo{white-space:normal;min-width:300px;max-width:460px;color:v
      Mục ① (KPI + bảng) theo bộ lọc ngày ở đầu mục; MỖI biểu đồ ở mục ② có bộ lọc ngày + nhóm + mức RIÊNG (ô #bllfXBox, dựng bằng JS). -->
 <div id="bllWrap" style="display:none">
 
+  <!-- Thanh "Xem theo ngày" giống tab Vận hành: mặc định xem cả kỳ, bấm một ngày thì mở popup riêng ngày đó -->
+  <div class="ngaybar" id="bllNgayBar"></div>
+
   <div class="card" style="--gc:var(--red)">
     <div class="card-head">
       <div><h2>① TỔNG QUAN BLACKLIST <i class="ic" data-i="bllTq">i</i></h2>
@@ -3845,14 +3853,7 @@ table.bllbang td.lydo{white-space:normal;min-width:300px;max-width:460px;color:v
         <input type="text" id="bllTim" class="dmini" style="width:190px" placeholder="Tìm mã KH / tên / kịch bản…" oninput="bllLocDoi()">
         <select class="dmini" id="bllLocMuc" onchange="bllLocDoi()" title="Lọc theo mức"></select>
         <select class="dmini" id="bllLocNhom" onchange="bllLocDoi()" title="Lọc theo nhóm"></select>
-        <span class="bcsw" id="swBllPv">
-          <button class="on" onclick="bllSw('pv','all',this)" title="Toàn bộ danh sách Blacklist">Toàn bộ</button>
-          <button onclick="bllSw('pv','loc',this)" title="Chỉ các lượt trong khoảng ngày đang chọn ở mục ①">Theo bộ lọc ngày</button>
-        </span>
-        <span class="bcsw" id="swBllDong">
-          <button class="on" onclick="bllSw('dong','luot',this)" title="Mỗi lượt vào Blacklist một dòng">Mọi lượt</button>
-          <button onclick="bllSw('dong','khach',this)" title="Mỗi khách một dòng — lượt gần nhất">Mỗi khách 1 dòng</button>
-        </span>
+        <span class="bllfl" id="bllfGBox" style="margin:0"></span>
       </div>
       <button class="bcxo" onclick="bllTaiCsv()" title="Tải đúng danh sách đang hiện (đã lọc, đã sắp) về file CSV">⬇ Tải CSV</button>
     </div>
@@ -4505,6 +4506,25 @@ table.bllbang td.lydo{white-space:normal;min-width:300px;max-width:460px;color:v
   </div>
 </div>
 
+<!-- ══════════ POPUP BLACKLIST MỘT NGÀY (Daicd 02/11) — cùng khung với popup báo cáo ngày của Vận hành ══════════ -->
+<div class="mask" id="maskBll" onclick="if(event.target===this)dongBllNgay()">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="md-h">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+        <span class="md-ng" id="mbNgay"></span>
+        <div><h2 id="mbTieu"></h2><span class="card-sub" id="mbSub"></span></div>
+      </div>
+      <div class="md-nav">
+        <button id="mbTruoc" title="Ngày trước" onclick="moBllNgay(BLL_NGAY_MO-1)">‹</button>
+        <button id="mbSau" title="Ngày sau" onclick="moBllNgay(BLL_NGAY_MO+1)">›</button>
+        <button onclick="window.print()" title="In riêng ngày này">⎙ In</button>
+        <button class="md-x" onclick="dongBllNgay()" title="Đóng (Esc)">✕</button>
+      </div>
+    </div>
+    <div class="md-b" id="mbBody"></div>
+  </div>
+</div>
+
 <!-- ══════════ POPUP DANH SÁCH KHÁCH VERY HIGH (user chốt 21/09) ══════════
      Trải phẳng theo LƯỢT: 1 khách × 1 ngày = 1 dòng, kể cả cùng một khách
      chạm Very High ở nhiều ngày khác nhau — KHÔNG gom lại thành 1 dòng/khách
@@ -4934,17 +4954,20 @@ function epNenToiChoSoDo(){
    đường (nhịp theo ngày) · donut hai vòng (mức × nhóm) · cột (phân bố điểm) · treemap (kịch bản) · bong bóng (khách vào nhiều ngày).
    Vẽ bằng SVG, không thư viện. Biểu đồ phẳng, không phát sáng. */
 let BLL_CACH = 'ngay', PV_BLL = null, BLL_RANGE = null;
-let BLL_KB = 'kh', BLL_PV = 'all', BLL_DONG = 'luot';
+let BLL_KB = 'kh', BLL_NGAY_MO = null;
 let BLL_TRANG = 0, BLL_CO = 50, BLL_ANIM = true, BLL_ANIM_TM = null;
 const BLL_MUC = ['LOW','MEDIUM','HIGH','VERY HIGH'];       // bậc mức → màu BAND; giá trị lạ trong file xếp cuối, màu accent
 const BLL_BO_TIEN_TO = /^\[NEW\]_[A-Z0-9_]+_/;
 const BLL_MAU = {cyan:'#2ee8ff', green:'#2ee98a', yellow:'#ffd84f', orange:'#ff9550', purple:'#b98cff', blue:'#6c9bff', red:'#ff4d6b'};
 const BLL_XOAY = [BLL_MAU.cyan, BLL_MAU.orange, BLL_MAU.purple, BLL_MAU.green, BLL_MAU.blue, BLL_MAU.yellow];   // màu xoay vòng cho nhóm / loại KB
+/* Nhận xét AI: ba nhãn như mục Báo cáo (đỏ / vàng / xanh) + "Chưa điều tra" cho ca nhánh điều tra tự động chưa soi tới */
+const BLL_AI = {duong: {t: 'Dương tính', c: 'var(--red)'}, vang: {t: 'Âm tính - Vàng', c: 'var(--yellow)'}, xanh: {t: 'Âm tính - Xanh', c: 'var(--green)'}};
+const BLL_AI_THU = {duong: 0, vang: 1, xanh: 2};
 /* mã biểu đồ: Line · Donut · Hist · Bong · Tree. Thứ tự vẽ quan trọng: biểu đồ cột và treemap lấp đầy chiều cao thẻ
    nên phải vẽ SAU thẻ bên cạnh (donut, bong bóng) — thẻ đó mới quyết định chiều cao của hàng. */
 const BLL_CHART = ['L', 'D', 'H', 'B', 'T'];
 const BLL_KEO = {D: 'H', B: 'T'};                          // thẻ đổi chiều cao thì vẽ lại thẻ cạnh nó
-const BLLF = {}; BLL_CHART.forEach(c=>{ BLLF[c] = {cach: 'ngay', pv: null}; });
+const BLLF = {}; BLL_CHART.concat(['G']).forEach(c=>{ BLLF[c] = {cach: 'ngay', pv: null}; });   // 'G' = bộ lọc ngày của bảng danh sách ③ (không phải biểu đồ)
 const bllfId = (c, s) => 'bllf' + c + s;
 
 const BLL = (function(){
@@ -4952,6 +4975,13 @@ const BLL = (function(){
   if(!b || !b.n) return null;
   const val = (c, i) => { const x = b.col[c][i]; return b.dict && b.dict[c] ? b.dict[c][x] : x; };
   const khongDau = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+  /* Nhận xét AI = kết luận của nhánh điều tra tự động cho đúng (khách × ngày), cùng quy tắc phân nhãn với mục Báo cáo:
+     dương tính | âm tính - vàng (mã nội bộ TRANG) | âm tính - xanh. Chỉ lấy ca khách (bỏ ca kịch bản bùng alert và ca AI Detection). */
+  const aiMap = new Map();
+  ((D.xuly && D.xuly.ds) || []).forEach(x=>{
+    if(x.kbdt || x.ad || !x.kh || !x.ngay) return;
+    aiMap.set(x.ngay + '|' + x.kh, {k: x.ketLuan === 'duong' ? 'duong' : (x.mau === 'TRANG' ? 'vang' : 'xanh'), cu: !!x.cu});
+  });
   const R = [];
   for(let i = 0; i < b.n; i++){
     const v = {};
@@ -4962,7 +4992,8 @@ const BLL = (function(){
       : kbs.map(x=>b.kb[x[0]] + ' (' + x[1] + ')').join(' + ');
     const ngay = String(v.UPDATED_DATE || '').slice(0, 10);
     const r = {i, v, ngay, diem: parseFloat(v.DETAIL), kbs, ms: v.MSISDN, imp: v.IMPACT, cat: v.CATEGORY};
-    r.hay = khongDau(b.cols.map(c=>v[c] || '').join(' '));
+    r.ai = aiMap.get(ngay + '|' + v.MSISDN) || null;
+    r.hay = khongDau(b.cols.map(c=>v[c] || '').join(' ') + ' ' + (r.ai ? BLL_AI[r.ai.k].t : 'chua dieu tra'));
     R.push(r);
   }
   const theoMs = new Map(), theoNgay = new Map();
@@ -5137,28 +5168,37 @@ function chonBllNhanh(){
   }, bllTruc());
 }
 function bllChonNgay(d){ $('bllNgay').value = d; datBllCach('ngay'); }
-/* Nút gạt: kind = kb | pv | dong */
+/* Nút gạt: kind = kb | pv */
 function bllSw(kind, v, nut){
   if(nut){ [...nut.parentElement.children].forEach(x=>x.classList.toggle('on', x === nut)); }
   if(kind === 'kb'){ BLL_KB = v; bllVeMot('T'); return; }
-  if(kind === 'pv'){ BLL_PV = v; BLL_TRANG = 0; }
-  else if(kind === 'dong'){ BLL_DONG = v; BLL_TRANG = 0; }
   bllVeBang();
 }
 /* Bấm một khách / kịch bản trên biểu đồ → lọc bảng danh sách rồi cuộn xuống bảng */
 function bllLocMs(ms){
   $('bllTim').value = ms;
   $('bllLocMuc').value = ''; $('bllLocNhom').value = '';
-  BLL_PV = 'all'; BLL_TRANG = 0;
-  [...$('swBllPv').children].forEach((x, i)=>x.classList.toggle('on', i === 0));
+  bllBangDatNgay(false); BLL_TRANG = 0;
   bllVeBang();
   $('bllBangCard').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+/* Đặt bộ lọc ngày của BẢNG danh sách: theo = true → đúng phạm vi ngày đang chọn ở mục ①; false → toàn bộ ngày */
+function bllBangDatNgay(theo){
+  const f = BLLF.G, k = bllfId('G', ''), kh = theo && BLL_CACH === 'khoang';
+  f.cach = kh ? 'khoang' : 'ngay';
+  $(k + 'HopD').classList.toggle('tat', kh);
+  $(k + 'HopK').classList.toggle('tat', !kh);
+  $(k + 'Ngay').value = theo && !kh ? $('bllNgay').value : '';
+  $(k + 'Tu').value = kh ? $('bllTu').value : '';
+  $(k + 'Den').value = kh ? $('bllDen').value : '';
+  $(k + 'Nhanh').value = '';
+  veNhanLich(k + 'Tu');
 }
 
 /* ── bộ lọc RIÊNG của từng biểu đồ: ngày / khoảng ngày (+ nhóm, mức) ── */
 function bllFHtml(c){
   const k = bllfId(c, '');
-  const nm = c === 'D' ? '' :
+  const nm = (c === 'D' || c === 'G') ? '' :
     `<select class="dmini" id="${k}Nhom" onchange="bllFLoc('${c}')" title="Lọc theo nhóm"><option value="">Mọi nhóm</option>${BLL ? BLL.nhom.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('') : ''}</select>` +
     `<select class="dmini" id="${k}Muc" onchange="bllFLoc('${c}')" title="Lọc theo mức"><option value="">Mọi mức</option>${BLL ? BLL.muc.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('') : ''}</select>`;
   return `<span class="ndbox" id="${k}HopD" onclick="bllFCach('${c}','ngay')" title="Xem đúng một ngày, hoặc toàn bộ"><span class="ndlab">Ngày</span><select id="${k}Ngay" onchange="bllFNgay('${c}')"></select></span>` +
@@ -5207,7 +5247,7 @@ function bllFDu(c){
 }
 function bllVeMot(c, khongKeo){
   if(!BLL || CHE_DO !== 'bll') return;
-  try{ ({L: bllVeLine, D: bllVeDonut, H: bllVeHist, T: bllVeTree, B: bllVeBong})[c](bllFDu(c)); }
+  try{ ({L: bllVeLine, D: bllVeDonut, H: bllVeHist, T: bllVeTree, B: bllVeBong, G: ()=>{ BLL_TRANG = 0; bllVeBang(); }})[c](bllFDu(c)); }
   catch(e){ console.error('Blacklist ' + c + ': ' + e.message); }
   if(!khongKeo && BLL_KEO[c]) bllVeMot(BLL_KEO[c], true);
 }
@@ -5225,11 +5265,12 @@ function bllKhoiTao(){
     + (D.nguong ? `<option value="vh">Đề xuất Very High (điểm > ${D.nguong[2]})</option>` : '');
   $('bllLocNhom').innerHTML = `<option value="">Mọi nhóm</option>` + (BLL ? BLL.nhom.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('') : '');
   ganLich('bllTu', 'bllDen', onBllKhoang, bllTruc);
-  BLL_CHART.forEach(c=>{
+  BLL_CHART.concat(['G']).forEach(c=>{
     $('bllf' + c + 'Box').innerHTML = bllFHtml(c);
     dat(bllfId(c, ''));
     ganLich(bllfId(c, 'Tu'), bllfId(c, 'Den'), ()=>bllFKhoang(c), bllTruc);
   });
+  bllNgayBarVe();
 }
 
 function renderBll(){
@@ -5525,8 +5566,8 @@ function bllVeTree(fd){
     d.addEventListener('mousemove', ev=>bllTipHien(`${bllChamMau(c)}<b>${esc(r.k)}</b><br>${fmt(r.kh)} lượt vào Blacklist · ${fmt(r.al)} alert<br>${pc(r.v, tong).toFixed(1)}% tổng` +
       `<div class="gh">Bấm để lọc bảng theo kịch bản này</div>`, ev));
     d.addEventListener('mouseleave', bllTipAn);
-    d.addEventListener('click', ()=>{ $('bllTim').value = r.k; $('bllLocMuc').value = ''; $('bllLocNhom').value = ''; BLL_PV = 'all'; BLL_TRANG = 0;
-      [...$('swBllPv').children].forEach((x, i)=>x.classList.toggle('on', i === 0)); bllVeBang(); $('bllBangCard').scrollIntoView({behavior: 'smooth', block: 'start'}); });
+    d.addEventListener('click', ()=>{ $('bllTim').value = r.k; $('bllLocMuc').value = ''; $('bllLocNhom').value = ''; bllBangDatNgay(false); BLL_TRANG = 0;
+      bllVeBang(); $('bllBangCard').scrollIntoView({behavior: 'smooth', block: 'start'}); });
   });
 }
 
@@ -5586,42 +5627,52 @@ const BLL_SO = new Set(['DETAIL', 'STATUS', 'MONTH']);
 function bllLocDoi(){ BLL_TRANG = 0; bllVeBang(); }
 function bllLocVH(){
   $('bllLocMuc').value = 'vh';
-  BLL_PV = 'loc'; BLL_TRANG = 0;
-  [...$('swBllPv').children].forEach((x, i)=>x.classList.toggle('on', i === 1));
+  bllBangDatNgay(true); BLL_TRANG = 0;
   bllVeBang();
   $('bllBangCard').scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 function bllLoc(){
   const q = BLL.khongDau(($('bllTim').value || '').trim());
   const mu = $('bllLocMuc').value, nh = $('bllLocNhom').value;
-  let v = BLL_PV === 'loc' && BLL_RANGE ? BLL_RANGE.rows : BLL.R;
-  if(BLL_DONG === 'khach'){
-    const cuoi = new Map();
-    v.forEach(r=>{ const c = cuoi.get(r.ms); if(!c || r.ngay >= c.ngay) cuoi.set(r.ms, r); });
-    v = Array.from(cuoi.values());
-  }
+  let v = bllFDu('G').rows;                 // theo bộ lọc ngày riêng của bảng (mặc định toàn bộ)
   if(mu === 'vh') v = v.filter(r=>D.nguong && r.diem > D.nguong[2]);
   else if(mu) v = v.filter(r=>r.imp === mu);
   if(nh) v = v.filter(r=>r.cat === nh);
   if(q) v = v.filter(r=>r.hay.includes(q));
   v = v.slice().sort((x, y)=>(y.diem || 0) - (x.diem || 0));
   return sxSap(v, 'sxBLL', k => k === '_tong' ? (r=>r.tong) : k === '_dau' ? (r=>r.dau)
+    : k === '_ai' ? (r=>r.ai ? BLL_AI_THU[r.ai.k] : 3)
     : k === 'DETAIL' ? (r=>r.diem) : BLL_SO.has(k) ? (r=>parseFloat(r.v[k])) : (r=>r.v[k] == null ? '' : r.v[k]));
 }
 SX_VE['sxBLL'] = ()=>bllVeBang();
 
+/* Cột hiển thị = các cột của file l1_bll.csv, chèn "NHẬN XÉT AI" ngay sau IMPACT (file không có IMPACT thì để cuối các cột của file) */
+function bllCotHien(){
+  const c = BLL.cols.slice(), i = c.indexOf('IMPACT');
+  c.splice(i >= 0 ? i + 1 : c.length, 0, '_ai');
+  return c;
+}
+/* Độ rộng CỐ ĐỊNH từng cột (px). Cột lý do (ADDED_REASON) không đặt → lấy phần còn lại. Cột lạ xuất hiện trong file → 90 */
+const BLL_RONG = {MSISDN: 148, CUST_NAME: 138, CATEGORY: 80, DETAIL: 60, IMPACT: 76, _ai: 120, REQUESTOR: 76,
+                  FINANCIAL_LOSS: 104, UPDATED_DATE: 86, STATUS: 56, MONTH: 62, _tong: 88, _dau: 92};
+const bllNhan = c => c === '_ai' ? 'NHẬN XÉT AI' : c;
+const bllAiChip = r => r.ai
+  ? `<span class="bllai${r.ai.cu ? ' cu' : ''}" style="color:${BLL_AI[r.ai.k].c};border-color:${BLL_AI[r.ai.k].c}"${r.ai.cu ? ` title="Ca điều tra trước mốc ${esc((D.xuly && D.xuly.moc) || '')} — chỉ để tham khảo"` : ''}>${BLL_AI[r.ai.k].t}</span>`
+  : `<span class="bllai chua" title="Lượt này chưa được nhánh điều tra tự động soi">Chưa điều tra</span>`;
 function bllO(r, c){
   const x = r.v[c] == null ? '' : r.v[c];
+  if(c === '_ai') return `<td>${bllAiChip(r)}</td>`;
   if(c === 'MSISDN') return `<td class="mono">${esc(x)}</td>`;
   if(c === 'IMPACT') return `<td><span class="bllchip" style="color:${bllMucMau(x)};border-color:${bllMucMau(x)}">${esc(x)}</span></td>`;
   if(c === 'DETAIL') return `<td class="num" style="color:${BAND[bllBandDiem(r.diem)].c};font-weight:700">${esc(x)}</td>`;
-  if(c === 'UPDATED_DATE') return `<td class="mono">${esc(x)}</td>`;
+  if(c === 'UPDATED_DATE') return `<td class="mono xuong" title="${esc(x)}">${esc(x.slice(0, 10))}<br>${esc(x.slice(11))}</td>`;
+  if(c === 'FINANCIAL_LOSS') return `<td class="xuong" title="${esc(x)}">${esc(x)}</td>`;
   if(c === 'ADDED_REASON'){
     const gon = r.kbs.length ? r.kbs.map(p=>bllTenKb(BLL.kb[p[0]]) + ' (' + p[1] + ')').join(' + ') : x;
     return `<td class="lydo" title="${esc(x)}">${esc(gon)}</td>`;
   }
   if(BLL_SO.has(c)) return `<td class="num">${esc(x)}</td>`;
-  return `<td>${esc(x)}</td>`;
+  return `<td title="${esc(x)}">${esc(x)}</td>`;
 }
 function bllVeBang(){
   if(!BLL) return;
@@ -5630,13 +5681,17 @@ function bllVeBang(){
   if(BLL_TRANG < 0) BLL_TRANG = 0;
   const hang = v.slice(BLL_TRANG * BLL_CO, (BLL_TRANG + 1) * BLL_CO);
   const soKh = new Set(v.map(r=>r.ms)).size;
-  $('bllBangSub').innerHTML = (BLL_PV === 'loc' && BLL_RANGE ? nhanPV(BLL_RANGE.ds) + ' · ' : '') + 'bấm tên cột để sắp xếp · ';
-  $('bllBangEm').innerHTML = `<b>${fmt(tong)}</b> ${BLL_DONG === 'khach' ? 'khách' : 'lượt'} · <b>${fmt(soKh)}</b> khách`;
+  const g = bllFDu('G');
+  $('bllBangSub').innerHTML = (g.ds.length < g.T.length ? nhanPV(g.ds) + ' · ' : '') + 'bấm tên cột để sắp xếp · ';
+  $('bllBangEm').innerHTML = `<b>${fmt(tong)}</b> lượt · <b>${fmt(soKh)}</b> khách`;
+  const cot = bllCotHien();
+  const colgroup = cot.map(c=>c === 'ADDED_REASON' ? '<col>' : `<col style="width:${BLL_RONG[c] || 90}px">`).join('')
+    + `<col style="width:${BLL_RONG._tong}px"><col style="width:${BLL_RONG._dau}px">`;
   $('bllBang').innerHTML = !tong ? `<div class="sub">Không có dòng nào khớp bộ lọc.</div>` :
-    `<div class="knbangwrap bllwrapbang"><table class="knbang bllbang">
-      <thead><tr>${BLL.cols.map(c=>thS('sxBLL', c, c, BLL_SO.has(c) ? 'num' : '', BLL_SO.has(c) ? -1 : 1)).join('')}
+    `<div class="knbangwrap bllwrapbang"><table class="knbang bllbang"><colgroup>${colgroup}</colgroup>
+      <thead><tr>${cot.map(c=>thS('sxBLL', c, bllNhan(c), BLL_SO.has(c) ? 'num' : '', BLL_SO.has(c) ? -1 : 1)).join('')}
         ${thS('sxBLL', '_tong', 'SỐ NGÀY VÀO', 'num', -1)}${thS('sxBLL', '_dau', 'VÀO LẦN ĐẦU', '', 1)}</tr></thead>
-      <tbody>${hang.map(r=>`<tr>${BLL.cols.map(c=>bllO(r, c)).join('')}<td class="num">${fmt(r.tong)}</td><td class="mono">${esc(r.dau)}</td></tr>`).join('')}</tbody>
+      <tbody>${hang.map(r=>`<tr>${cot.map(c=>bllO(r, c)).join('')}<td class="num">${fmt(r.tong)}</td><td class="mono">${esc(r.dau)}</td></tr>`).join('')}</tbody>
     </table></div>`;
   const tu = tong ? BLL_TRANG * BLL_CO + 1 : 0, den = Math.min(tong, (BLL_TRANG + 1) * BLL_CO);
   $('bllTrang').innerHTML = `<span>Dòng <b>${fmt(tu)}–${fmt(den)}</b> / ${fmt(tong)}</span>
@@ -5651,14 +5706,147 @@ function bllTaiCsv(){
   if(!BLL) return;
   const v = bllLoc();
   const o = s => { s = String(s == null ? '' : s); return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-  const out = [BLL.cols.concat(['SO_NGAY_VAO', 'VAO_LAN_DAU']).map(o).join(',')];
-  v.forEach(r=>out.push(BLL.cols.map(c=>o(r.v[c])).concat([r.tong, r.dau]).join(',')));
+  const cot = bllCotHien();
+  const out = [cot.map(c=>c === '_ai' ? 'NHAN_XET_AI' : c).concat(['SO_NGAY_VAO', 'VAO_LAN_DAU']).map(o).join(',')];
+  v.forEach(r=>out.push(cot.map(c=>o(c === '_ai' ? (r.ai ? BLL_AI[r.ai.k].t : 'Chưa điều tra') : r.v[c])).concat([r.tong, r.dau]).join(',')));
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['﻿' + out.join('\r\n')], {type: 'text/csv;charset=utf-8'}));
   a.download = 'Blacklist_' + (BLL.ngayCo[BLL.ngayCo.length - 1] || 'danh_sach') + '.csv';
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
 }
+
+/* ═════ THANH "XEM THEO NGÀY" + POPUP MỘT NGÀY CỦA BLACKLIST (Daicd 02/11) ═════
+   Giống tab Vận hành: mặc định xem cả kỳ; bấm một ngày (chip, lịch, hoặc ‹ › trong popup) thì mở popup riêng ngày đó,
+   dùng đúng khung và lớp CSS của popup báo cáo ngày (mask/modal/md-h, mkpi, mcard, mucbar, nmini). Mọi số lấy từ dữ liệu. */
+const BLL_CHIP_TOI_DA = 7;
+let BLL_NGAY_ROWS = null;
+function bllNgayBarVe(){
+  if(!BLL || !$('bllNgayBar')) return;
+  const T = bllNgayCo(), mn = T.length - 1, tu = Math.max(0, T.length - BLL_CHIP_TOI_DA);
+  const chip = T.slice(tu).map((d, q)=>{
+    const j = tu + q, n = (BLL.theoNgay.get(d) || []).length;
+    return `<button class="nchip${j === mn ? ' moi' : ''}" onclick="moBllNgay(${j})" title="Mở báo cáo riêng ngày ${dLab(d)}">
+      <span class="nd">${dLab(d)}</span><span class="nt">${thu(d)}</span><span class="na">${fmt(n)}</span></button>`;
+  }).join('');
+  $('bllNgayBar').innerHTML = `<span class="nb-nhan">Xem theo ngày</span>
+    <button class="nchip tq" onclick="dongBllNgay()" title="Quay về bản gộp cả kỳ"><span class="nd">◱ Tổng quan cả kỳ</span></button>
+    ${tu > 0 ? `<span class="nb-cu">+${tu} ngày cũ hơn →</span>` : ''}${chip}
+    <span class="nb-loc"><span class="lb">Chọn ngày</span>
+      <span class="lich"><span class="lichnut" id="lich_bllNgayChon" onclick="moLich('bllNgayChon')"></span></span>
+      <input type="date" id="bllNgayChon" hidden value="${T[mn]}"></span>`;
+  ganLich('bllNgayChon', 'bllNgayChon', ()=>{ const j = bllNgayCo().indexOf($('bllNgayChon').value); if(j >= 0) moBllNgay(j); }, bllNgayCo, true);
+}
+function moBllNgay(j){
+  const T = bllNgayCo();
+  if(!BLL || j < 0 || j >= T.length) return;
+  BLL_NGAY_MO = j;
+  const oc = $('bllNgayChon'); if(oc){ oc.value = T[j]; veNhanLich('bllNgayChon'); }
+  bllVeNgay(j);
+  $('maskBll').classList.add('mo');
+  document.body.classList.add('dangmo');
+  $('maskBll').scrollTop = 0;
+}
+function dongBllNgay(){
+  BLL_NGAY_MO = null;
+  $('maskBll').classList.remove('mo');
+  if(!document.querySelector('.mask.mo')) document.body.classList.remove('dangmo');
+}
+document.addEventListener('keydown', e=>{
+  if(BLL_NGAY_MO === null) return;
+  if(e.key === 'Escape') dongBllNgay();
+  if(e.key === 'ArrowLeft' && BLL_NGAY_MO > 0) moBllNgay(BLL_NGAY_MO - 1);
+  if(e.key === 'ArrowRight' && BLL_NGAY_MO < bllNgayCo().length - 1) moBllNgay(BLL_NGAY_MO + 1);
+});
+const bllLuotNgay = d => (BLL.theoNgay.get(d) || []).length;
+/* Các ngày CÓ dữ liệu Blacklist (ngày chưa có file l1_bll thì không hiện chip, không mở được popup trống) */
+const bllNgayCo = () => BLL.ngayCo;
+function bllVeNgay(j){
+  const T = bllNgayCo(), d = T[j], rows = BLL.theoNgay.get(d) || [], n = rows.length;
+  const truoc = j > 0 ? bllLuotNgay(T[j - 1]) : null;
+  const tbKy = BLL.ngayCo.length ? BLL.R.length / BLL.ngayCo.length : 0;
+  const moi = rows.filter(r=>r.lan === 1).length;
+  const vh = D.nguong ? rows.filter(r=>r.diem > D.nguong[2]).length : 0;
+  const dd = rows.map(r=>r.diem).filter(x=>isFinite(x)), tb = dd.length ? dd.reduce((s, x)=>s + x, 0) / dd.length : 0;
+  const ai = {duong: 0, vang: 0, xanh: 0}; rows.forEach(r=>{ if(r.ai) ai[r.ai.k]++; });
+  const soi = ai.duong + ai.vang + ai.xanh;
+  $('mbNgay').textContent = dLab(d) + ' ' + thu(d);
+  $('mbTieu').textContent = 'BLACKLIST NGÀY ' + dLab(d);
+  $('mbSub').innerHTML = `${d} · ${j === T.length - 1 ? '<b style="color:var(--accent)">ngày mới nhất trong dữ liệu</b>' : 'ngày thứ ' + (j + 1) + '/' + T.length + ' của kỳ'} · nguồn <b>${esc(BLL.nguon)}</b>`;
+  $('mbTruoc').disabled = j <= 0;
+  $('mbSau').disabled = j >= T.length - 1;
+  if(!n){
+    BLL_NGAY_ROWS = null;
+    $('mbBody').innerHTML = `<div class="note">Ngày này không có lượt khách nào vào Blacklist.</div>`;
+    return;
+  }
+  const kpi = [
+    ['Lượt vào Blacklist', fmt(n), truoc == null ? 'ngày đầu kỳ' : muiTen(n, truoc) + ' so hôm trước', 'var(--accent)'],
+    ['Khách mới', fmt(moi), `${fmt(n - moi)} khách vào lại`, 'var(--green)'],
+    ['Chờ duyệt Very High', fmt(vh), D.nguong ? `${pc(vh, n).toFixed(1)}% số lượt · điểm > ${D.nguong[2]}` : '', 'var(--vh)'],
+    ['Điểm trung bình', tb.toFixed(2), dd.length ? `cao nhất ${Math.max(...dd).toFixed(2)}` : '', 'var(--orange)'],
+    ['AI đã soi', `${fmt(soi)}<span class="dv">/${fmt(n)}</span>`,
+      soi ? `<b style="color:var(--red)">${ai.duong}</b> dương tính · <b style="color:var(--yellow)">${ai.vang}</b> âm tính vàng · <b style="color:var(--green)">${ai.xanh}</b> âm tính xanh` : 'chưa có lượt nào được AI soi', 'var(--red)'],
+    ['So TB cả kỳ', tbKy ? ((n - tbKy) / tbKy * 100 >= 0 ? '+' : '') + ((n - tbKy) / tbKy * 100).toFixed(0) + '%' : '—', `TB ${fmt(Math.round(tbKy))} lượt/ngày`, 'var(--yellow)'],
+  ].map(x=>`<div class="kpi" style="--kc:${x[3]}"><div class="k">${x[0]}</div><div class="v">${x[1]}</div><div class="x">${x[2]}</div></div>`).join('');
+
+  /* mức trong ngày + dải 7 ngày liên tiếp để nhảy sang ngày khác */
+  const NM = 7, nmTu = Math.max(0, j - NM + 1), nmDs = T.slice(nmTu, j + 1), mx = Math.max(...nmDs.map(bllLuotNgay), 1);
+  const mucHtml = `<div class="mcard" style="--gc:var(--vh)">
+    <h3>MỨC TRONG NGÀY <span>${fmt(n)} lượt · mức theo cột IMPACT của file</span></h3>
+    <div class="mucbar">${BLL.muc.map(m=>{ const c = rows.filter(r=>r.imp === m).length, mc = bllMucMau(m);
+      return `<div class="mu${c ? '' : ' trong'}" style="--bc:${mc}"><div class="n"><span class="dot" style="background:${mc}"></span>${esc(m)}<b class="pp">${pc(c, n).toFixed(1)}%</b></div><div class="q">${fmt(c)}</div></div>`; }).join('')}</div>
+    <div class="nmini"><div class="t">${nmDs.length} ngày liên tiếp tính đến <b style="color:var(--dim)">${dLab(d)}</b> — bấm cột để nhảy sang ngày khác</div>
+      <div class="r">${nmDs.map((x, q)=>{ const jj = nmTu + q, c = bllLuotNgay(x);
+        return `<button class="b${jj === j ? ' nay' : ''}" onclick="moBllNgay(${jj})" title="${dLab(x)} ${thu(x)} · ${fmt(c)} lượt"><span class="cw"><span class="v">${fmt(c)}</span><span class="c" style="height:${Math.max(4, c / mx * 82).toFixed(1)}%"></span></span><span class="l">${dLab(x)}</span></button>`; }).join('')}</div></div></div>`;
+
+  /* nhóm đưa vào (AML / VAY / ...) */
+  const nhomHtml = `<div class="mcard" style="--gc:var(--green)">
+    <h3>NHÓM ĐƯA VÀO <span>${BLL.nhom.length} nhóm trong file</span></h3>
+    <div class="md-tr"><table><colgroup><col><col style="width:64px"><col style="width:62px"><col style="width:96px"></colgroup>
+      <thead><tr><th class="l">Nhóm</th><th>Lượt</th><th>% ngày</th><th>So hôm trước</th></tr></thead>
+      <tbody>${BLL.nhom.map(g=>{ const c = rows.filter(r=>r.cat === g).length, ct = j > 0 ? (BLL.theoNgay.get(T[j - 1]) || []).filter(r=>r.cat === g).length : 0;
+        return `<tr><td class="l"><span style="display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px;background:${BLL.nhomMau[g]}"></span>${esc(g)}</td><td class="num"><b>${fmt(c)}</b></td><td class="num" style="color:var(--faint)">${pc(c, n).toFixed(1)}%</td><td>${j > 0 ? muiTen(c, ct) : '—'}</td></tr>`; }).join('')}</tbody></table></div></div>`;
+
+  /* kịch bản đưa khách vào trong ngày: số lượt có kịch bản đó + tổng số alert */
+  const kb = new Map();
+  rows.forEach(r=>r.kbs.forEach(p=>{ const o = kb.get(p[0]) || {i: p[0], luot: 0, al: 0}; o.luot++; o.al += p[1]; kb.set(p[0], o); }));
+  const kbDs = Array.from(kb.values()).sort((a, b)=>b.luot - a.luot || b.al - a.al), mxk = Math.max(...kbDs.map(x=>x.luot), 1);
+  const kbHtml = `<div class="mcard" style="--gc:var(--orange)">
+    <h3>KỊCH BẢN ĐƯA KHÁCH VÀO TRONG NGÀY <span>${fmt(kbDs.length)} kịch bản · đủ, không cắt top</span></h3>
+    <div class="md-tr">${kbDs.length ? `<table><colgroup><col style="width:26px"><col><col style="width:64px"><col style="width:72px"><col style="width:150px"></colgroup>
+      <thead><tr><th>#</th><th class="l">Kịch bản</th><th>Lượt</th><th>Alert</th><th></th></tr></thead>
+      <tbody>${kbDs.map((x, q)=>`<tr><td class="num" style="color:var(--faint)">${q + 1}</td><td class="l" title="${esc(BLL.kb[x.i])}">${esc(bllTenKb(BLL.kb[x.i]))}</td><td class="num"><b>${fmt(x.luot)}</b></td><td class="num">${fmt(x.al)}</td>
+        <td><div class="thanhkb" style="width:${Math.max(3, x.luot / mxk * 100)}%;background:linear-gradient(90deg,var(--orange),rgba(255,149,80,.4))"></div></td></tr>`).join('')}</tbody></table>`
+      : '<div class="note">Các lượt trong ngày không có chi tiết kịch bản trong file.</div>'}</div></div>`;
+
+  /* danh sách khách vào trong ngày — sắp được bằng cách bấm tên cột */
+  BLL_NGAY_ROWS = rows;
+  const khHtml = `<div class="mcard" style="--gc:var(--high)">
+    <h3>KHÁCH VÀO BLACKLIST NGÀY NÀY <span>${fmt(n)} lượt · bấm tên cột để sắp xếp · cột Nhận xét AI là kết luận của nhánh điều tra tự động</span></h3>
+    <div class="md-tr" id="mbKh"></div></div>`;
+
+  $('mbBody').innerHTML = `<div class="mkpi">${kpi}</div><div class="mgrid">${mucHtml}${nhomHtml}</div>${kbHtml}${khHtml}`;
+  bllVeNgayBang();
+}
+function bllVeNgayBang(){
+  const rows = BLL_NGAY_ROWS; if(!rows || !$('mbKh')) return;
+  const ds = sxSap(rows, 'sxBllN', k => ({
+    ms: r=>r.ms, ten: r=>r.v.CUST_NAME || '', nhom: r=>r.cat || '', diem: r=>r.diem,
+    muc: r=>BLL.muc.indexOf(r.imp), ai: r=>r.ai ? BLL_AI_THU[r.ai.k] : 3, lan: r=>r.lan})[k]);
+  $('mbKh').innerHTML = `<table><colgroup><col style="width:170px"><col style="width:150px"><col style="width:72px"><col style="width:62px"><col style="width:92px"><col style="width:128px"><col style="width:96px"><col></colgroup>
+    <thead><tr>${thS('sxBllN', 'ms', 'Mã khách', 'l', 1)}${thS('sxBllN', 'ten', 'Tên', 'l', 1)}${thS('sxBllN', 'nhom', 'Nhóm', 'l', 1)}${thS('sxBllN', 'diem', 'Điểm')}
+      ${thS('sxBllN', 'muc', 'Mức', 'l', -1)}${thS('sxBllN', 'ai', 'Nhận xét AI', 'l', 1)}${thS('sxBllN', 'lan', 'Lần vào', 'l', 1)}<th class="l">Kịch bản</th></tr></thead>
+    <tbody>${ds.map(r=>{ const gon = r.kbs.length ? r.kbs.map(p=>bllTenKb(BLL.kb[p[0]]) + ' (' + p[1] + ')').join(' + ') : (r.v.ADDED_REASON || '');
+      return `<tr><td class="l mono" style="font-size:11px">${esc(r.ms)}</td><td class="l">${esc(r.v.CUST_NAME || '')}</td>
+        <td class="l" style="color:var(--dim);font-size:11px">${esc(r.cat || '')}</td>
+        <td class="num" style="color:${BAND[bllBandDiem(r.diem)].c};font-weight:700">${esc(r.v.DETAIL)}</td>
+        <td class="l"><span class="bllchip" style="color:${bllMucMau(r.imp)};border-color:${bllMucMau(r.imp)}">${esc(r.imp)}</span></td>
+        <td class="l">${bllAiChip(r)}</td>
+        <td class="l" style="font-size:11px;color:var(--dim)">${r.lan === 1 ? 'Lần đầu' : 'Vào lại (lần ' + r.lan + ')'}</td>
+        <td class="l" style="color:var(--dim);font-size:11px" title="${esc(r.v.ADDED_REASON || '')}">${esc(gon)}</td></tr>`; }).join('')}</tbody></table>`;
+}
+sxMac('sxBllN', 'diem', -1); SX_VE['sxBllN'] = bllVeNgayBang;
 
 /* Tab Graph AI: nạp iframe ở lần mở đầu (src ghi ở data-src) */
 function napGraph(){
