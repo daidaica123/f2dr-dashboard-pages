@@ -7206,7 +7206,7 @@ function bcPhan1(iA, iB, dsNgay){
    Âm tính thì action là sửa rule; dương tính thì action là hướng xử lý khách.
    Bản cũ gom theo (ngày × nhóm) nên không trả lời được "ai bị điều tra, kết
    luận ra sao" — đó mới là thứ người làm rule cần. */
-let XL_DIEN = '', XL_NGAY_BLL = null;   // lọc diện chọn ca (vào BLL / điều tra thêm) + tập ngày có ca vào BLL
+let XL_DIEN = '', XL_NGAY_BLL = null, XL_BLL_KHOA = null;   // lọc diện chọn ca (vào BLL / điều tra thêm) + tập ngày có ca vào BLL
 let XL_KL = '';                    // '' | 'duong' | 'am' — lọc bảng chi tiết
 let XL_CU = false;                   // true = ô số + biểu đồ mục ② tính cả ca CŨ (trước mốc rollback)
 let XL_ARGS = null;                  // tham số lần vẽ mục ② gần nhất, để vẽ lại khi bật/tắt ca cũ
@@ -7242,7 +7242,9 @@ const chipKl = (ten, mau, them) =>
 function dienXl(r){
   if(!XL_NGAY_BLL) XL_NGAY_BLL = new Set(((D.xuly && D.xuly.ds) || []).filter(x=>x.dien === 'bll').map(x=>x.ngay));
   if(r.kbdt || r.ad || !XL_NGAY_BLL.has(r.ngay)) return '';
-  return r.dien === 'bll' ? 'bll' : 'them';
+  /* Ca chọn theo kiểu cũ (trước khi có lý do 'BLL') vẫn là ca VÀO BLL nếu khách có tên trong danh sách Blacklist của đúng ngày đó */
+  if(!XL_BLL_KHOA && BLL) XL_BLL_KHOA = new Set(BLL.R.map(x=>x.ngay + '|' + x.ms));
+  return (r.dien === 'bll' || (XL_BLL_KHOA && XL_BLL_KHOA.has(r.ngay + '|' + r.kh))) ? 'bll' : 'them';
 }
 function tagDien(r){ const d = dienXl(r);
   return d === 'bll' ? '<div><span class="tagbll" title="Khách vào Blacklist theo cổng alert→BLL — mỗi ngày soi toàn bộ">VÀO BLL</span></div>'
