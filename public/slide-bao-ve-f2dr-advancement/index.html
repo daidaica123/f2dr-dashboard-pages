@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F2DR Advancement · 07:00 (nền sáng)</title>
+<style>
+:root{
+  --ink:#14161F; --mute:rgba(20,22,31,.68); --dim:rgba(20,22,31,.48); --faint:rgba(20,22,31,.13);
+  --paper:#ECE8DF; --card:#F7F4EC;
+  --amber:#C2410C; --coral:#E11D48; --pink:#A21CAF; --teal:#0F766E; --sky:#1D4ED8; --violet:#6D28D9; --gold:#A16207;
+  --glass:#F7F4EC; --line:rgba(20,22,31,.9);
+  --font:Bahnschrift,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(20,22,31,.075) 1px,transparent 1.3px);background-size:26px 26px}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 85% 80% at 50% 45%,transparent 60%,rgba(120,100,70,.16) 100%)}
+#sky{display:none}
+#vp{position:fixed;inset:0;z-index:1}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;transform:translate(-50%,-50%)}
+section{position:absolute;inset:0;opacity:0;visibility:hidden;transform:translateY(14px);color:var(--ink);
+  transition:opacity .7s ease,transform .9s cubic-bezier(.2,.7,.2,1),visibility .7s}
+section.active{opacity:1;visibility:visible;transform:none}
+body.static *{transition:none!important;animation:none!important}
+[data-s]{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+[data-s].on{opacity:1;transform:none}
+.kick{position:absolute;font:700 21px var(--font);letter-spacing:.24em;color:var(--amber);text-transform:uppercase}
+h1,h2{position:absolute;font-family:var(--font);font-weight:700;letter-spacing:-.025em;line-height:1;color:var(--ink)}
+h2 em,h1 em{font-style:normal;color:var(--amber)}
+.mute{color:var(--mute)}
+
+/* HUD, thanh tien do */
+#hud{position:absolute;left:90px;top:30px;display:flex;align-items:baseline;gap:20px;z-index:6;transition:opacity .6s}
+#hud.off{opacity:0}
+#hud .lab{font:700 19px var(--font);letter-spacing:.22em;color:var(--mute)}
+#clock{font:700 56px var(--font);font-variant-numeric:tabular-nums;color:var(--ink);padding:0 10px;background:linear-gradient(transparent 60%,rgba(217,119,6,.42) 60%)}
+#rail{position:absolute;left:90px;right:90px;bottom:32px;height:22px;z-index:6;display:flex}
+#rail .ln,#rail .pr{position:absolute;left:0;top:10px;height:3px}
+#rail .ln{right:0;background:var(--faint)}
+#rail .pr{background:var(--ink);transition:width .8s}
+#rail b{position:relative;flex:1;height:22px;cursor:pointer}
+#rail b:last-child{flex:0 0 14px}
+#rail b::after{content:"";position:absolute;left:0;top:4px;width:14px;height:14px;border-radius:50%;background:var(--paper);border:3px solid var(--ink);transition:all .4s}
+#rail b.d::after{background:var(--ink)}
+#rail b.c::after{transform:scale(1.5);background:#D97706;box-shadow:0 0 0 5px rgba(217,119,6,.22)}
+#pg{position:absolute;right:90px;bottom:60px;font:700 17px var(--font);letter-spacing:.22em;color:var(--dim);z-index:6}
+body.rec #rail,body.rec #pg,body.rec #auto{display:none}
+#auto{position:absolute;right:18px;top:12px;z-index:9;font:700 13px var(--font);letter-spacing:.16em;color:var(--mute);opacity:0;transition:opacity .4s}
+#auto.show{opacity:.85}
+#flash{position:absolute;inset:-40px;background:#D97706;opacity:0;pointer-events:none;z-index:20}
+
+/* ngan keo workflow chi tiet */
+.scrim{position:absolute;inset:0;background:rgba(236,232,223,.8);backdrop-filter:blur(2px);z-index:3}
+.scrim[data-s]{transform:none}
+.drawer{position:absolute;right:70px;top:84px;width:640px;height:716px;z-index:4;border-radius:20px;background:var(--card);border:3px solid var(--ink);
+  box-shadow:12px 12px 0 var(--ink);padding:28px 34px 24px}
+.drawer[data-s]{transform:translateX(70px)}
+.drawer[data-s].on{transform:none}
+.drawer .hd{font:700 17px var(--font);letter-spacing:.22em;color:var(--amber)}
+.drawer h3{font:700 34px/1.1 var(--font);margin:8px 0 14px;color:var(--ink)}
+.drawer .rw{display:grid;grid-template-columns:58px 1fr 128px 70px;align-items:center;column-gap:12px;padding:7px 0;border-top:1.5px dashed rgba(20,22,31,.22)}
+.drawer .rw code{font:700 15px var(--font);letter-spacing:.06em;color:var(--dim)}
+.drawer .rw span{font:600 19px/1.2 var(--font);color:var(--ink)}
+.drawer .rw i{display:block;height:11px;border-radius:3px;border:2px solid var(--ink);background:var(--c,var(--sky));min-width:5px}
+.drawer .rw b{font:700 18px var(--font);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.drawer .rw.big span,.drawer .rw.big b{color:var(--amber)}
+.drawer .ft{margin-top:12px;font:500 17px/1.4 var(--font);color:var(--mute)}
+.drawer .grp{font:700 14px var(--font);letter-spacing:.2em;color:var(--dim);margin:10px 0 2px}
+.hint{position:absolute;right:90px;top:120px;font:700 16px var(--font);letter-spacing:.14em;color:var(--ink);padding:8px 14px;border:2px dashed rgba(20,22,31,.5);border-radius:30px;background:var(--card)}
+body.rec .hint,body.static .hint{display:none}
+
+/* ===== 0 · TIEU DE ===== */
+#s-title .kick{left:94px;top:84px}
+#s-title .when{position:absolute;right:90px;top:84px;font:700 21px var(--font);letter-spacing:.24em;color:var(--mute);text-transform:uppercase}
+#s-title h1{left:84px;top:140px;font-size:118px;line-height:.95;letter-spacing:-.03em}
+#s-title .sub{position:absolute;left:94px;top:392px;width:780px;font:600 31px/1.32 var(--font);color:var(--ink)}
+#s-title .sub b{color:var(--amber)}
+#s-title .me{position:absolute;left:94px;padding-left:22px;border-left:7px solid var(--amber)}
+#s-title .me .lb{font:700 16px var(--font);letter-spacing:.24em;color:var(--dim)}
+#s-title .me .nm{font:700 44px/1.1 var(--font);margin-top:3px;color:var(--ink)}
+#s-title .me .un{font:600 22px/1.3 var(--font);color:var(--mute);margin-top:3px}
+#tsun{position:absolute;left:900px;top:104px;width:620px;height:700px;overflow:visible}
+#tsun text{font-family:Bahnschrift,"Segoe UI",sans-serif;font-weight:700}
+
+/* ===== 1 · BOI CANH ===== */
+#s-ctx .kick{left:94px;top:96px}
+#s-ctx h2{left:90px;top:132px;font-size:84px;line-height:.98;white-space:nowrap}
+#s-ctx .col{position:absolute;top:268px;height:552px;border-radius:20px;border:3px solid var(--ink);background:var(--card);box-shadow:8px 8px 0 var(--ink);padding:22px 26px}
+#s-ctx .c1{left:90px;width:640px;background:#E4DFD3}
+#s-ctx .c2{left:790px;width:340px}
+#s-ctx .c3{left:1190px;width:320px;background:#F6DDBF}
+#s-ctx .col .tg{font:700 16px var(--font);letter-spacing:.2em;color:var(--dim)}
+#s-ctx .c3 .tg{color:var(--amber)}
+#s-ctx .col h3{font:700 36px/1.08 var(--font);margin-top:6px;color:var(--ink)}
+#s-ctx .c3 h3{color:var(--amber)}
+#s-ctx .col small{display:block;font:600 19px var(--font);color:var(--mute);margin-top:4px}
+#s-ctx .bd{margin-top:16px}
+#s-ctx ul{list-style:none}
+#s-ctx li{font:600 21px/1.32 var(--font);color:var(--ink);padding-left:26px;position:relative;margin-bottom:13px}
+#s-ctx li::before{content:"";position:absolute;left:0;top:8px;width:12px;height:12px;border-radius:3px;background:var(--coral);border:2px solid var(--ink)}
+#s-ctx .stop{margin-top:6px;border:3px solid var(--coral);border-radius:12px;padding:10px 16px;font:700 22px/1.3 var(--font);color:var(--coral);background:rgba(247,244,236,.7)}
+#s-ctx .c2 p,#s-ctx .c3 p{font:600 22px/1.38 var(--font);color:var(--ink)}
+#s-ctx .pill{display:inline-block;margin-top:16px;font:700 19px var(--font);letter-spacing:.06em;padding:8px 18px;border-radius:30px;border:3px solid var(--ink);background:var(--card)}
+#s-ctx .c3 .pill{background:var(--ink);color:#F7F4EC}
+#s-ctx .ar{position:absolute;top:500px;font:700 54px var(--font);color:var(--ink)}
+
+/* ===== 1 · MO ===== */
+#s-open .kick{left:94px;top:84px}
+#s-open .who{position:absolute;right:90px;top:78px;text-align:right;font:700 20px/1.5 var(--font);letter-spacing:.16em;color:var(--mute);text-transform:uppercase}
+#big{position:absolute;left:84px;top:132px;font:700 240px/1 var(--font);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink);transition:color .5s}
+#big.hit{color:var(--amber)}
+#pulse{position:absolute;left:470px;top:250px;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:4px solid #D97706;opacity:0;pointer-events:none}
+#pulse.go{animation:pulse 1.6s cubic-bezier(.2,.7,.2,1)}
+@keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(60)}}
+#hero{left:90px;top:432px;font-size:156px;line-height:.98}
+#hero .ch{display:inline-block;opacity:0;transform:translateY(46px) rotate(5deg)}
+#hero.on .ch{animation:chIn .8s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:var(--d)}
+@keyframes chIn{to{opacity:1;transform:none}}
+body.static #hero .ch{opacity:1;transform:none}
+#s-open .sub{position:absolute;left:94px;top:772px;font:600 29px/1.3 var(--font);color:var(--ink)}
+#s-open .sub b{color:var(--amber);font-weight:700}
+.sunst{position:absolute;left:1040px;top:250px;width:440px;height:440px}
+.sunst .rays{transform-origin:220px 220px;animation:spin 30s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sunst text{font-family:Bahnschrift,"Segoe UI",sans-serif;font-weight:700}
+
+/* ===== 2 · HOM QUA ===== */
+#s-yday .kick{left:94px;top:78px;color:#C2410C}
+#s-yday h2{left:90px;top:126px;font-size:132px;color:#14161F;line-height:.98}
+#s-yday .people{position:absolute;right:110px;top:122px;display:flex;gap:24px;align-items:center}
+#s-yday .people svg{width:84px;height:106px;fill:#14161F}
+#s-yday .people span{font:700 30px var(--font);letter-spacing:.1em;color:#C2410C;margin-left:8px}
+#s-yday .day{position:absolute;left:90px;top:410px;width:1420px}
+#s-yday .day .bar{height:62px;border-radius:12px;background:repeating-linear-gradient(135deg,#171A24 0 14px,#2B3040 14px 28px);transform-origin:left;transform:scaleX(0);transition:transform 1.8s cubic-bezier(.3,.6,.2,1)}
+#s-yday .day.on .bar{transform:scaleX(1)}
+#s-yday .day .tt{position:absolute;left:24px;top:15px;font:700 25px var(--font);letter-spacing:.2em;color:#F6F2EA}
+#s-yday .day .tk{display:flex;justify-content:space-between;margin-top:12px;font:600 21px var(--font);color:rgba(20,22,30,.6);font-variant-numeric:tabular-nums}
+#s-yday .chain{position:absolute;left:90px;top:565px;width:1010px;height:230px}
+#s-yday .pipe{position:absolute;left:34px;right:34px;top:30px;height:10px;border-radius:5px;background:#171A24}
+#s-yday .nd{position:absolute;top:0;width:72px;height:72px;border-radius:50%;background:#F6F2EA;border:6px solid #171A24;font:700 29px/60px var(--font);text-align:center;color:#14161F}
+#s-yday .drip{position:absolute;top:80px;width:14px;height:20px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;background:#E11D48;animation:drip 2.2s ease-in infinite}
+@keyframes drip{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(70px);opacity:0}}
+body.static #s-yday .drip{opacity:1}
+#s-yday .cap{position:absolute;left:0;top:168px;font:600 28px var(--font);color:#14161F}
+#s-yday .cap b{color:#C2410C}
+#s-yday .flag{position:absolute;right:100px;top:530px;background:#E11D48;color:#fff;font:700 19px var(--font);letter-spacing:.14em;padding:8px 16px;border-radius:8px;rotate:-3deg;z-index:2}
+#s-yday .res{position:absolute;right:100px;top:572px;width:360px;height:236px;border-radius:22px;background:#fff;border:3px solid #171A24;padding:24px 26px;box-shadow:12px 12px 0 #171A24}
+#s-yday .res .rw{height:13px;border-radius:4px;background:#D6D3CB;margin-bottom:9px}
+#s-yday .res .rw:nth-child(3n){width:70%} #s-yday .res .rw:nth-child(3n+1){width:92%}
+#s-yday .res p{font:700 29px/1.15 var(--font);margin-top:14px;color:#14161F}
+
+/* ===== 3 · TONG QUAN: MAT DONG HO ===== */
+#s-dial .kick{left:94px;top:112px}
+#s-dial h2{left:90px;top:150px;font-size:74px;line-height:.98}
+#s-dial .lg{position:absolute;left:90px;width:720px}
+#s-dial .lg .t{font:700 19px var(--font);letter-spacing:.12em;color:var(--mute);font-variant-numeric:tabular-nums}
+#s-dial .lg h3{font:700 32px/1.1 var(--font);margin-top:4px;display:flex;align-items:center;gap:14px;color:var(--ink)}
+#s-dial .lg .tg{display:inline-block;font:700 15px var(--font);letter-spacing:.14em;padding:3px 11px;border-radius:20px;margin-left:10px;border:2.5px solid var(--ink);vertical-align:2px}
+#s-dial .lg .tg.a{background:var(--ink);color:#F7F4EC}
+#s-dial .lg .tg.r{background:var(--card);color:var(--mute);border-color:rgba(20,22,31,.5)}
+#s-dial .lg.adv h3{font-size:34px}
+#s-dial .lg h3 i{width:34px;height:14px;border-radius:4px;background:var(--c);border:2.5px solid var(--ink)}
+#s-dial .lg p{font:500 21px/1.32 var(--font);color:var(--mute);margin-top:4px;padding-left:48px}
+#dial{position:absolute;left:870px;top:118px;width:680px;height:680px;overflow:visible}
+#dial .lane{fill:none;stroke-linecap:butt;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s cubic-bezier(.3,.6,.2,1)}
+#dial .lane.on{stroke-dashoffset:0}
+#hand{transform-box:view-box;transform-origin:340px 340px;transition:transform 1.6s cubic-bezier(.3,.6,.2,1)}
+#dial .ctr{transition:all .8s}
+
+/* ===== 4 · THAY THE F2DR: CAC BUOC ===== */
+#s-main .kick{left:94px;top:116px}
+#s-main h2{left:90px;top:160px;font-size:112px}
+#s-main .old{position:absolute;right:90px;top:150px;width:390px;height:190px;border-radius:22px;border:3px dashed rgba(20,22,31,.5);background:var(--card);padding:24px 30px;transition:opacity 1s,filter 1s}
+#s-main .old.gone{opacity:.55;filter:grayscale(1)}
+#s-main .old .t{font:700 16px var(--font);letter-spacing:.22em;color:var(--dim)}
+#s-main .old h3{font:700 46px/1.05 var(--font);margin-top:8px;color:var(--ink)}
+#s-main .old p{font:600 19px var(--font);color:var(--mute);margin-top:6px}
+#stamp{position:absolute;right:96px;top:282px;padding:9px 20px;border:5px solid var(--coral);border-radius:11px;font:700 28px var(--font);letter-spacing:.14em;color:var(--coral);rotate:-9deg;background:rgba(247,244,236,.82)}
+#stamp[data-s]{transform:scale(2.4);opacity:0;transition:transform .45s cubic-bezier(.5,1.6,.4,1) .6s,opacity .3s .6s}
+#stamp[data-s].on{transform:scale(1);opacity:1}
+#s-main .steps{position:absolute;left:90px;top:372px;width:1420px;height:310px}
+#s-main .sp{position:absolute;top:0;width:256px;min-height:290px;border-radius:18px;border:3px solid var(--ink);background:var(--card);box-shadow:7px 7px 0 var(--ink);padding:16px 18px 16px}
+#s-main .sp .no{display:inline-block;width:40px;height:40px;border-radius:50%;background:var(--ink);color:#F7F4EC;font:700 21px/40px var(--font);text-align:center}
+#s-main .sp .tm{float:right;font:700 16px var(--font);letter-spacing:.06em;color:var(--mute);margin-top:10px;font-variant-numeric:tabular-nums}
+#s-main .sp h3{font:700 27px/1.1 var(--font);margin-top:12px;color:var(--ink)}
+#s-main .sp p{font:600 20px/1.35 var(--font);color:var(--mute);margin-top:8px}
+#s-main .sp.hl{background:#F6DDBF;border-width:4px}
+#s-main .sp.hl .no{background:var(--amber)}
+#s-main .sp .own{display:inline-block;margin-top:10px;font:700 14px var(--font);letter-spacing:.12em;padding:4px 10px;border-radius:12px;background:var(--amber);color:#F7F4EC}
+#s-main .sp::after{content:"›";position:absolute;right:-27px;top:46%;font:700 40px var(--font);color:var(--ink)}
+#s-main .sp.last::after{display:none}
+#s-main .cnt{position:absolute;top:712px;left:90px;display:flex;gap:46px}
+#s-main .cnt div{font:600 20px var(--font);color:var(--mute)}
+#s-main .cnt b{display:block;font:700 56px/1 var(--font);color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+#s-main .cnt div:nth-child(2) b{color:var(--amber)}
+#s-main .chip{position:absolute;right:90px;top:726px;font:700 25px var(--font);color:var(--teal);padding:12px 26px;border-radius:30px;background:var(--card);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink)}
+
+/* ===== 4b · MO HINH DIEM VDF ===== */
+#s-score .kick{left:94px;top:96px}
+#s-score h2{left:90px;top:132px;font-size:78px;line-height:.98}
+#s-score .sb3{position:absolute;left:94px;top:296px;font:600 26px/1.3 var(--font);color:var(--mute)}
+#s-score .sb3 b{color:var(--ink)}
+#s-score .pn2{position:absolute;top:352px;height:338px;border-radius:20px;border:3px solid var(--ink);background:var(--card);box-shadow:8px 8px 0 var(--ink);padding:18px 24px}
+#s-score .pn2.l{left:90px;width:690px}#s-score .pn2.r{left:820px;width:690px}
+#s-score .pn2 .tg{font:700 15px var(--font);letter-spacing:.18em;color:var(--amber)}
+#s-score .pn2 h3{font:700 29px/1.1 var(--font);margin-top:5px;color:var(--ink)}
+#sc1{position:absolute;left:14px;top:84px;width:660px;height:240px}
+#sc1 text{font-family:Bahnschrift,"Segoe UI",sans-serif;font-weight:700}
+#sc1 .cv{fill:none;stroke:#C2410C;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s cubic-bezier(.3,.6,.2,1)}
+#s-score .pn2.l.on #sc1 .cv{stroke-dashoffset:0}
+#s-score .bar2{position:relative;margin-top:30px;height:62px;border-radius:12px;border:3px solid var(--ink);background:repeating-linear-gradient(135deg,rgba(20,22,31,.07) 0 10px,transparent 10px 20px);overflow:hidden}
+#s-score .bar2 i{position:absolute;top:0;bottom:0;display:block;font:700 22px/56px var(--font);font-style:normal;text-align:center;white-space:nowrap;overflow:hidden}
+#s-score .bar2 i.a{left:0;width:60%;background:var(--ink);color:#F7F4EC}
+#s-score .bar2 i.b{left:60%;width:9.8%;background:var(--amber);color:#F7F4EC;font-size:17px}
+#s-score .tk2{display:flex;justify-content:space-between;font:700 15px var(--font);color:var(--dim);margin-top:6px}
+#s-score .ex{font:600 21px/1.35 var(--font);color:var(--ink);margin-top:18px}
+#s-score .ex b{color:var(--amber)}
+#s-score .bands{position:absolute;left:90px;top:732px;width:1420px;height:58px;display:flex;border:3px solid var(--ink);border-radius:12px;overflow:hidden;box-shadow:5px 5px 0 var(--ink)}
+#s-score .bands i{display:block;font:700 22px/52px var(--font);font-style:normal;color:#F7F4EC;text-align:center;white-space:nowrap}
+#s-score .bl{position:absolute;left:94px;top:706px;font:700 15px var(--font);letter-spacing:.2em;color:var(--dim)}
+
+/* ===== 5 · ADVANCEMENT = DOI AI ===== */
+#s-adv .kick{left:94px;top:92px}
+#s-adv h2{left:90px;top:130px;font-size:92px;line-height:.98}
+#s-adv .sb2{position:absolute;left:94px;top:322px;font:600 27px/1.3 var(--font);color:var(--mute)}
+#s-adv .sb2 b{color:var(--ink)}
+#s-adv .cards{position:absolute;left:90px;top:380px;width:1420px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px 26px}
+#s-adv .ac{position:relative;height:162px;border-radius:18px;border:3px solid var(--ink);background:var(--card);box-shadow:7px 7px 0 var(--ink);padding:18px 18px 12px 112px}
+#s-adv .ac b{position:absolute;left:20px;top:30px;width:74px;height:74px;border-radius:14px;background:var(--c);border:3px solid var(--ink);color:#F7F4EC;font:700 33px/68px var(--font);text-align:center;letter-spacing:.02em}
+#s-adv .ac h3{font:700 29px/1.1 var(--font);color:var(--ink);white-space:nowrap}
+#s-adv .ac small{display:block;font:700 18px var(--font);color:var(--c);margin-top:3px}
+#s-adv .ac p{font:600 20px/1.3 var(--font);color:var(--mute);margin-top:6px}
+#s-adv .ac:nth-child(2){transition-delay:.12s}#s-adv .ac:nth-child(3){transition-delay:.24s}#s-adv .ac:nth-child(4){transition-delay:.36s}#s-adv .ac:nth-child(5){transition-delay:.48s}#s-adv .ac:nth-child(6){transition-delay:.6s}
+#s-adv .loopbar{position:absolute;left:90px;top:754px;width:1420px;display:flex;align-items:center;gap:12px}
+#s-adv .loopbar span{font:700 21px var(--font);padding:9px 20px;border-radius:40px;background:var(--card);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);white-space:nowrap}
+#s-adv .loopbar span.hl{background:var(--amber);color:#F7F4EC}
+#s-adv .loopbar i{font:700 28px var(--font);font-style:normal;color:var(--ink)}
+#s-adv .loopbar em{font:700 21px var(--font);font-style:normal;color:var(--amber);margin-left:8px}
+
+/* ===== bang AI dung chung (AV/AR/AA, AD/AT) ===== */
+.pn{position:absolute;border-radius:20px;background:var(--card);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:18px 26px}
+.pn .hd{display:flex;align-items:center;gap:16px;height:70px}
+.pn .hd b{flex:0 0 62px;height:62px;border-radius:14px;background:var(--c);border:3px solid var(--ink);color:#F7F4EC;font:700 28px/56px var(--font);text-align:center}
+.pn .hd h3{font:700 30px/1.08 var(--font);color:var(--ink)}
+.pn .hd small{display:block;font:600 19px/1.25 var(--font);color:var(--mute);margin-top:3px}
+.pn .rw{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1.5px dashed rgba(20,22,31,.25)}
+.pn .rw .id{flex:0 0 54px;font:700 20px/30px var(--font);color:var(--c);letter-spacing:.02em}
+.pn .rw .who{flex:0 0 66px;text-align:center;font:700 14px/1 var(--font);letter-spacing:.12em;padding:7px 0;border-radius:14px;background:var(--ink);color:#F7F4EC;margin-top:3px}
+.pn .rw .who.ai{background:var(--amber)}
+.pn .rw .tx{flex:1;font:600 21px/1.32 var(--font);color:var(--ink)}
+
+/* ===== 6 · AV AR AA ===== */
+#s-av .kick{left:94px;top:116px}
+#s-av h2{left:90px;top:156px;font-size:84px;line-height:.98}
+#s-av .pn.core{left:90px;top:336px;width:850px;height:480px}
+#s-av .pn.core .rw{height:78px}
+#s-av .pn.ar{left:980px;top:336px;width:530px;height:226px}
+#s-av .pn.aa{left:980px;top:590px;width:530px;height:226px}
+#s-av .core .ms{font:700 15px var(--font);letter-spacing:.14em;color:var(--dim);margin:0 0 4px}
+
+/* ===== 7 · AD AT ===== */
+#s-adat .kick{left:94px;top:112px}
+#s-adat h2{left:90px;top:148px;font-size:76px;line-height:.98;white-space:nowrap}
+#s-adat .pn{top:276px;width:690px;height:482px}
+#s-adat .pn.l{left:90px}#s-adat .pn.r{left:820px}
+#s-adat .pn .rw{height:86px}
+
+/* ===== 8 · AG MO PHONG ===== */
+#s-ag .kick{left:94px;top:116px}
+#s-ag h2{left:90px;top:152px;font-size:80px;line-height:.98}
+#s-ag .agl{position:absolute;left:90px;top:342px;width:470px}
+#s-ag .as{display:flex;gap:14px;margin-bottom:14px;opacity:.34;transition:opacity .6s}
+#s-ag .as.act{opacity:1}
+#s-ag .as i{flex:0 0 40px;height:40px;border-radius:50%;background:var(--ink);color:#F7F4EC;font:700 21px/40px var(--font);text-align:center;font-style:normal}
+#s-ag .as b{display:block;font:700 25px/1.1 var(--font);color:var(--ink)}
+#s-ag .as span{display:block;font:600 19px/1.3 var(--font);color:var(--mute);margin-top:3px}
+#s-ag .note{position:absolute;right:90px;top:84px;font:700 15px var(--font);letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+#agsv{position:absolute;left:600px;top:112px;width:920px;height:700px;overflow:visible}
+#agsv text{font-family:Bahnschrift,"Segoe UI",sans-serif}
+#agsv .tkb{fill:#F7F4EC;stroke:#14161F;stroke-width:3;transition:fill .6s}
+#agsv .tkt{font-weight:700;font-size:16px;fill:#14161F;transition:fill .6s}
+#agsv .tka{font-weight:600;font-size:14px;fill:rgba(20,22,31,.7);transition:fill .6s,opacity .5s}
+#agsv .bo{opacity:0;font-weight:700;font-size:14px;fill:#F7F4EC;transition:opacity .6s}
+#agsv.s2 .tkg.sh .tkb{fill:#6D28D9}
+#agsv.s2 .tkg.sh .tkt{fill:#F7F4EC}
+#agsv.s2 .tkg.sh .am{opacity:0}
+#agsv.s2 .tkg.sh .bo{opacity:1}
+#agsv .dgl{fill:none;stroke:rgba(20,22,31,.36);stroke-width:1.6}
+#agsv .dgx{fill:none;stroke:#E11D48;stroke-width:2.6;opacity:.8}
+
+/* ===== 12 · TIN CAY ===== */
+#s-trust .kick{left:94px;top:116px}
+#s-trust h2{left:90px;top:156px;font-size:92px;line-height:.98}
+#s-trust .flow2{position:absolute;left:90px;top:372px;width:1420px;height:340px}
+#s-trust .ai0{position:absolute;left:0;top:0;width:230px;height:300px;border-radius:20px;border:3px solid var(--ink);background:#F6DDBF;box-shadow:8px 8px 0 var(--ink);padding:22px 20px}
+#s-trust .ai0 .tg{font:700 15px var(--font);letter-spacing:.18em;color:var(--amber)}
+#s-trust .ai0 h3{font:700 32px/1.1 var(--font);margin-top:8px;color:var(--ink)}
+#s-trust .ai0 p{font:600 20px/1.35 var(--font);color:rgba(20,22,31,.78);margin-top:12px}
+#s-trust .ly{position:absolute;top:0;width:360px;height:300px;border-radius:20px;border:3px solid var(--ink);background:var(--card);box-shadow:8px 8px 0 var(--ink);padding:22px 22px}
+#s-trust .ly .tg{font:700 15px var(--font);letter-spacing:.18em;color:var(--c)}
+#s-trust .ly h3{font:700 29px/1.1 var(--font);margin-top:8px;color:var(--ink)}
+#s-trust .ly p{font:600 20px/1.35 var(--font);color:var(--mute);margin-top:10px}
+#s-trust .ly .res{position:absolute;left:22px;right:22px;bottom:18px;padding-top:10px;border-top:2px dashed rgba(20,22,31,.3);font:700 20px/1.3 var(--font);color:var(--c)}
+#s-trust .ar2{position:absolute;top:120px;font:700 44px var(--font);color:var(--ink)}
+#s-trust .fin2{position:absolute;left:90px;top:752px;font:700 42px/1.1 var(--font);color:var(--ink)}
+#s-trust .fin2 em{font-style:normal;color:var(--amber)}
+
+/* ===== 9 · KET QUA ===== */
+#s-result .kick{left:94px;top:116px}
+#s-result h2{left:90px;top:158px;font-size:100px}
+#s-result .rs{position:absolute;top:330px;width:335px;height:470px;border-radius:20px;background:var(--card);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:18px 22px 18px}
+#s-result .rs.c1{left:90px}#s-result .rs.c2{left:451px}#s-result .rs.c3{left:812px}#s-result .rs.c4{left:1173px}
+#s-result .rs .bd{display:inline-block;font:700 17px var(--font);letter-spacing:.14em;padding:4px 12px;border-radius:8px;background:var(--c);color:#F7F4EC;border:2.5px solid var(--ink)}
+#s-result .rs .nm{font:700 24px/1.1 var(--font);margin-top:10px;color:var(--ink)}
+#s-result .rs .bg{font:700 92px/1 var(--font);letter-spacing:-.03em;color:var(--c);margin-top:8px;font-variant-numeric:tabular-nums}
+#s-result .rs .cp{font:600 19px/1.3 var(--font);color:var(--mute);margin-top:2px}
+#s-result .rs ul{list-style:none;margin-top:14px;border-top:2px dashed rgba(20,22,31,.28);padding-top:10px}
+#s-result .rs li{font:600 19px/1.32 var(--font);color:var(--ink);margin-bottom:8px;padding-left:18px;position:relative}
+#s-result .rs li::before{content:"";position:absolute;left:0;top:9px;width:9px;height:9px;border-radius:2px;background:var(--c);border:1.5px solid var(--ink)}
+#s-result .rs li b{color:var(--c)}
+
+/* ===== 9 · THAT THA ===== */
+#s-honest .kick{left:94px;top:116px}
+#s-honest h2{left:90px;top:156px;font-size:96px;line-height:.98}
+#s-honest .lim{position:absolute;left:90px;top:420px;width:600px;font:600 26px/1.38 var(--font);padding:26px 30px;border-radius:20px;background:var(--card);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink)}
+#s-honest .lim b{color:var(--amber)}
+#s-honest .cal{position:absolute;left:760px;top:396px;width:750px}
+#s-honest .cal .cap{font:700 19px var(--font);letter-spacing:.2em;color:var(--mute);margin-bottom:14px}
+#s-honest .days{display:grid;grid-template-columns:repeat(9,1fr);gap:8px}
+#s-honest .days div{height:128px;border-radius:12px;padding:12px 6px;text-align:center;color:var(--ink);display:flex;flex-direction:column;justify-content:space-between;align-items:center;border:3px solid var(--ink)}
+#s-honest .days span{font:700 26px var(--font)}
+#s-honest .days small{font:700 14px/1.2 var(--font)}
+#s-honest .days .rd{background:#FDA4AF} #s-honest .days .yl{background:#FCD34D} #s-honest .days .gn{background:#5EEAD4}
+#s-honest .fix{position:absolute;left:760px;top:618px;width:750px;font:600 25px/1.38 var(--font)}
+#s-honest .fix b{color:var(--teal)}
+#s-honest .tag{position:absolute;left:90px;top:680px;width:620px;font:700 38px/1.15 var(--font)}
+#s-honest .tag em{font-style:normal;color:var(--teal)}
+
+/* ===== 10 · KET ===== */
+#s-end .kick{left:94px;top:96px}
+#s-end h2{left:90px;top:130px;font-size:92px}
+#s-end .cmp{position:absolute;left:90px;top:262px;width:1420px}
+#s-end .cr{position:relative;height:84px;margin-bottom:26px}
+#s-end .cr .t{position:absolute;left:0;top:0;width:200px;font:700 34px/84px var(--font)}
+#s-end .cr .b{position:absolute;left:230px;top:10px;height:64px;border-radius:12px;border:3px solid var(--ink);transform-origin:left;transform:scaleX(0);transition:transform 1.6s cubic-bezier(.3,.6,.2,1)}
+#s-end .cmp.on .b{transform:scaleX(1)}
+#s-end .b.o{width:1190px;background:repeating-linear-gradient(135deg,#171A24 0 14px,#2B3040 14px 28px)}
+#s-end .b.n{width:142px;background:var(--teal);box-shadow:5px 5px 0 var(--ink)}
+#s-end .b.n2{width:33px;background:#D97706;z-index:2}
+#s-end .cr .l{position:absolute;top:0;font:700 25px/84px var(--font);white-space:nowrap}
+#s-end .b.o + .l{color:#F6F2EA;left:260px!important}
+#s-end .chips{position:absolute;left:90px;top:478px;width:1420px;display:flex;flex-wrap:wrap;gap:12px}
+#s-end .chips span{font:700 22px var(--font);padding:9px 20px;border-radius:40px;background:var(--card);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+#s-end .chips .h{background:none;border:none;box-shadow:none;color:var(--mute);font:700 19px var(--font);letter-spacing:.2em;padding:10px 0;width:100%}
+#s-end .fin{position:absolute;left:90px;top:712px;font:700 88px/1 var(--font);letter-spacing:-.03em;white-space:nowrap}
+#s-end .fin em{font-style:normal;color:var(--amber)}
+#s-end .go{position:absolute;right:90px;top:640px;text-align:right}
+#s-end .go .cd{font:700 18px var(--font);color:var(--mute);letter-spacing:.16em}
+#s-end .go .cd b{display:block;font:700 54px/1.1 var(--font);color:var(--ink);letter-spacing:.02em;font-variant-numeric:tabular-nums;background:linear-gradient(transparent 62%,rgba(217,119,6,.42) 62%);display:inline-block;padding:0 8px}
+#s-end .go a{display:inline-block;margin:12px 0 0 10px;font:700 19px var(--font);color:#F7F4EC;background:var(--ink);padding:11px 20px;border-radius:11px;text-decoration:none;box-shadow:4px 4px 0 var(--amber)}
+#s-end .go a.sec{background:var(--card);color:var(--ink);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+body.static #s-end .go a,body.rec #s-end .go a{display:none}
+
+/* ===== CAN BANG LAI (12/11): tieu de 1 dong, noi dung dan deu ===== */
+#s-ctx .kick,#s-score .kick,#s-adv .kick,#s-result .kick,#s-trust .kick,#s-honest .kick{top:84px}
+#s-ctx h2,#s-score h2,#s-adv h2,#s-result h2,#s-trust h2,#s-honest h2,#s-av h2,#s-ag h2,#s-adat h2,#s-main h2{white-space:nowrap}
+#s-ctx h2{top:116px;font-size:72px}
+#s-ctx .col{top:236px;height:556px}
+#s-ctx li{font-size:22px;margin-bottom:14px}
+#s-ctx .c2 p,#s-ctx .c3 p{font-size:25px;line-height:1.4}
+#s-ctx .pill{font-size:21px;margin-top:24px}
+#s-ctx .ar{top:480px}
+
+#s-main .kick{top:112px}
+#s-main h2{top:146px;font-size:84px}
+#s-main .old{top:128px;height:190px}
+#stamp{top:286px;right:100px}
+#s-main .steps{top:360px}
+#s-main .sp{min-height:262px}
+#s-main .sp p{font-size:21px}
+#s-main .sp .own{font-size:13px;letter-spacing:.05em}
+#s-main .cnt{top:690px}
+#s-main .chip{top:704px}
+
+#s-score h2{top:116px;font-size:66px;line-height:1}
+#s-score .sb3{top:200px}
+#s-score .pn2{top:262px;height:372px}
+#sc1{top:100px}
+#s-score .bar2{margin-top:44px}
+#s-score .ex{font-size:23px;margin-top:26px}
+#s-score .bl{top:664px}
+#s-score .bands{top:690px}
+
+#s-adv h2{top:116px;font-size:66px;line-height:1}
+#s-adv .sb2{top:200px}
+#s-adv .cards{top:268px}
+#s-adv .ac{height:178px;padding-top:26px}
+#s-adv .ac b{top:48px}
+#s-adv .ac h3{font-size:31px}
+#s-adv .ac p{font-size:21px}
+#s-adv .loopbar{top:706px}
+
+.pn .rw .tx{font-size:22px}
+#s-av .kick{top:112px}
+#s-av h2{top:146px;font-size:66px;line-height:1}
+#s-av .pn.core{top:250px;height:544px}
+#s-av .pn.core .rw{height:92px}
+#s-av .pn.ar{top:250px;height:256px}
+#s-av .pn.aa{top:538px;height:256px}
+
+#s-adat h2{top:146px;font-size:66px}
+#s-adat .pn{top:250px;height:544px}
+#s-adat .pn .rw{height:100px}
+
+#s-ag .kick{top:112px}
+#s-ag h2{top:146px;font-size:60px;line-height:1}
+#s-ag .agl{top:262px}
+#s-ag .as{margin-bottom:26px}
+
+#s-result h2{top:116px;font-size:66px}
+#s-result .rs{top:230px;height:560px;padding:24px 24px}
+#s-result .rs .nm{font-size:27px}
+#s-result .rs .bg{font-size:104px}
+#s-result .rs .cp{font-size:21px}
+#s-result .rs li{font-size:21px;margin-bottom:10px}
+
+#s-trust h2{top:116px;font-size:66px;line-height:1}
+#s-trust .flow2{top:252px;height:420px}
+#s-trust .ai0,#s-trust .ly{height:380px}
+#s-trust .ai0 p,#s-trust .ly p{font-size:22px}
+#s-trust .ly h3{font-size:31px}
+#s-trust .ly .res{font-size:21px}
+#s-trust .ar2{top:170px}
+#s-trust .fin2{top:700px;font-size:46px}
+
+#s-honest h2{top:116px;font-size:66px;line-height:1}
+#s-honest .lim{top:250px;width:640px;font-size:28px;padding:30px 32px}
+#s-honest .tag{top:560px;width:640px;font-size:46px}
+#s-honest .cal{top:240px}
+#s-honest .days div{height:150px}
+#s-honest .fix{top:470px;font-size:27px}
+
+/* tinh chinh khoang cach kick - tieu de */
+#s-ctx h2,#s-score h2,#s-adv h2,#s-result h2,#s-trust h2,#s-honest h2{top:126px}
+#s-ctx .col{top:246px;height:548px}
+#s-score .sb3{top:210px}
+#s-score .pn2{top:272px;height:366px}
+#s-score .bl{top:668px}
+#s-score .bands{top:694px}
+#s-adv .sb2{top:210px}
+#s-adv .cards{top:278px}
+#s-adv .loopbar{top:714px}
+#s-result .rs{top:240px;height:552px}
+#s-main h2,#s-av h2,#s-adat h2,#s-ag h2{top:158px}
+#stamp{top:268px}
+#s-ctx .ar{top:470px;font-size:56px}
+#s-ctx .pill{font-size:18px;white-space:nowrap}
+#s-trust .ai0,#s-trust .ly{height:340px}
+#s-trust .fin2{top:672px}
+#s-result .rs{height:520px}
+#s-honest .tag{width:720px;font-size:44px}
+#s-ctx .c1{left:90px;width:560px}
+#s-ctx .c2{left:700px;width:380px}
+#s-ctx .c3{left:1130px;width:380px}
+#s-ctx li{font-size:23px;margin-bottom:20px}
+#s-ctx .c1 li::before{top:9px}
+#s-ctx .c2 li,#s-ctx .c3 li{font-size:21px;margin-bottom:14px;padding-left:24px}
+#s-ctx .c2 li::before{background:var(--teal)}
+#s-ctx .c3 li::before{background:var(--amber)}
+#s-ctx .c2 .pill,#s-ctx .c3 .pill{margin-top:8px}
+/* can bang 3 cot bo canh */
+#s-ctx .c1{left:90px;width:470px}
+#s-ctx .c2{left:615px;width:420px}
+#s-ctx .c3{left:1090px;width:420px}
+#s-ctx .col li{font-size:21px;line-height:1.34;margin-bottom:15px;padding-left:25px}
+#s-ctx .col .bd{margin-top:18px}
+#s-ctx .col .pill{position:absolute;left:26px;bottom:26px;margin-top:0}
+#s-ctx .ar{top:480px}
+#s-ctx .old-st{position:absolute;right:22px;top:24px;rotate:4deg;padding:6px 14px;border:4px solid var(--coral);border-radius:10px;font:700 20px var(--font);letter-spacing:.1em;color:var(--coral);background:rgba(247,244,236,.85)}
+#s-ctx .old-st{top:20px;right:18px;padding:4px 10px;border-width:3px;font-size:15px;letter-spacing:.06em;rotate:3deg}
+#tsun .sweep{transform-box:view-box;transform-origin:310px 270px;animation:spin 6s linear infinite}
+</style>
+</head>
+<body>
+<div id="sky"><div id="grad"></div><div id="stars"></div><canvas id="dust"></canvas><div id="glow"></div><div id="sun"></div><div id="vig"></div></div>
+<div id="vp"><div id="stage">
+
+<div id="hud" class="off"><span class="lab">SÁNG 10/11</span><span id="clock">07:00:00</span></div>
+
+<!-- 0 · TIÊU ĐỀ -->
+<section id="s-title" data-steps="1" data-p="0">
+  <div class="kick">AI Workflow Challenge 2026 · Chung kết</div>
+  <div class="when">Tháng 11 · 2026</div>
+  <h1>F2DR<br><em>ADVANCEMENT</em></h1>
+  <div class="sub">Luồng tự động <b>07:00</b> mỗi sáng: thay F2DR cũ, và thêm một <b>đội AI</b> biết điều tra</div>
+  <div class="me" style="top:560px;width:780px"><div class="lb">NGƯỜI BẢO VỆ</div><div class="nm">Cao Đăng Đại</div><div class="un">Fraud Risk Modelling Analyst</div></div>
+  <div class="me" style="top:690px;width:780px"><div class="lb">ĐƠN VỊ</div><div class="nm" style="font-size:34px">Phòng Quản trị rủi ro</div><div class="un">Trung tâm Vận hành Khai thác · Tổng Công ty Dịch vụ Tài chính số Viettel</div></div>
+  <svg id="tsun" viewBox="0 0 620 700">
+    <circle cx="324" cy="282" r="230" fill="#14161F"/>
+    <circle cx="310" cy="270" r="230" fill="#F7F4EC" stroke="#14161F" stroke-width="6"/>
+    <circle cx="310" cy="270" r="170" fill="none" stroke="#14161F" stroke-width="1.5" opacity=".25"/><circle cx="310" cy="270" r="110" fill="none" stroke="#14161F" stroke-width="1.5" opacity=".25"/><circle cx="310" cy="270" r="50" fill="none" stroke="#14161F" stroke-width="1.5" opacity=".25"/>
+    <line x1="310" y1="40" x2="310" y2="500" stroke="#14161F" stroke-width="1.5" opacity=".2"/><line x1="80" y1="270" x2="540" y2="270" stroke="#14161F" stroke-width="1.5" opacity=".2"/>
+    <circle cx="175" cy="217" r="5" fill="#14161F" opacity="0.40"/><circle cx="108" cy="314" r="5" fill="#14161F" opacity="0.28"/><circle cx="179" cy="190" r="6" fill="#14161F" opacity="0.55"/><circle cx="218" cy="263" r="6" fill="#14161F" opacity="0.28"/><circle cx="356" cy="106" r="6" fill="#14161F" opacity="0.40"/><circle cx="288" cy="332" r="5" fill="#14161F" opacity="0.55"/><circle cx="334" cy="210" r="4" fill="#14161F" opacity="0.40"/><circle cx="518" cy="223" r="5" fill="#14161F" opacity="0.40"/><circle cx="180" cy="155" r="5" fill="#14161F" opacity="0.55"/><circle cx="395" cy="278" r="5" fill="#14161F" opacity="0.28"/><circle cx="315" cy="364" r="4" fill="#14161F" opacity="0.28"/><circle cx="274" cy="278" r="5" fill="#14161F" opacity="0.40"/><circle cx="388" cy="151" r="4" fill="#14161F" opacity="0.40"/><circle cx="211" cy="150" r="5" fill="#14161F" opacity="0.40"/><circle cx="284" cy="413" r="4" fill="#14161F" opacity="0.40"/><circle cx="525" cy="264" r="4" fill="#14161F" opacity="0.28"/><circle cx="258" cy="80" r="6" fill="#14161F" opacity="0.40"/><circle cx="325" cy="390" r="6" fill="#14161F" opacity="0.40"/><circle cx="157" cy="380" r="6" fill="#14161F" opacity="0.28"/><circle cx="431" cy="98" r="5" fill="#14161F" opacity="0.28"/><circle cx="311" cy="275" r="6" fill="#14161F" opacity="0.28"/><circle cx="140" cy="398" r="5" fill="#14161F" opacity="0.55"/><circle cx="270" cy="228" r="5" fill="#14161F" opacity="0.55"/><circle cx="286" cy="458" r="5" fill="#14161F" opacity="0.40"/><circle cx="321" cy="59" r="5" fill="#14161F" opacity="0.55"/><circle cx="374" cy="295" r="6" fill="#14161F" opacity="0.40"/><circle cx="158" cy="322" r="4" fill="#14161F" opacity="0.28"/><circle cx="299" cy="177" r="6" fill="#14161F" opacity="0.55"/><circle cx="246" cy="305" r="5" fill="#14161F" opacity="0.55"/><circle cx="380" cy="70" r="5" fill="#14161F" opacity="0.55"/><circle cx="399" cy="192" r="5" fill="#14161F" opacity="0.40"/><circle cx="232" cy="331" r="6" fill="#14161F" opacity="0.55"/><circle cx="185" cy="115" r="5" fill="#14161F" opacity="0.40"/><circle cx="220" cy="436" r="5" fill="#14161F" opacity="0.55"/><circle cx="225" cy="207" r="5" fill="#14161F" opacity="0.55"/><circle cx="185" cy="308" r="6" fill="#14161F" opacity="0.28"/><circle cx="101" cy="291" r="6" fill="#14161F" opacity="0.55"/><circle cx="419" cy="149" r="4" fill="#14161F" opacity="0.55"/><circle cx="482" cy="202" r="4" fill="#14161F" opacity="0.55"/><circle cx="401" cy="241" r="6" fill="#14161F" opacity="0.28"/><circle cx="149" cy="148" r="4" fill="#14161F" opacity="0.55"/><circle cx="351" cy="260" r="6" fill="#14161F" opacity="0.55"/><circle cx="359" cy="172" r="4" fill="#14161F" opacity="0.40"/><circle cx="265" cy="430" r="4" fill="#14161F" opacity="0.55"/><circle cx="318" cy="326" r="5" fill="#14161F" opacity="0.28"/><circle cx="307" cy="297" r="6" fill="#14161F" opacity="0.40"/><circle cx="192" cy="92" r="6" fill="#14161F" opacity="0.40"/><circle cx="156" cy="180" r="5" fill="#14161F" opacity="0.40"/><circle cx="485" cy="228" r="6" fill="#14161F" opacity="0.28"/><circle cx="289" cy="246" r="5" fill="#14161F" opacity="0.40"/><circle cx="292" cy="122" r="6" fill="#14161F" opacity="0.55"/><circle cx="431" cy="270" r="5" fill="#14161F" opacity="0.28"/><circle cx="253" cy="253" r="5" fill="#14161F" opacity="0.40"/><circle cx="459" cy="162" r="4" fill="#14161F" opacity="0.40"/><circle cx="259" cy="153" r="5" fill="#14161F" opacity="0.55"/><circle cx="451" cy="122" r="4" fill="#14161F" opacity="0.28"/><circle cx="345" cy="136" r="5" fill="#14161F" opacity="0.28"/><circle cx="131" cy="182" r="5" fill="#14161F" opacity="0.28"/><circle cx="184" cy="385" r="5" fill="#14161F" opacity="0.40"/><circle cx="310" cy="208" r="5" fill="#14161F" opacity="0.28"/><circle cx="328" cy="418" r="6" fill="#14161F" opacity="0.28"/><circle cx="130" cy="273" r="6" fill="#14161F" opacity="0.55"/><circle cx="458" cy="189" r="4" fill="#14161F" opacity="0.55"/><circle cx="421" cy="180" r="5" fill="#14161F" opacity="0.55"/><circle cx="223" cy="310" r="5" fill="#14161F" opacity="0.55"/><circle cx="243" cy="420" r="6" fill="#14161F" opacity="0.28"/><circle cx="330" cy="292" r="6" fill="#14161F" opacity="0.55"/><circle cx="325" cy="465" r="6" fill="#14161F" opacity="0.55"/><circle cx="247" cy="363" r="5" fill="#14161F" opacity="0.55"/><circle cx="132" cy="247" r="5" fill="#14161F" opacity="0.55"/>
+    <g class="sweep"><path d="M310,270 L310,40 A230,230 0 0 1 463.9,99.1 Z" fill="#C2410C" opacity=".28"/><line x1="310" y1="270" x2="463.9" y2="99.1" stroke="#C2410C" stroke-width="4" stroke-linecap="round"/></g>
+    <line x1="196" y1="150" x2="262" y2="112" stroke="#E11D48" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/><line x1="262" y1="112" x2="352" y2="176" stroke="#E11D48" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/><line x1="196" y1="150" x2="214" y2="268" stroke="#E11D48" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/><line x1="214" y1="268" x2="318" y2="318" stroke="#E11D48" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/><line x1="352" y1="176" x2="318" y2="318" stroke="#E11D48" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/><line x1="214" y1="268" x2="142" y2="330" stroke="#E11D48" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="196" cy="150" r="15" fill="none" stroke="#E11D48" stroke-width="2.5" opacity=".6"/><circle cx="196" cy="150" r="9" fill="#E11D48" stroke="#14161F" stroke-width="3"/><circle cx="262" cy="112" r="15" fill="none" stroke="#E11D48" stroke-width="2.5" opacity=".6"/><circle cx="262" cy="112" r="9" fill="#E11D48" stroke="#14161F" stroke-width="3"/><circle cx="352" cy="176" r="15" fill="none" stroke="#E11D48" stroke-width="2.5" opacity=".6"/><circle cx="352" cy="176" r="9" fill="#E11D48" stroke="#14161F" stroke-width="3"/><circle cx="214" cy="268" r="15" fill="none" stroke="#E11D48" stroke-width="2.5" opacity=".6"/><circle cx="214" cy="268" r="9" fill="#E11D48" stroke="#14161F" stroke-width="3"/><circle cx="318" cy="318" r="15" fill="none" stroke="#E11D48" stroke-width="2.5" opacity=".6"/><circle cx="318" cy="318" r="9" fill="#E11D48" stroke="#14161F" stroke-width="3"/><circle cx="142" cy="330" r="15" fill="none" stroke="#E11D48" stroke-width="2.5" opacity=".6"/><circle cx="142" cy="330" r="9" fill="#E11D48" stroke="#14161F" stroke-width="3"/>
+    <rect x="14" y="40" width="248" height="38" rx="19" fill="#14161F"/><text x="138" y="65" text-anchor="middle" font-size="16" letter-spacing="1.5" fill="#F7F4EC">QUÉT MỖI SÁNG 07:00</text>
+    <line x1="500" y1="452" x2="574" y2="522" stroke="#14161F" stroke-width="20" stroke-linecap="round"/>
+    <circle cx="450" cy="392" r="96" fill="#14161F" opacity=".95" transform="translate(8 8)"/>
+    <circle cx="450" cy="392" r="96" fill="#F7F4EC" stroke="#14161F" stroke-width="8"/>
+    <circle cx="450" cy="400" r="50" fill="#14161F"/>
+    <rect x="400" y="380" width="100" height="34" rx="15" fill="#E11D48" stroke="#14161F" stroke-width="3"/>
+    <ellipse cx="428" cy="397" rx="10" ry="7" fill="#F7F4EC"/><ellipse cx="472" cy="397" rx="10" ry="7" fill="#F7F4EC"/>
+    <path d="M436 428 Q450 438 464 428" fill="none" stroke="#F7F4EC" stroke-width="4" stroke-linecap="round"/>
+    <path d="M370 330 l0 -18 l18 0 M530 330 l0 -18 l-18 0 M370 454 l0 18 l18 0 M530 454 l0 18 l-18 0" fill="none" stroke="#E11D48" stroke-width="5" stroke-linecap="round" transform="translate(0 -8)" opacity="0"/>
+    <rect x="330" y="270" width="240" height="38" rx="19" fill="#E11D48" stroke="#14161F" stroke-width="3"/><text x="450" y="295" text-anchor="middle" font-size="17" letter-spacing="1" fill="#F7F4EC">BẮT ĐƯỢC GIAN LẬN</text>
+    <line x1="10" y1="566" x2="610" y2="566" stroke="#14161F" stroke-width="6" stroke-linecap="round"/>
+    <g transform="translate(436,38) rotate(8)"><rect width="168" height="56" rx="10" fill="rgba(247,244,236,.9)" stroke="#E11D48" stroke-width="4"/><text x="84" y="36" text-anchor="middle" font-size="20" letter-spacing="2" fill="#E11D48">ĐỀ TÀI DỰ THI</text></g>
+    <g data-s="1">
+      <rect x="10" y="596" width="129" height="44" rx="9" fill="#1D4ED8" stroke="#14161F" stroke-width="3.5"/>
+      <text x="154" y="627" font-size="23" fill="#14161F">THAY THẾ F2DR · 13 phút</text>
+      <rect x="109" y="654" width="467" height="44" rx="9" fill="#C2410C" stroke="#14161F" stroke-width="3.5"/>
+      <text x="126" y="684" font-size="22" letter-spacing="1.5" fill="#F7F4EC">ADVANCEMENT · ĐỘI AI</text>
+    </g>
+  </svg>
+</section>
+
+<!-- 1 · BỐI CẢNH -->
+<section id="s-ctx" data-steps="2" data-p="0.03">
+  <div class="kick">Bối cảnh</div>
+  <h2>Vì sao có <em>F2DR Advancement?</em></h2>
+  <div class="col c1"><span class="old-st">BẤT CẬP · LỖI THỜI</span><div class="tg">TRƯỚC ĐÂY</div><h3>F2DR của VCS</h3><small>Vận hành từ 03/2022</small>
+    <div class="bd" data-s="1"><ul>
+      <li>Dữ liệu đi qua nhiều chặng, không đối soát vào–ra: thiếu hoặc trùng mà không báo lỗi</li>
+      <li>VDF không làm chủ bộ chấm điểm, không chỉnh được theo nghiệp vụ</li>
+      <li>Cấu hình một kịch bản mất nửa ngày đến hai ngày</li>
+      <li>Lỗi xảy ra thường xuyên, không xử lý dứt điểm được, cứ tái đi tái lại</li>
+      <li>Thiếu thông tin trên dashboard nên góc nhìn về insight dữ liệu bị hạn chế</li>
+    </ul></div></div>
+  <div class="ar" style="left:578px" data-s="2">›</div>
+  <div class="col c2"><div class="tg">BƯỚC 1</div><h3>F2DR Replacement</h3><small>VDF tự dựng luồng thay thế</small>
+    <div class="bd" data-s="2"><ul><li>Lấy dữ liệu trực tiếp từ ClickHouse, không qua nhiều bước trung gian</li><li>Score VDF tự phát triển, chỉnh được theo nghiệp vụ</li><li>Kịch bản viết thẳng bằng SQL, sửa và chạy lại ngay</li><li>Tự chạy 07:00, lỗi thì tự chạy lại, về BI trong 13 phút</li></ul><span class="pill">Đã thay F2DR</span></div></div>
+  <div class="ar" style="left:1053px" data-s="2">›</div>
+  <div class="col c3"><div class="tg">BƯỚC 2</div><h3>F2DR Advancement</h3><small>Không dừng ở thay thế</small>
+    <div class="bd" data-s="2"><ul><li>Đội 6 AI điều tra từng khách, ra nhãn và đề xuất</li><li>Truy vết kịch bản bùng alert, tìm đúng nguyên nhân</li><li>Tìm khoảng mù luật chưa thấy, lần dòng tiền theo ca</li><li>Đề xuất sửa luật mỗi ngày, luật ngày càng tốt hơn</li></ul><span class="pill">Điều F2DR cũ chưa có</span></div></div>
+</section>
+
+<!-- 1 · MỞ -->
+<section id="s-open" data-steps="2" data-p="0">
+  <div class="kick" data-s="0">Mỗi sáng · 07:00</div>
+  <div id="big">06:59:55</div><div id="pulse"></div>
+  <svg class="sunst" data-s="0" viewBox="0 0 440 440"><circle cx="232" cy="232" r="118" fill="#14161F"/><g class="rays"><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(0 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(30 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(60 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(90 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(120 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(150 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(180 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(210 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(240 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(270 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(300 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(330 220 220)"/></g><circle cx="220" cy="220" r="118" fill="#D97706" stroke="#14161F" stroke-width="6"/><text x="220" y="212" text-anchor="middle" font-size="64" fill="#14161F">07:00</text><text x="220" y="258" text-anchor="middle" font-size="24" letter-spacing="6" fill="#14161F">MỖI SÁNG</text></svg>
+  <h1 id="hero">Không ai<br><em>bấm nút.</em></h1>
+  <div class="sub" data-s="2"><b>F2DR Advancement</b> · thay F2DR cũ, và thêm một đội AI biết điều tra</div>
+</section>
+
+<!-- 3 · TỔNG QUAN -->
+<section id="s-dial" data-steps="2" data-p="0.12">
+  <div class="kick">Tổng quan · sáng 10/11</div>
+  <h2>13 phút <em>thay F2DR.</em><br>44 phút <em>ADVANCEMENT.</em></h2>
+  <div class="lg" style="top:352px;--c:var(--sky)" data-s="1"><div class="t">07:00 → 07:13<span class="tg r">THAY THẾ F2DR</span></div><h3><i></i>Thu thập, chấm điểm, đẩy lên BI</h3><p>51 kịch bản, 1.342 khách có cảnh báo, nằm trên bảng BI lúc 07:11</p></div>
+  <div class="lg adv" style="top:456px;--c:var(--coral)" data-s="2"><div class="t">07:10 → 07:39<span class="tg a">ADVANCEMENT</span></div><h3><i></i>Đội AI điều tra từng khách</h3><p>AV kiểm tra từng khách, AR phản biện lại</p></div>
+  <div class="lg adv" style="top:560px;--c:#D97706" data-s="2"><div class="t">07:39 → 07:54<span class="tg a">ADVANCEMENT</span></div><h3><i></i>Đội AI tìm điều luật chưa thấy</h3><p>AD khoảng mù · AT kịch bản bùng · AG lần dòng tiền</p></div>
+  <div class="lg" style="top:664px;--c:var(--teal)" data-s="2"><div class="t">07:40 → 07:57<span class="tg r">HẠ TẦNG</span></div><h3><i></i>Canh gác</h3><p>Khâu nào chưa xong thì tự chạy lại, canh tới 13:00</p></div>
+  <svg id="dial" viewBox="0 0 680 680"></svg>
+</section>
+
+<!-- 4 · THAY THẾ F2DR: CÁC BƯỚC -->
+<section id="s-main" data-steps="2" data-p="0.2">
+  <div class="kick">F2DR Replacement · 07:00 → 07:13</div>
+  <h2>Chỉ cần <em>13 phút.</em></h2>
+  <div class="old" id="old"><div class="t">TRƯỚC ĐÂY</div><h3>F2DR cũ</h3><p>Nhiều chặng trung gian, ra bảng thô</p></div>
+  <div id="stamp" data-s="2">ĐÃ THAY THẾ</div>
+  <div class="steps" data-s="1">
+    <div class="sp" style="left:0"><span class="no">1</span><span class="tm">07:00 · 18 giây</span><h3>Chuẩn bị</h3><p>Soát kịch bản, chờ nguồn dữ liệu về đủ, đọc mail khiếu nại</p></div>
+    <div class="sp" style="left:291px"><span class="no">2</span><span class="tm">07:00 → 07:10</span><h3>Chạy 51 kịch bản</h3><p>51 câu truy vấn chạy thẳng trên kho dữ liệu, ra các dòng cảnh báo</p></div>
+    <div class="sp hl" style="left:582px"><span class="no">3</span><span class="tm">mỗi khách một điểm</span><h3>Chấm điểm</h3><p>Gộp cảnh báo theo khách, chấm bằng mô hình</p><span class="own">SCORE VDF · TỰ PHÁT TRIỂN</span></div>
+    <div class="sp" style="left:873px"><span class="no">4</span><span class="tm">đến 07:11</span><h3>Đẩy ClickHouse</h3><p>Gửi bảng alert qua API Trung tâm Dữ liệu, đồng bộ về BI</p></div>
+    <div class="sp last" style="left:1164px"><span class="no">5</span><span class="tm">đến 07:13</span><h3>Dựng và kiểm</h3><p>Dựng dashboard, quét an toàn, đưa lên mạng, tự kiểm lại bản đang chạy</p></div>
+  </div>
+  <div class="cnt" data-s="2"><div><b data-count="51">51</b>kịch bản</div><div><b data-count="2010" data-fmt="1">2.010</b>dòng cảnh báo</div><div><b data-count="1342" data-fmt="1">1.342</b>khách có cảnh báo</div></div>
+  <div class="chip" data-s="2">07:11 · alert đã nằm trên bảng BI</div>
+</section>
+
+<!-- 4b · MÔ HÌNH ĐIỂM VDF -->
+<section id="s-score" data-steps="2" data-p="0.25">
+  <div class="kick">F2DR Replacement · bộ chấm điểm</div>
+  <h2>Điểm rủi ro do <em>VDF tự phát triển.</em></h2>
+  <div class="sb3">F2DR cũ chấm điểm như hộp đen, VDF không chỉnh được. <b>Mô hình này VDF làm chủ từng công thức.</b></div>
+  <div class="pn2 l" data-s="1"><div class="tg">TẦNG 1 · CÙNG MỘT KỊCH BẢN NỔ NHIỀU LẦN</div><h3>Tiệm cận trần, không cộng dồn</h3>
+    <svg id="sc1" viewBox="0 0 660 240">
+      <line x1="50" y1="200" x2="640" y2="200" stroke="#14161F" stroke-width="3"/><line x1="50" y1="20" x2="50" y2="200" stroke="#14161F" stroke-width="3"/>
+      <line x1="50" y1="115.0" x2="640" y2="115.0" stroke="#14161F" stroke-width="2" stroke-dasharray="7 7" opacity=".6"/>
+      <text x="640" y="107.0" text-anchor="end" font-size="17" fill="#14161F">trần của mức này</text>
+      <path d="M70,140.5 L174.0,30" fill="none" stroke="#E11D48" stroke-width="3" stroke-dasharray="3 8" stroke-linecap="round"/>
+      <text x="186.0" y="46" font-size="17" fill="#E11D48">nếu cộng dồn: vượt trần ngay</text>
+      <path class="cv" pathLength="1" d="M70.0,140.5 L126.0,132.9 L182.0,127.5 L238.0,123.7 L294.0,121.1 L350.0,119.3 L406.0,118.0 L462.0,117.1 L518.0,116.5 L574.0,116.0"/>
+      <circle cx="70.0" cy="140.5" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="126.0" cy="132.9" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="182.0" cy="127.5" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="238.0" cy="123.7" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="294.0" cy="121.1" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="350.0" cy="119.3" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="406.0" cy="118.0" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="462.0" cy="117.1" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="518.0" cy="116.5" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/><circle cx="574.0" cy="116.0" r="5" fill="#C2410C" stroke="#14161F" stroke-width="2"/>
+      <text x="345" y="232" text-anchor="middle" font-size="16" fill="rgba(20,22,31,.6)">số lần cùng một kịch bản nổ trong ngày  →</text>
+    </svg></div>
+  <div class="pn2 r" data-s="2"><div class="tg">TẦNG 2 · NHIỀU KỊCH BẢN KHÁC NHAU</div><h3>Kịch bản mạnh nhất làm gốc</h3>
+    <div class="bar2"><i class="a">60 · kịch bản mạnh nhất</i><i class="b">+9,8</i></div>
+    <div class="tk2"><span>0</span><span>điểm của khách trong ngày: 69,8</span><span>100</span></div>
+    <div class="ex">Các kịch bản còn lại chỉ lấp thêm <b>một phần nhỏ</b> khoảng còn trống. Ví dụ minh họa: kịch bản 60 điểm và kịch bản 35 điểm cho ra 69,8.</div></div>
+  <div class="bl" data-s="2">MỨC ĐỘ ẢNH HƯỞNG THEO ĐIỂM</div>
+  <div class="bands" data-s="2"><i style="width:25%;background:var(--teal)">LOW · đến 25</i><i style="width:40%;background:#A16207">MEDIUM · trên 25 đến 65</i><i style="width:35%;background:var(--coral)">HIGH · trên 65</i></div>
+</section>
+
+<!-- 5 · ADVANCEMENT = ĐỘI AI -->
+<section id="s-adv" data-steps="2" data-p="0.3">
+  <div class="kick">ADVANCEMENT · điều F2DR cũ chưa từng có</div>
+  <h2>F2DR chỉ báo động. <em>Đội AI biết vì sao.</em></h2>
+  <div class="sb2">Mỗi AI chạy theo <b>một workflow dựng sẵn</b>. Không AI nào tự nghĩ xem mình cần làm gì.</div>
+  <div class="cards">
+    <div class="ac" style="--c:var(--coral)" data-s="1"><b>AV</b><h3>AI Verification</h3><small>Kiểm tra từng khách</small><p>Khách này có thật sự gian lận không?</p></div>
+    <div class="ac" style="--c:var(--pink)" data-s="1"><b>AR</b><h3>AI Reviewer</h3><small>Phản biện</small><p>Kết luận ấy có chỗ nào sai không?</p></div>
+    <div class="ac" style="--c:var(--gold)" data-s="1"><b>AT</b><h3>AI Trace</h3><small>Truy vết kịch bản bùng</small><p>Vì sao một kịch bản bỗng báo nhiều?</p></div>
+    <div class="ac" style="--c:var(--amber)" data-s="1"><b>AD</b><h3>AI Detection</h3><small>Tìm khoảng mù</small><p>Ai đang gian lận mà luật chưa thấy?</p></div>
+    <div class="ac" style="--c:var(--violet)" data-s="1"><b>AG</b><h3>AI Graph</h3><small>Lần dòng tiền</small><p>Tiền đi qua đâu, dồn về những ai?</p></div>
+    <div class="ac" style="--c:var(--teal)" data-s="1"><b>AA</b><h3>AI Auditing</h3><small>Kiểm toán mù</small><p>Chính các AI có chấm đúng không?</p></div>
+  </div>
+  <div class="loopbar" data-s="2"><span>ALERT</span><i>→</i><span>ĐIỀU TRA</span><i>→</i><span>NHÃN</span><i>→</i><span class="hl">ĐỀ XUẤT SỬA LUẬT</span><i>→</i><span>ALERT TỐT HƠN</span><em>↺ mỗi sáng</em></div>
+</section>
+
+<!-- 6 · AV + AR + AA -->
+<section id="s-av" data-steps="2" data-p="0.4">
+  <div class="kick">AV · AR · AA</div>
+  <h2>Thu thập hết, <em>rồi mới nhận định.</em></h2>
+  <div class="pn core" style="--c:var(--coral)" data-s="1">
+    <div class="hd"><b>AV</b><div><h3>AI Verification</h3><small>Điều tra từng khách theo một quy trình cố định</small></div></div>
+    <div class="rw"><span class="id">AV1</span><span class="who">CODE</span><span class="tx">Chọn khách và thu thập toàn diện dữ liệu: hồ sơ, dòng tiền, hành vi, vay, danh sách đen</span></div>
+    <div class="rw"><span class="id">AV2</span><span class="who">CODE</span><span class="tx">Đối chiếu với các khách cùng ngày</span></div>
+    <div class="rw"><span class="id">AV3</span><span class="who">CODE</span><span class="tx">Chấm toàn bộ tiêu chí, gom thành tờ số liệu của từng khách</span></div>
+    <div class="rw"><span class="id">AV4</span><span class="who ai">AI</span><span class="tx">Đọc kết quả rồi mới nhận định: ra nhãn và đề xuất. Không công cụ, không tự tra thêm</span></div>
+    <div class="rw"><span class="id">AV5</span><span class="who">CODE</span><span class="tx">Dựng báo cáo che tên, kiểm lại từng con số trong nhận định</span></div>
+  </div>
+  <div class="pn ar" style="--c:var(--pink)" data-s="2">
+    <div class="hd"><b>AR</b><div><h3>AI Reviewer</h3><small>Phản biện</small></div></div>
+    <div class="rw"><span class="id">AR1</span><span class="who ai">AI</span><span class="tx">AI thứ hai đọc lại độc lập: Tốt, Cần sửa hay Sai nghiêm trọng</span></div>
+  </div>
+  <div class="pn aa" style="--c:var(--teal)" data-s="2">
+    <div class="hd"><b>AA</b><div><h3>AI Auditing</h3><small>Kiểm toán mù</small></div></div>
+    <div class="rw"><span class="id">AA1</span><span class="who ai">AI</span><span class="tx">Mỗi Chủ nhật chấm lại mà không biết kết luận cũ, đo độ lệch của chính hệ thống</span></div>
+  </div>
+</section>
+
+<!-- 7 · AD + AT + WORKFLOW CHI TIẾT -->
+<section id="s-adat" data-steps="2" data-p="0.5">
+  <div class="kick">AD · AT</div>
+  <h2>Hai AI, hai câu hỏi <em>khác nhau.</em></h2>
+  <div class="pn l" style="--c:var(--amber)" data-s="1">
+    <div class="hd"><b>AD</b><div><h3>AI Detection</h3><small>Ai có dòng tiền đáng ngờ mà luật chưa báo?</small></div></div>
+    <div class="rw"><span class="id">AD1</span><span class="who">CODE</span><span class="tx">Sàng toàn bộ ví chưa có alert, bỏ nhóm hợp lệ như kênh, nhận lương</span></div>
+    <div class="rw"><span class="id">AD2</span><span class="who ai">AI</span><span class="tx">Xét nhanh rồi xét sâu từng ví, phải loại trừ bán hàng, thu hộ, lương trước khi kết luận</span></div>
+    <div class="rw"><span class="id">AD3</span><span class="who ai">AI 2</span><span class="tx">AI thứ hai kiểm độc lập: giữ hoặc hạ</span></div>
+    <div class="rw"><span class="id">AD4</span><span class="who ai">AI</span><span class="tx">Gom theo kiểu hành vi, đề xuất sửa kịch bản cũ hoặc thêm kịch bản mới</span></div>
+  </div>
+  <div class="pn r" style="--c:var(--gold)" data-s="1">
+    <div class="hd"><b>AT</b><div><h3>AI Trace</h3><small>Kịch bản nào báo bất thường hôm nay, vì sao?</small></div></div>
+    <div class="rw"><span class="id">AT1</span><span class="who">CODE</span><span class="tx">So số alert hôm nay của từng kịch bản với 14 ngày trước, phát hiện kịch bản bùng</span></div>
+    <div class="rw"><span class="id">AT2</span><span class="who">CODE</span><span class="tx">Dựng tờ bằng chứng: khách đầu bảng, câu truy vấn của kịch bản, loại giao dịch, dòng tiền</span></div>
+    <div class="rw"><span class="id">AT3</span><span class="who ai">AI</span><span class="tx">Truy nguyên nhân, nêu cả điều đã loại trừ và độ chắc chắn</span></div>
+    <div class="rw"><span class="id">AT4</span><span class="who">CODE</span><span class="tx">Báo phương án xử lý: sửa kịch bản, white list hay điều tra thêm</span></div>
+  </div>
+  <div class="hint" data-s="1" style="top:60px">BẤM TIẾP · XEM WORKFLOW CHI TIẾT</div>
+  <div class="scrim" data-s="2"></div>
+  <div class="drawer" data-s="2" style="width:700px;right:60px">
+    <div class="hd">WORKFLOW CHI TIẾT · 07:10 → 07:54</div><h3>Nhánh điều tra và khối AI</h3>
+    <div class="grp">AV · KIỂM TRA TỪNG KHÁCH</div>
+    <div class="rw"><code>AV1</code><span>Dựng hồ sơ khách</span><i style="width:30px;--c:var(--coral)"></i><b>352 s</b></div>
+    <div class="rw"><code>AV2</code><span>Đối chiếu khách cùng ngày</span><i style="width:3px;--c:var(--coral)"></i><b>33 s</b></div>
+    <div class="rw"><code>AV3</code><span>Tờ số liệu từng khách</span><i style="width:3px;--c:var(--coral)"></i><b>25 s</b></div>
+    <div class="rw big"><code>AV4</code><span>AI viết nhận định</span><i style="width:48px;--c:var(--amber)"></i><b>561 s</b></div>
+    <div class="rw"><code>AV5</code><span>Báo cáo che tên, kiểm sự thật</span><i style="width:7px;--c:var(--coral)"></i><b>83 s</b></div>
+    <div class="rw"><code>AV6</code><span>Dựng trang ca điều tra, đưa lên mạng</span><i style="width:37px;--c:var(--coral)"></i><b>428 s</b></div>
+    <div class="grp">AR · PHẢN BIỆN</div>
+    <div class="rw"><code>AR1</code><span>AI thứ hai phản biện</span><i style="width:21px;--c:var(--pink)"></i><b>245 s</b></div>
+    <div class="grp">KHỐI AI · SAU ĐIỀU TRA</div>
+    <div class="rw"><code>AD</code><span>AI Detection, tìm khoảng mù</span><i style="width:72px;--c:var(--amber)"></i><b>832 s</b></div>
+    <div class="rw"><code>AT</code><span>AI Trace, truy vết kịch bản bùng</span><i style="width:3px;--c:var(--gold)"></i><b>1 s</b></div>
+    <div class="rw"><code>AG</code><span>AI Graph, lần dòng tiền</span><i style="width:3px;--c:var(--violet)"></i><b>19 s</b></div>
+    <div class="ft">AA chạy riêng mỗi Chủ nhật, cùng vòng cải tiến tuần.</div>
+  </div>
+</section>
+
+<!-- 8 · AG MÔ PHỎNG -->
+<section id="s-ag" data-steps="2" data-p="0.6">
+  <div class="kick">AG · AI Graph · 0 token</div>
+  <h2>Theo dấu <em>từng đồng.</em></h2>
+  <div class="note">Ca thật sáng 10/11 · mã ví đã rút gọn</div>
+  <div class="agl">
+    <div class="as act"><i>1</i><div><b>Chọn ví</b><span>Ví AD giữ và ví có alert nhóm tiền. Code chấm điểm cấu trúc 0–100, lấy mức cao.</span></div></div>
+    <div class="as"><i>2</i><div><b>Lần dòng tiền</b><span>Ghép tiền vào với tiền ra theo thứ tự thời gian, xuôi và ngược, tối đa 4 bước.</span></div></div>
+    <div class="as"><i>3</i><div><b>Đi ngang qua tài khoản</b><span>Tài khoản nhận từ rất nhiều ví là điểm nối: xem những ví nào khác cùng gửi vào.</span></div></div>
+    <div class="as"><i>4</i><div><b>Nhận dạng hình</b><span>Toả ra nhiều nơi, gom về một mối, tài khoản thu gom, tiền qua nhanh.</span></div></div>
+  </div>
+  <svg id="agsv" viewBox="0 0 920 700"></svg>
+</section>
+
+<!-- 9 · KẾT QUẢ -->
+<section id="s-result" data-steps="2" data-p="0.55">
+  <div class="kick">46 buổi sáng, từ 26/09 tới 10/11</div>
+  <h2>Kết quả <em>từng AI.</em></h2>
+  <div class="rs c1" style="--c:var(--coral)" data-s="1"><span class="bd">AV · AR</span><div class="nm">Điều tra từng khách</div><div class="bg" data-count="1169" data-fmt="1">1.169</div><div class="cp">ca được điều tra, 1.079 khách</div>
+    <ul><li><b>342 ca</b> qua cổng BLL, <b>171</b> dương tính</li><li><b>140 ca</b> bắt nhầm, thành <b>140 đề xuất</b> sửa luật</li><li>AR đọc lại 319 ca, bắt <b>392 lỗi</b> sự thật</li></ul></div>
+  <div class="rs c2" style="--c:var(--gold)" data-s="1"><span class="bd">AT</span><div class="nm">Truy vết kịch bản bùng</div><div class="bg" data-count="18">18</div><div class="cp">lần truy vết, 6 kịch bản, 15 sáng</div>
+    <ul><li>13 lần bùng, 5 lần tụt về 0</li><li>Nguyên nhân: <b>12</b> hành vi bất thường, <b>3</b> nhiều nghiệp vụ, <b>2</b> đổi dữ liệu</li><li>Phương án: <b>15</b> điều tra thêm, <b>2</b> sửa KB</li></ul></div>
+  <div class="rs c3" style="--c:var(--amber)" data-s="2"><span class="bd">AD</span><div class="nm">Tìm khoảng mù</div><div class="bg" data-count="518">518</div><div class="cp">ví xét sâu, từ ~47.000 ví quét mỗi ngày</div>
+    <ul><li>AI thứ hai kiểm <b>131</b> ví: giữ <b>15</b>, hạ <b>116</b></li><li><b>10 đề xuất</b> sửa KB hoặc thêm KB mới</li><li>Hạ nhiều nhất vì thiếu bằng chứng: 90 ví</li></ul></div>
+  <div class="rs c4" style="--c:var(--violet)" data-s="2"><span class="bd">AG</span><div class="nm">Lần dòng tiền</div><div class="bg" data-count="807" data-fmt="1">807</div><div class="cp">ca lần dòng tiền, 641 ví, 27 sáng</div>
+    <ul><li><b>172 ca</b> ở mức điểm cao</li><li>Hình hay gặp: toả ra nhiều nơi <b>522</b>, tài khoản thu gom <b>459</b></li><li>0 token, mỗi sáng ~19 giây</li></ul></div>
+</section>
+
+<!-- 12 · TIN CẬY -->
+<section id="s-trust" data-steps="2" data-p="0.42">
+  <div class="kick">Độ tin cậy</div>
+  <h2>Làm sao biết <em>AI nói đúng?</em></h2>
+  <div class="flow2">
+    <div class="ai0"><div class="tg">BẮT ĐẦU</div><h3>AI viết nhận định</h3><p>Mỗi khách một bản nhận định dựa trên tờ số liệu.</p></div>
+    <div class="ar2" style="left:243px" data-s="1">›</div>
+    <div class="ly" style="left:290px;--c:var(--pink)" data-s="1"><div class="tg">LỚP 1 · AI THỨ HAI</div><h3>Đọc lại độc lập</h3><p>Một AI khác đọc lại từng nhận định và tìm chỗ sai.</p><div class="res">319 ca đã rà: 88 tốt, 223 cần sửa, 8 sai nghiêm trọng</div></div>
+    <div class="ar2" style="left:664px" data-s="1">›</div>
+    <div class="ly" style="left:711px;--c:var(--teal)" data-s="1"><div class="tg">LỚP 2 · CODE</div><h3>Đối chiếu từng con số</h3><p>Mọi số tiền, ngày, số dư AI nêu đều được so với dữ liệu gốc. Số nào không có thì bị gắn cờ.</p><div class="res">Sáng 10/11: 227 số khớp, 4 số lệch bị gắn cờ</div></div>
+    <div class="ar2" style="left:1085px" data-s="2">›</div>
+    <div class="ly" style="left:1130px;width:290px;--c:var(--sky)" data-s="2"><div class="tg">LỚP 3 · CHẤM MÙ</div><h3>Tự đo độ sai</h3><p>Mỗi Chủ nhật AI chấm lại mà không biết kết luận cũ.</p><div class="res">283 lượt chấm lại: cứ 4 lượt thì 1 lượt cho kết luận khác</div></div>
+  </div>
+  <div class="fin2" data-s="2">AI không tự chấm bài của mình. <em>Sai ở đâu thì lộ ra ở đó.</em></div>
+</section>
+
+<!-- 9 · THẬT THÀ -->
+<section id="s-honest" data-steps="2" data-p="0.8">
+  <div class="kick">Thật thà</div>
+  <h2>Không hoàn hảo. <em>Biết tự sửa.</em></h2>
+  <div class="lim" data-s="1">Nhãn dương tính, âm tính vàng, âm tính xanh do <b>AI gán</b>, chưa phải nhãn chuẩn do người xác nhận. Hệ thống đo được độ lệch, chưa thay được con người.</div>
+  <div class="cal"><div class="cap" data-s="1">THÁNG 11</div>
+    <div class="days">
+      <div class="rd" data-s="1"><span>02</span><small>dữ liệu nguồn thiếu</small></div>
+      <div class="rd" data-s="1"><span>03</span><small>mã lạ dừng bước gộp</small></div>
+      <div class="rd" data-s="1"><span>04</span><small>kẹt file trạng thái</small></div>
+      <div class="rd" data-s="1"><span>05</span><small>chốt chặn khớp nhầm</small></div>
+      <div class="yl" data-s="2"><span>06</span><small>thêm giám sát</small></div>
+      <div class="gn" data-s="2"><span>07</span><small>sạch</small></div>
+      <div class="gn" data-s="2"><span>08</span><small>sạch</small></div>
+      <div class="gn" data-s="2"><span>09</span><small>sạch</small></div>
+      <div class="gn" data-s="2"><span>10</span><small>sạch</small></div>
+    </div></div>
+  <div class="fix" data-s="2">Bốn sáng gặp lỗi, mỗi sáng một kiểu. Từ 06/11, một lớp <b>giám sát tự chạy lại</b> khâu nào chưa xong. Bốn sáng liền sau đó chạy sạch.</div>
+  <div class="tag" data-s="2">Lỗi không biến mất.<br><em>Nhưng không còn nằm chờ người.</em></div>
+</section>
+
+<!-- 10 · KẾT -->
+<section id="s-end" data-steps="2" data-p="1">
+  <div class="kick">Trước và sau</div>
+  <h2>Từ cả ngày <em>xuống một giờ.</em></h2>
+  <div class="cmp" data-s="1">
+    <div class="cr"><div class="t">Trước</div><div class="b o"></div><div class="l" style="left:260px">2 người, cả ngày làm việc</div></div>
+    <div class="cr"><div class="t">Sau</div><div class="b n"></div><div class="b n2"></div><div class="l" style="left:400px">Cả đội AI xong lúc 07:57, luồng chính chỉ 13 phút. Người chỉ còn duyệt.</div></div>
+  </div>
+  <div class="chips" data-s="1"><span class="h">NHỮNG THỨ TRƯỚC ĐÂY CHƯA TỪNG CÓ</span><span>Điều tra từng khách mỗi sáng</span><span>AI phản biện lẫn nhau</span><span>Truy vết kịch bản bùng alert</span><span>Tìm khoảng mù của luật</span><span>Lần dòng tiền theo ca</span><span>Nhãn làm nền cho model AI/ML</span></div>
+  <div class="fin" data-s="2">Mai 07:00, <em>nó lại chạy.</em></div>
+  <div class="go" data-s="2"><div class="cd">LƯỢT CHẠY KẾ TIẾP SAU<b id="cd">00:00:00</b></div><a class="sec" href="https://f2dr-dashboard-pages.pages.dev/workflow-tong-hop/#1" target="_blank" rel="noopener">Xem workflow tổng hợp</a><a href="https://f2dr-dashboard-pages.pages.dev/" target="_blank" rel="noopener">Mở dashboard thật</a></div>
+</section>
+
+<div id="rail"><div class="ln"></div><div class="pr" id="pr"></div></div>
+<div id="pg"></div>
+<div id="auto">TỰ CHẠY · bấm A để dừng</div>
+<div id="flash"></div>
+</div></div>
+
+<script>
+(function(){
+const $=q=>document.querySelector(q);
+const Q=new URLSearchParams(location.search),STATIC=Q.has('static'),REC=Q.has('rec');
+if(STATIC)document.body.classList.add('static');
+if(REC)document.body.classList.add('rec');
+const stage=$('#stage');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')'}
+addEventListener('resize',fit);fit();
+
+/* ---------- trời ---------- */
+const stars=$('#stars');
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+for(let i=0;i<120;i++){const e=document.createElement('i'),z=rnd()*2.2+.6;
+  e.style.cssText='left:'+rnd()*100+'%;top:'+rnd()*72+'%;width:'+z+'px;height:'+z+'px;opacity:'+(rnd()*.6+.25)+';animation-delay:'+(rnd()*4)+'s';stars.appendChild(e)}
+const SK=[[[4,6,14],[17,24,54]],[[7,10,26],[30,28,66]],[[10,15,34],[58,36,62]]];
+const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t)),rgb=a=>'rgb('+a.join(',')+')';
+let skyP=0,skyRaf=0;
+function paintSky(p){
+  $('#grad').style.background='linear-gradient(to bottom,'+rgb(mix(SK[0][0],SK[0][1],p))+' 0%,'+rgb(mix(SK[1][0],SK[1][1],p))+' 62%,'+rgb(mix(SK[2][0],SK[2][1],p))+' 100%)';
+  $('#glow').style.opacity=(.12+p*.88).toFixed(3);
+  $('#sun').style.transform='translateY('+((1-p)*230).toFixed(1)+'px)';
+  $('#sun').style.opacity=(p*1.1).toFixed(3);
+  stars.style.opacity=(1-p*.75).toFixed(3);
+}
+function animSky(to,anim){cancelAnimationFrame(skyRaf);if(!anim){skyP=to;paintSky(to);return}
+  const from=skyP,t0=performance.now();
+  (function f(n){const k=Math.min(1,(n-t0)/1500),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;skyP=from+(to-from)*e;paintSky(skyP);if(k<1)skyRaf=requestAnimationFrame(f)})(t0)}
+/* bụi sáng trôi */
+const cv=$('#dust'),cx=cv.getContext('2d');let P=[];
+function sizeCv(){cv.width=innerWidth;cv.height=innerHeight;P=[];for(let i=0;i<60;i++)P.push({x:rnd()*cv.width,y:rnd()*cv.height,r:rnd()*1.6+.4,v:rnd()*.25+.06,a:rnd()*.35+.08})}
+sizeCv();addEventListener('resize',sizeCv);
+function dust(){cx.clearRect(0,0,cv.width,cv.height);for(const d of P){d.y-=d.v;if(d.y<-4){d.y=cv.height+4;d.x=rnd()*cv.width}
+  cx.beginPath();cx.arc(d.x,d.y,d.r,0,6.283);cx.fillStyle='rgba(255,214,160,'+(d.a*Math.min(1,skyP*1.6+.2))+')';cx.fill()}
+  if(!STATIC)requestAnimationFrame(dust)}
+dust();
+
+/* ---------- đồng hồ ---------- */
+const T=(h,m,s)=>h*3600+m*60+s;
+const fmt=t=>{t=Math.max(0,Math.round(t));return [Math.floor(t/3600),Math.floor(t%3600/60),t%60].map(x=>String(x).padStart(2,'0')).join(':')};
+const rafs=new Map();
+function animClock(el,from,to,ms,done,lin){cancelAnimationFrame(rafs.get(el));const t0=performance.now();
+  (function f(n){const k=Math.min(1,(n-t0)/ms),e=lin?k:1-Math.pow(1-k,3);el._v=from+(to-from)*e;el.textContent=fmt(el._v);
+    if(k<1)rafs.set(el,requestAnimationFrame(f));else if(done)done()})(t0)}
+function setClock(el,t){cancelAnimationFrame(rafs.get(el));el._v=t;el.textContent=fmt(t)}
+const big=$('#big'),hero=$('#hero'),clock=$('#clock'),hud=$('#hud');
+
+/* chữ tiêu đề tách từng ký tự */
+(function split(node){let k=0;(function walk(n){[...n.childNodes].forEach(c=>{
+  if(c.nodeType===3){const f=document.createDocumentFragment();[...c.textContent].forEach(ch=>{
+    if(ch===' '){f.appendChild(document.createTextNode(' '));return}
+    const s=document.createElement('span');s.className='ch';s.textContent=ch;s.style.setProperty('--d',(k++*0.045)+'s');f.appendChild(s)});c.replaceWith(f)}
+  else if(c.nodeType===1&&c.tagName!=='BR')walk(c)})})(node)})(hero);
+
+/* ---------- mặt đồng hồ tổng quan ---------- */
+const NS='http://www.w3.org/2000/svg',dial=$('#dial');
+const C=340,pt=(r,deg)=>[C+r*Math.sin(deg*Math.PI/180),C-r*Math.cos(deg*Math.PI/180)];
+const el=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);(par||dial).appendChild(e);return e};
+for(let m=0;m<60;m++){const a=m*6,maj=m%5===0,[x1,y1]=pt(maj?292:300,a),[x2,y2]=pt(312,a);
+  el('line',{x1,y1,x2,y2,stroke:maj?'rgba(20,22,31,.55)':'rgba(20,22,31,.18)','stroke-width':maj?3:1.5,'stroke-linecap':'round'})}
+[['07:00',0],['07:15',90],['07:30',180],['07:45',270]].forEach(([t,a])=>{const [x,y]=pt(342,a);
+  const tx=el('text',{x,y:y+7,'text-anchor':'middle','font-family':'Bahnschrift,Segoe UI','font-weight':700,'font-size':20,fill:'rgba(20,22,31,.6)'});tx.textContent=t});
+const LANES=[[268,2,768,'#1D4ED8'],[232,634,2362,'#E11D48'],[196,2363,3262,'#D97706'],[160,2453,3451,'#0F766E']];
+const laneEls=LANES.map(([r,t0,t1,c])=>{
+  el('circle',{cx:C,cy:C,r,fill:'none',stroke:'rgba(20,22,31,.09)','stroke-width':22});
+  const a0=t0/10,a1=t1/10,[x0,y0]=pt(r,a0),[x1,y1]=pt(r,a1),lg=(a1-a0)>180?1:0;
+  const p=el('path',{d:'M'+x0+' '+y0+' A'+r+' '+r+' 0 '+lg+' 1 '+x1+' '+y1,class:'lane',stroke:c,'stroke-width':22,pathLength:1,style:'--c:'+c});return p});
+const hand=el('g',{id:'hand'});
+el('line',{x1:C,y1:C,x2:C,y2:C-300,stroke:'#14161F','stroke-width':4,'stroke-linecap':'round'},hand);
+el('circle',{cx:C,cy:C-300,r:7,fill:'#14161F'},hand);
+const ctr=el('g',{class:'ctr'});
+el('circle',{cx:C,cy:C,r:118,fill:'#F7F4EC',stroke:'#14161F','stroke-width':5},ctr);
+const dclk=el('text',{x:C,y:C+8,'text-anchor':'middle','font-family':'Bahnschrift,Segoe UI','font-weight':700,'font-size':52,fill:'#C2410C',style:'font-variant-numeric:tabular-nums'},ctr);dclk.textContent='07:00:00';
+const dlab=el('text',{x:C,y:C+48,'text-anchor':'middle','font-family':'Bahnschrift,Segoe UI','font-weight':600,'font-size':17,'letter-spacing':'3',fill:'rgba(20,22,31,.6)'},ctr);dlab.textContent='SÁNG 10/11';
+const DT=[T(7,0,0),T(7,12,48),T(7,57,31)];
+const ang=t=>(t-T(7,0,0))/10;
+
+/* ---------- AG: mô phỏng một ca thật (ví 00015d77, sáng 10/11) ---------- */
+const agsv=$('#agsv');
+(function(){
+  const E=(tag,at,par,txt)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(txt!==undefined)e.textContent=txt;(par||agsv).appendChild(e);return e};
+  const G=(par,at)=>E('g',at||{},par);
+  const SX=340,SY=352,SR=64;
+  const wd=(tr)=>(2+2.9*Math.log10(1+tr)).toFixed(1);
+  function dots(par,path,n,dur){for(let k=0;k<n;k++){const c=E('circle',{r:5,fill:'#14161F'},par);const a=E('animateMotion',{dur:dur+'s',begin:'-'+(k*dur/Math.max(n,1)).toFixed(2)+'s',repeatCount:'indefinite',path},c)}}
+  /* luôn hiện: ngân hàng + ví */
+  const NH=[[285,'Ngân hàng ①','4 GD · 74,9 tr',4],[420,'Ngân hàng ②','3 GD · 43,0 tr',3]];
+  NH.forEach(([y,t,u])=>{E('rect',{x:20,y:y-35,width:170,height:70,rx:12,fill:'#F7F4EC',stroke:'#14161F','stroke-width':3});
+    E('text',{x:105,y:y-4,'text-anchor':'middle','font-weight':700,'font-size':20,fill:'#14161F'},null,t);
+    E('text',{x:105,y:y+22,'text-anchor':'middle','font-weight':600,'font-size':16,fill:'rgba(20,22,31,.7)'},null,u)});
+  E('circle',{cx:SX,cy:SY,r:SR,fill:'#C2410C',stroke:'#14161F','stroke-width':5});
+  E('text',{x:SX,y:SY-12,'text-anchor':'middle','font-weight':700,'font-size':16,'letter-spacing':3,fill:'#F7F4EC'},null,'VÍ');
+  E('text',{x:SX,y:SY+16,'text-anchor':'middle','font-weight':700,'font-size':22,fill:'#F7F4EC'},null,'00015d77');
+  E('rect',{x:SX-74,y:SY+SR+14,width:148,height:30,rx:15,fill:'#14161F'});
+  E('text',{x:SX,y:SY+SR+35,'text-anchor':'middle','font-weight':700,'font-size':14,'letter-spacing':1.5,fill:'#F7F4EC'},null,'AD ĐỀ XUẤT GIỮ');
+  E('rect',{x:SX-92,y:SY-SR-46,width:184,height:30,rx:15,fill:'#F7F4EC',stroke:'#14161F','stroke-width':2.5});
+  E('text',{x:SX,y:SY-SR-25,'text-anchor':'middle','font-weight':700,'font-size':15,fill:'#14161F'},null,'Điểm cấu trúc 87/100');
+  /* bước 1: tiền vào, tiền ra */
+  const g1=G(null,{'data-s':1});
+  NH.forEach(([y,,,n],k)=>{const p='M190 '+y+' C 236 '+y+', 232 '+SY+', '+(SX-SR)+' '+SY;
+    E('path',{d:p,fill:'none',stroke:'#14161F','stroke-width':k?3.6:4.4,opacity:.55,'stroke-linecap':'round'},g1);dots(g1,p,n,2.4)});
+  const EX=[['b554eb','44 tr',44,2,1,0],['928718','12 tr',12,1,1,0],['99b59c','7 tr',7,1,74,0]];
+  const GR=[['f78eff','5 tr',5,23,[['0001bd72',1],['0001e323',1],['0001a300',0],['00016208',0]]],
+            ['61c31f','2 tr',2,154,[['0001da61',1],['0001b9f4',1],['0001191e',0],['0001934b',0]]],
+            ['6ede52','2 tr',2,157,[['00016394',1],['0001600e',0],['00014e8b',0],['0001768b',0]]],
+            ['2ac734','1 tr',1,225,[['00016394',1],['0001f9f3',1],['0001ef5b',1],['00010dda',0]]],
+            ['cd0c6e','1 tr',1,132,[['00014f05',1],['0001dc7e',1],['0001e4ad',0],['00017d07',0]]],
+            ['d2a509','0,9 tr',0.9,83,[['0001fb72',1],['00016394',1],['00018383',0],['00015354',0]]]];
+  const TK=[],tkAt={};
+  EX.forEach((e,i)=>TK.push({id:e[0],am:e[1],tr:e[2],n:e[3],be:e[4],y:40+i*52,sh:0}));
+  GR.forEach((g,i)=>{const y0=196+i*80;const o={id:g[0],am:g[1],tr:g[2],n:1,be:g[3],y:y0+30,sh:1,ws:g[4],y0};TK.push(o);tkAt[g[0]]=o});
+  TK.push({id:'+28',am:'43 tr',tr:43,n:6,be:0,y:672,sh:0,gop:1});
+  TK.forEach(t=>{const p='M'+(SX+SR)+' '+SY+' C 462 '+SY+', 462 '+t.y+', 520 '+t.y;
+    E('path',{d:p,fill:'none',stroke:'#14161F','stroke-width':wd(t.tr),opacity:.5,'stroke-linecap':'round'},g1);dots(g1,p,t.n,2.8)});
+  TK.forEach(t=>{const gg=G(g1,{class:'tkg'+(t.sh?' sh':'')});
+    E('rect',{class:'tkb',x:520,y:t.y-23,width:170,height:46,rx:10},gg);
+    if(t.gop){E('text',{class:'tkt',x:532,y:t.y-3},gg,'+28 nơi nhận khác');E('text',{class:'tka am',x:532,y:t.y+15},gg,'38 lệnh, '+t.am+' tổng')}
+    else{E('text',{class:'tkt',x:532,y:t.y-3},gg,'TK '+t.id);E('text',{class:'tka am',x:532,y:t.y+15},gg,t.am);
+      if(t.sh)E('text',{class:'bo',x:532,y:t.y+15},gg,t.be+' ví gửi vào')}});
+  const c1=G(g1,{});
+  E('rect',{x:20,y:112,width:400,height:62,rx:14,fill:'#F7F4EC',stroke:'#14161F','stroke-width':3},c1);
+  E('text',{x:36,y:140,'font-weight':700,'font-size':20,fill:'#14161F'},c1,'Vào 117,9 tr · ra 117,9 tr');
+  E('text',{x:36,y:163,'font-weight':600,'font-size':16,fill:'rgba(20,22,31,.7)'},c1,'100% tiền ra trong 24 giờ, qua 38 lệnh');
+  agsv.appendChild(g1);
+  /* bước 2: đi ngang qua tài khoản thu gom */
+  const g2=G(null,{'data-s':2});
+  const WX=800,wl={};let widx=0;
+  GR.forEach((g,gi)=>{let j=0;g[4].forEach(([id,fl])=>{
+    if(!wl[id]){wl[id]={x:WX,y:TK[3+gi].y0+j*19+4,fl};j++}})});
+  GR.forEach((g,gi)=>{const t=TK[3+gi];g[4].forEach(([id],k)=>{const w=wl[id],first=(w.y>=t.y0&&w.y<=t.y0+80);
+    const first_g=GR.findIndex(h=>h[4].some(x=>x[0]===id));
+    E('path',{d:'M'+(WX-8)+' '+w.y+' L690 '+t.y,class:first_g===gi?'dgl':'dgx'},g2)})});
+  Object.keys(wl).forEach(id=>{const w=wl[id];E('circle',{cx:w.x,cy:w.y,r:7.5,fill:w.fl?'#E11D48':'#F7F4EC',stroke:'#14161F','stroke-width':2.4},g2)});
+  ['22 ví khác cùng gửi','vào các tài khoản này,','10 ví đã có alert (đỏ)'].forEach((t,i)=>E('text',{x:712,y:52+i*24,'font-weight':i===2?700:600,'font-size':18,fill:i===2?'#E11D48':'#14161F'},g2,t));
+  E('rect',{x:26,y:506,width:400,height:166,rx:16,fill:'#14161F'},g2);
+  E('rect',{x:20,y:500,width:400,height:166,rx:16,fill:'#F7F4EC',stroke:'#14161F','stroke-width':3},g2);
+  E('text',{x:40,y:530,'font-weight':700,'font-size':14,'letter-spacing':3,fill:'rgba(20,22,31,.55)'},g2,'HÌNH DÒNG TIỀN');
+  [['Toả ra 37 nơi nhận','#C2410C'],['27 tài khoản thu gom','#6D28D9'],['100% tiền ra trong 24 giờ','#0F766E']].forEach(([t,c],i)=>{
+    E('rect',{x:40,y:549+i*34,width:16,height:16,rx:3,fill:c,stroke:'#14161F','stroke-width':2},g2);
+    E('text',{x:68,y:563+i*34,'font-weight':700,'font-size':23,fill:'#14161F'},g2,t)});
+  agsv.appendChild(g2);
+})();
+
+/* ---------- đếm số ---------- */
+function countUp(e){const to=+e.dataset.count,f=e.dataset.fmt,t0=performance.now();
+  (function k(n){const x=Math.min(1,(n-t0)/1500),v=Math.round(to*(1-Math.pow(1-x,3)));e.textContent=f?v.toLocaleString('vi-VN'):v;if(x<1)requestAnimationFrame(k)})(t0)}
+const finalCount=e=>{const to=+e.dataset.count;e.textContent=e.dataset.fmt?to.toLocaleString('vi-VN'):to};
+
+/* ---------- đếm ngược tới 07:00 ---------- */
+function cdTick(){const n=new Date(),t=new Date(n);t.setHours(7,0,0,0);if(t<=n)t.setDate(t.getDate()+1);$('#cd').textContent=fmt((t-n)/1000)}
+setInterval(cdTick,1000);cdTick();
+
+/* ---------- điều khiển ---------- */
+const secs=[...document.querySelectorAll('section')],rail=$('#rail'),pr=$('#pr');
+secs.forEach((s,i)=>{const b=document.createElement('b');b.onclick=e=>{e.stopPropagation();stopAuto();go(i,0)};rail.appendChild(b)});
+const ticks=[...rail.querySelectorAll('b')],steps=i=>+secs[i].dataset.steps;
+const HUDT={'s-main':[T(7,0,2),T(7,11,0),T(7,12,48)],
+            's-av':[T(7,10,34),T(7,39,23),T(7,39,23)],
+            's-adat':[T(7,39,23),T(7,54,22),T(7,54,22)],
+            's-ag':[T(7,54,22),T(7,54,41),T(7,54,41)]};
+let I=0,S=0,lastI=-1;
+function flash(o){const f=$('#flash');f.style.transition='none';f.style.opacity=(o||.5)*.32;requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition='opacity 1s';f.style.opacity=0}))}
+function hit(){big.classList.add('hit');const p=$('#pulse');p.classList.remove('go');void p.offsetWidth;p.classList.add('go');hero.classList.add('on');flash(.28);setTimeout(()=>big.classList.remove('hit'),1100)}
+function apply(i,s,anim){
+  const sec=secs[i],id=sec.id,newSlide=i!==lastI;
+  secs.forEach((x,k)=>x.classList.toggle('active',k===i));
+  document.body.classList.toggle('day',sec.dataset.day==='1');
+  if(newSlide)animSky(+sec.dataset.p,anim&&!STATIC);
+  sec.querySelectorAll('[data-s]').forEach(e=>{
+    const on=(+e.dataset.s)<=s,was=e.classList.contains('on');e.classList.toggle('on',on);
+    const cs=[...e.querySelectorAll('[data-count]')];
+    if(on&&!was&&anim)cs.forEach(countUp);else if(on&&!anim)cs.forEach(finalCount)});
+  /* từng slide */
+  if(id==='s-open'){
+    if(s===0){setClock(big,T(6,59,55));hero.classList.remove('on');big.classList.remove('hit')}
+    else if(anim&&s===1){setClock(big,T(6,59,55));hero.classList.remove('on');animClock(big,T(6,59,55),T(7,0,0),4200,hit,true)}
+    else{setClock(big,T(7,0,0));hero.classList.add('on')}
+  }
+  hud.classList.toggle('off',!HUDT[id]);
+  if(HUDT[id]){const a=HUDT[id],t=a[Math.min(s,a.length-1)];
+    if(anim&&s>0&&!newSlide){animClock(clock,a[s-1],t,(id==='s-main'&&s===1)?5200:1500)}else setClock(clock,t)}
+  if(id==='s-dial'){
+    laneEls.forEach((p,k)=>p.classList.toggle('on',s>=(k<1?1:2)));
+    const t=DT[Math.min(s,DT.length-1)];hand.style.transform='rotate('+ang(t)+'deg)';
+    if(anim&&s>0&&!newSlide)animClock(dclk,DT[s-1],t,1600);else setClock(dclk,t);
+    dial.classList.toggle('done',s>=2);dlab.textContent=['SÁNG 10/11','ĐÃ THAY F2DR','XONG ĐỘI AI'][Math.min(s,2)];dlab.setAttribute('fill',s>=1?'#0F766E':'rgba(20,22,31,.6)')
+  }
+  if(id==='s-main')$('#old').classList.toggle('gone',s>=2);
+  if(id==='s-ag'){agsv.classList.toggle('s2',s>=2);document.querySelectorAll('#s-ag .as').forEach((e,k)=>e.classList.toggle('act',k<[1,2,4][Math.min(s,2)]))}
+  /* thanh tiến độ */
+  ticks.forEach((b,k)=>{b.classList.toggle('d',k<i||(k===i&&s>=steps(i)));b.classList.toggle('c',k===i)});
+  pr.style.width=Math.min(100,(i+s/steps(i))/(secs.length-1)*100)+'%';
+  $('#pg').textContent=String(i+1).padStart(2,'0')+' / '+String(secs.length).padStart(2,'0');
+  lastI=i;
+  if(!STATIC&&!REC)try{history.replaceState(null,'','#'+(i+1)+'.'+s)}catch(e){}
+}
+function go(i,s){I=Math.max(0,Math.min(secs.length-1,i));S=Math.max(0,Math.min(steps(I),s));apply(I,S,false)}
+function next(){if(S<steps(I)){S++;apply(I,S,true)}else if(I<secs.length-1){const from=I;I++;S=0;apply(I,S,true)}else stopAuto()}
+function prev(){if(S>0){S--;apply(I,S,false)}else if(I>0){I--;S=steps(I);apply(I,S,false)}}
+let autoT=0;
+function startAuto(){$('#auto').classList.add('show');clearInterval(autoT);autoT=setInterval(next,3400)}
+function stopAuto(){clearInterval(autoT);autoT=0;$('#auto').classList.remove('show')}
+addEventListener('keydown',e=>{
+  const k=e.key;
+  if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(k)){e.preventDefault();stopAuto();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(k)){e.preventDefault();stopAuto();prev()}
+  else if(k==='Home')go(0,0);else if(k==='End')go(secs.length-1,steps(secs.length-1));
+  else if(k==='a'||k==='A')autoT?stopAuto():startAuto();
+  else if(k==='f'||k==='F')document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+  else if(k==='w'||k==='W'){const d=secs[I].querySelector('.drawer');if(d){const ds=+d.dataset.s;go(I,S>=ds?ds-1:ds)}}
+  else if(k==='Escape'){const d=secs[I].querySelector('.drawer');if(d&&S>=+d.dataset.s)go(I,+d.dataset.s-1)}
+});
+addEventListener('click',e=>{if(REC||e.target.closest('a,#rail'))return;stopAuto();(e.clientX<innerWidth*.25)?prev():next()});
+let tx=null;addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){stopAuto();d<0?next():prev()}tx=null});
+function goTo(i,s){const from=I;I=Math.max(0,Math.min(secs.length-1,i));S=Math.max(0,Math.min(steps(I),s));
+  apply(I,S,true)}
+window.deck={go,goTo,next,prev,total:secs.length,steps,state:()=>({i:I,s:S})};
+
+/* ---------- khởi động ---------- */
+const h=(location.hash||'').slice(1).split('.');
+let i0=Math.max(0,Math.min(secs.length-1,(+h[0]||1)-1)),s0=h[1]!==undefined&&h[1]!==''?+h[1]:(STATIC?steps(i0):0);
+go(i0,s0);
+if(STATIC){if(secs[i0].id==='s-open'&&s0>=1){setClock(big,T(7,0,0));hero.classList.add('on')}}
+if(!STATIC&&(Q.has('auto')))startAuto();
+})();
+</script>
+</body>
+</html>
