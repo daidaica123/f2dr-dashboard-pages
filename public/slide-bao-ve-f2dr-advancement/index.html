@@ -646,7 +646,7 @@ body.static #s-end .go a,body.rec #s-end .go a{display:none}
 <!-- 1 · MỞ -->
 <section id="s-open" data-steps="1" data-p="0">
   <div class="kick" data-s="0">Mỗi sáng · 07:00</div>
-  <div id="big">06:59:55</div><div id="pulse"></div>
+  <div id="big">06:59:57</div><div id="pulse"></div>
   <svg class="sunst" data-s="0" viewBox="0 0 440 440"><circle cx="232" cy="232" r="118" fill="#14161F"/><g class="rays"><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(0 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(30 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(60 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(90 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(120 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(150 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(180 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(210 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(240 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(270 220 220)"/><line x1="220" y1="42" x2="220" y2="78" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(300 220 220)"/><line x1="220" y1="42" x2="220" y2="62" stroke="#14161F" stroke-width="12" stroke-linecap="round" transform="rotate(330 220 220)"/></g><circle cx="220" cy="220" r="118" fill="#D97706" stroke="#14161F" stroke-width="6"/><text x="220" y="212" text-anchor="middle" font-size="64" fill="#14161F">07:00</text><text x="220" y="258" text-anchor="middle" font-size="24" letter-spacing="6" fill="#14161F">MỖI SÁNG</text></svg>
   <h1 id="hero">Không ai<br><em>bấm nút.</em></h1>
   <div class="sub" data-s="2"><b>F2DR Advancement</b> · thay F2DR cũ, và thêm một đội AI biết điều tra</div>
@@ -1054,8 +1054,8 @@ function apply(i,s,anim){
   /* từng slide */
   if(id==='s-open'){
     const sub=$('#s-open .sub');clearTimeout(window._subT);
-    if(s===0){setClock(big,T(6,59,55));hero.classList.remove('on');big.classList.remove('hit');sub.classList.remove('on')}
-    else if(anim&&s===1){setClock(big,T(6,59,55));hero.classList.remove('on');sub.classList.remove('on');animClock(big,T(6,59,55),T(7,0,0),4200,hit,true);window._subT=setTimeout(()=>sub.classList.add('on'),5800)}
+    if(s===0){setClock(big,T(6,59,57));hero.classList.remove('on');big.classList.remove('hit');sub.classList.remove('on')}
+    else if(anim&&s===1){setClock(big,T(6,59,57));hero.classList.remove('on');sub.classList.remove('on');animClock(big,T(6,59,57),T(7,0,0),3000,hit,true);window._subT=setTimeout(()=>sub.classList.add("on"),4000)}
     else{setClock(big,T(7,0,0));hero.classList.add('on');sub.classList.add('on')}
   }
   hud.classList.toggle('off',!HUDT[id]);
