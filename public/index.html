@@ -5212,7 +5212,7 @@ function bllTipChu(key, T){
   case 'bllM':
     return T('Nhận xét AI theo thời gian',
       `Biểu đồ chỉ vẽ <b>một đường</b> cho nhãn đang chọn; bấm nút <b>Dương tính</b>, <b>Âm tính - Vàng</b> hoặc <b>Âm tính - Xanh</b> để đổi nhãn. Nút <b>Số lượt</b> cho số lượt mỗi ngày; nút <b>Tỉ trọng %</b> cho phần trăm của nhãn đó trong số lượt đã có nhận xét AI của ngày đó
-       (ngày chưa có nhận xét thì ngắt đường). Đường đậm là trung bình 7 ngày, đường mờ là số thật từng ngày, nét đứt là mức trung bình cả kỳ. Rê chuột để xem số của cả ba nhãn trong ngày đó;
+       (ngày chưa có nhận xét thì ngắt đường). <b>Đường sáng</b> là số thật từng ngày, <b>nét đứt cam</b> là trung bình 7 ngày, nét chấm mờ là mức trung bình cả kỳ. Rê chuột để xem số của cả ba nhãn trong ngày đó;
        <b>bấm một điểm</b> để đổi bộ lọc ở mục ① sang ngày đó. Chọn đúng một ngày thì biểu đồ vẫn hiện 30 ngày gần nhất để có chỗ so.`);
   case 'bllH':
     return T('Các lượt có điểm bao nhiêu',
@@ -5682,7 +5682,7 @@ function bllVeAiLine(fd){
   const m = lam ? dm.map((_, i)=>{ const w = dm.slice(Math.max(0, i - 6), i + 1);
     if(pt){ const sc = w.reduce((a, o)=>a + o.co, 0); return sc ? w.reduce((a, o)=>a + o[kk], 0) / sc * 100 : null; }
     return w.reduce((a, o)=>a + o[kk], 0) / w.length; }) : null;
-  const y = m || v;
+  const y = v;                                   // đường SÁNG = số thật từng ngày (như chart 'Lượt khách vào Blacklist'); trung bình 7 ngày = nét đứt MỜ
   const tb = pt ? tg[kk] / co * 100 : tg[kk] / Math.max(1, n);
   const mx = Math.max(1, tb, ...v.filter(x=>x != null));
   const ty = pt ? bllTrucY(Math.min(100, mx * 1.12)) : bllTrucY(mx), top = Math.min(ty.top, pt ? 100 : ty.top), nt = ty.nt;
@@ -5694,8 +5694,9 @@ function bllVeAiLine(fd){
   const chon = fd.ds.length === 1 ? days.indexOf(fd.ds[0]) : -1;
   const iMax = v.reduce((bi, x, i)=>x != null && (bi < 0 || x > v[bi]) ? i : bi, -1);
   let ic = y.length - 1; while(ic >= 0 && y[ic] == null) ic--;
-  $('bllAiLChu').innerHTML = (lam ? `<span style="--c:${c}"><i class="ln"></i>Trung bình 7 ngày</span><span style="--c:${c};opacity:.55"><i class="ln"></i>Số thật từng ngày</span>` : `<span style="--c:${c}"><i class="ln"></i>${esc(BLL_AI[kk].t)}</span>`) +
-    `<span style="--c:${c}"><i class="ln ds"></i>Trung bình cả kỳ ${fmtV(tb)}${pt ? '' : '/ngày'}</span>`;
+  $('bllAiLChu').innerHTML = `<span style="--c:${c}"><i class="ln"></i>${esc(BLL_AI[kk].t)} (số thật từng ngày)</span>` +
+    (lam ? `<span style="--c:${BLL_MAU.orange}"><i class="ln ds"></i>Trung bình 7 ngày</span>` : '') +
+    `<span style="--c:${c};opacity:.6"><i class="ln ds"></i>Trung bình cả kỳ ${fmtV(tb)}${pt ? '' : '/ngày'}</span>`;
   $('bllAiLEm').innerHTML = `${n} ngày · <b style="color:${c}">${esc(BLL_AI[kk].t)}</b> <b>${fmt(tg[kk])}</b> lượt, chiếm <b>${pc(tg[kk], co).toFixed(1)}%</b> trong ${fmt(co)} lượt đã có nhận xét AI${tg.chua ? ` (còn ${fmt(tg.chua)} lượt chưa điều tra)` : ''} · bấm một điểm để xem ngày đó ở mục ①`;
   el.innerHTML = `<svg class="bllsv" viewBox="0 0 ${W} ${H}" role="img" aria-label="Nhận xét AI ${esc(BLL_AI[kk].t)} theo ngày">
     <defs><linearGradient id="bllAiG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c}" stop-opacity=".28"/><stop offset="100%" stop-color="${c}" stop-opacity="0"/></linearGradient></defs>
@@ -5703,10 +5704,10 @@ function bllVeAiLine(fd){
       return `<line x1="${P.l}" x2="${W - P.r}" y1="${yy}" y2="${yy}" stroke="#2a3f6b" stroke-opacity="${q ? .38 : .75}" ${q ? 'stroke-dasharray="3 5"' : ''}/>
         <text class="bllax" x="${P.l - 8}" y="${yy + 3.5}" text-anchor="end">${pt ? (x % 1 ? x.toFixed(1) : x) + '%' : (Number.isInteger(x) ? x : x.toFixed(1))}</text>`; }).join('')}
     ${chon >= 0 ? `<rect x="${X(chon) - Math.max(6, iw / n / 2)}" y="${P.t}" width="${Math.max(12, iw / n)}" height="${ih}" fill="${c}" opacity=".1" rx="4"/>` : ''}
-    <line x1="${P.l}" x2="${W - P.r}" y1="${Y(tb)}" y2="${Y(tb)}" stroke="${c}" stroke-opacity=".6" stroke-width="1.4" stroke-dasharray="6 5"/>
-    ${lam ? chay(v).map(r=>`<path class="bllfade" d="${bllDuong(r)}" fill="none" stroke="${c}" stroke-opacity=".3" stroke-width="1.3" stroke-linejoin="round"/>`).join('') : ''}
+    <line x1="${P.l}" x2="${W - P.r}" y1="${Y(tb)}" y2="${Y(tb)}" stroke="${c}" stroke-opacity=".38" stroke-width="1.3" stroke-dasharray="2 5"/>
     ${chay(y).map(r=>r.length > 1 ? `<path class="bllfade" d="${bllDuong(r)} L${r[r.length - 1][0]},${base} L${r[0][0]},${base} Z" fill="url(#bllAiG)"/>` : '').join('')}
-    ${chay(y).map(r=>`<path class="bllpath" pathLength="1" d="${bllDuong(r)}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}
+    ${lam ? chay(m).map(r=>`<path class="bllfade" d="${bllDuong(r)}" fill="none" stroke="${BLL_MAU.orange}" stroke-opacity=".7" stroke-width="2" stroke-dasharray="6 4" stroke-linecap="round"/>`).join('') : ''}
+    ${chay(y).map(r=>`<path class="bllpath" pathLength="1" d="${bllDuong(r)}" fill="none" stroke="${c}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}
     ${n <= 45 ? v.map((x, i)=>x == null ? '' : `<circle cx="${X(i)}" cy="${Y(x)}" r="3" fill="#0b1426" stroke="${c}" stroke-width="1.6"/>`).join('') : ''}
     ${n >= 5 && iMax >= 0 && v[iMax] > 0 ? `<circle cx="${X(iMax)}" cy="${Y(v[iMax])}" r="4.4" fill="${c}"/>
       <text x="${Math.min(W - P.r - 4, Math.max(P.l + 4, X(iMax)))}" y="${Y(v[iMax]) - 10}" text-anchor="middle" font-size="11" font-weight="700" fill="#eef3fe">${fmtV(v[iMax])}<tspan fill="#7a8cb3" font-weight="400"> · ${dLab(days[iMax])}</tspan></text>` : ''}
