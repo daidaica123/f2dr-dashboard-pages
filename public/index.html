@@ -2100,7 +2100,8 @@ table.bllbang td.xuong{white-space:normal;line-height:1.35}
 #bllWrap .bllhd h3 .bch3p{margin-left:6px}
 #bllWrap .bllfl .ndbox select.dmini{max-width:100px}
 /* thẻ nửa trang: bỏ ô "chọn nhanh" cho gọn — lịch đã có sẵn 7 ngày / 30 ngày / Toàn bộ */
-#bllWrap #bllfDBox select[id$='Nhanh'],#bllWrap #bllfHBox select[id$='Nhanh'],#bllWrap #bllfTBox select[id$='Nhanh'],#bllWrap #bllfBBox select[id$='Nhanh']{display:none}
+#bllWrap #bllfDBox select[id$='Nhanh'],#bllWrap #bllfHBox select[id$='Nhanh'],#bllWrap #bllfTBox select[id$='Nhanh'],#bllWrap #bllfBBox select[id$='Nhanh'],#bllWrap #bllfABox select[id$='Nhanh'],#bllWrap #bllfMBox select[id$='Nhanh']{display:none}
+#bllWrap .bllhead3 #bllLocAi{max-width:150px}
 #bllWrap #bllDonut{flex:1;display:flex;align-items:center}
 #bllWrap #bllDonut .bllrow{width:100%}
 
@@ -2136,6 +2137,31 @@ table.bllbang td.xuong{white-space:normal;line-height:1.35}
 #bllWrap .bllkey .kh b{margin-left:auto;font-family:var(--mono);color:var(--text);font-weight:600}
 #bllWrap .bllkey .kh em{font-style:normal;color:var(--faint);font-family:var(--mono);width:46px;text-align:right}
 #bllWrap .bllkey .kt{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:6px 0 1px;font-weight:700}
+
+/* Nhận xét AI (16/11): donut ba nhãn + chú giải có thanh tỉ lệ + ghi chú lượt chưa điều tra */
+#bllWrap #bllAi{flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px}
+#bllWrap #bllAi .bllrow{width:100%}
+#bllWrap .bllrow .bllaikey{order:-1}
+#bllWrap .bllaikey{display:grid;gap:12px;font-size:12px;color:var(--dim)}
+#bllWrap .bllaikey .ak{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:5px 8px;cursor:pointer;
+  padding:4px 6px;border-radius:9px;transition:background .15s}
+#bllWrap .bllaikey .ak:hover,#bllWrap .bllaikey .ak.on{background:color-mix(in srgb,var(--c) 11%,transparent)}
+#bllWrap .bllaikey .ak i{width:11px;height:11px;border-radius:3px;background:var(--c);box-shadow:0 0 8px color-mix(in srgb,var(--c) 55%,transparent)}
+#bllWrap .bllaikey .ak .ten{color:var(--text);font-weight:600}
+#bllWrap .bllaikey .ak b{font-family:var(--mono);color:var(--text);font-weight:700;font-size:13px}
+#bllWrap .bllaikey .ak em{font-style:normal;font-family:var(--mono);color:var(--c);width:50px;text-align:right;font-weight:700}
+#bllWrap .bllaikey .ak .bar{grid-column:1/-1;height:6px;border-radius:4px;background:rgba(120,140,190,.16);overflow:hidden}
+#bllWrap .bllaikey .ak .bar u{display:block;height:100%;border-radius:4px;text-decoration:none;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 50%,transparent),var(--c))}
+#bllWrap .bllaikey .ak.rong{opacity:.45;cursor:default}
+#bllWrap .bllainote{padding:7px 11px;border-radius:9px;background:rgba(120,140,190,.08);border:1px solid rgba(120,140,190,.18);
+  font-size:11.5px;color:var(--dim);line-height:1.55}
+#bllWrap .bllainote b{color:var(--text);font-family:var(--mono)}
+#bllWrap .bllainhan button{font-weight:600}
+#bllWrap .bllainhan button[data-k=duong].on{background:rgba(255,77,107,.16);color:var(--red)}
+#bllWrap .bllainhan button[data-k=vang].on{background:rgba(255,216,79,.15);color:var(--yellow)}
+#bllWrap .bllainhan button[data-k=xanh].on{background:rgba(46,233,138,.15);color:var(--green)}
+@media(max-width:560px){#bllWrap .bllrow .bllaikey{order:1}}
 
 /* treemap */
 #bllWrap .bllmap{position:relative;border-radius:10px;overflow:hidden}
@@ -3845,6 +3871,27 @@ table.bllbang td.xuong{white-space:normal;line-height:1.35}
     </div>
 
     <div class="bllg2">
+      <div class="bllc" style="--cc:#ff7ad9">
+        <div class="bllhd"><h3><span class="tg">Nhận xét AI</span>Tỉ trọng ba nhãn <i class="ic" data-i="bllA">i</i></h3><div class="bllfl" id="bllfABox"></div></div>
+        <div class="bllsub" id="bllAiEm"></div>
+        <div id="bllAi"></div>
+      </div>
+      <div class="bllc" style="--cc:#ff7ad9">
+        <div class="bllhd"><h3><span class="tg">Theo ngày</span>Nhận xét AI theo thời gian <i class="ic" data-i="bllM">i</i></h3><div class="bllfl" id="bllfMBox"></div></div>
+        <div class="bllsr"><span class="bcsw bllainhan" id="swBllAiN">
+              <button class="on" data-k="duong" onclick="bllSw('ain','duong',this)">Dương tính</button>
+              <button data-k="vang" onclick="bllSw('ain','vang',this)">Âm tính - Vàng</button>
+              <button data-k="xanh" onclick="bllSw('ain','xanh',this)">Âm tính - Xanh</button>
+            </span><span class="bcsw" id="swBllAiL">
+              <button class="on" onclick="bllSw('ail','so',this)" title="Số lượt mỗi ngày của nhãn đang chọn">Số lượt</button>
+              <button onclick="bllSw('ail','pt',this)" title="Tỉ trọng nhãn đang chọn trong số lượt đã có nhận xét AI của ngày đó">Tỉ trọng %</button>
+            </span><div class="bllleg" id="bllAiLChu"></div></div>
+        <div class="bllsub" id="bllAiLEm"></div>
+        <div id="bllAiLine"></div>
+      </div>
+    </div>
+
+    <div class="bllg2">
       <div class="bllc" style="--cc:#b98cff">
         <div class="bllhd"><h3><span class="tg">Cơ cấu</span>Mức và nhóm <i class="ic" data-i="bllD">i</i></h3><div class="bllfl" id="bllfDBox"></div></div>
         <div class="bllsub">Vòng ngoài là mức, vòng trong là nhóm đưa vào. Rê chuột vào một cung để xem số lượt. Cung quá nhỏ được vẽ to hơn thật một chút cho dễ nhìn — số ghi bên dưới là số thật.</div>
@@ -3883,6 +3930,7 @@ table.bllbang td.xuong{white-space:normal;line-height:1.35}
         <input type="text" id="bllTim" class="dmini" style="width:190px" placeholder="Tìm mã KH / tên / kịch bản…" oninput="bllLocDoi()">
         <select class="dmini" id="bllLocMuc" onchange="bllLocDoi()" title="Lọc theo mức"></select>
         <select class="dmini" id="bllLocNhom" onchange="bllLocDoi()" title="Lọc theo nhóm"></select>
+        <select class="dmini" id="bllLocAi" onchange="bllLocDoi()" title="Lọc theo nhận xét AI"></select>
         <span class="bllfl" id="bllfGBox" style="margin:0"></span>
       </div>
       <button class="bcxo" onclick="bllTaiCsv()" title="Tải đúng danh sách đang hiện (đã lọc, đã sắp) về file CSV">⬇ Tải CSV</button>
@@ -5007,7 +5055,7 @@ const BLL_AI = {duong: {t: 'Dương tính', c: 'var(--red)'}, vang: {t: 'Âm tí
 const BLL_AI_THU = {duong: 0, vang: 1, xanh: 2};
 /* mã biểu đồ: Line · Donut · Hist · Bong · Tree. Thứ tự vẽ quan trọng: biểu đồ cột và treemap lấp đầy chiều cao thẻ
    nên phải vẽ SAU thẻ bên cạnh (donut, bong bóng) — thẻ đó mới quyết định chiều cao của hàng. */
-const BLL_CHART = ['L', 'D', 'H', 'B', 'T'];
+const BLL_CHART = ['L', 'D', 'H', 'B', 'T', 'A', 'M'];     // 16/11: + A (tỉ trọng nhận xét AI) · M (nhận xét AI theo thời gian)
 const BLL_KEO = {D: 'H', B: 'T'};                          // thẻ đổi chiều cao thì vẽ lại thẻ cạnh nó
 const BLLF = {}; BLL_CHART.concat(['G']).forEach(c=>{ BLLF[c] = {cach: 'ngay', pv: null}; });   // 'G' = bộ lọc ngày của bảng danh sách ③ (không phải biểu đồ)
 const bllfId = (c, s) => 'bllf' + c + s;
@@ -5143,7 +5191,7 @@ function bllTipChu(key, T){
        <b>Đề xuất Very High</b> = lượt có điểm lớn hơn ${t[2]}, chờ Lead duyệt mới thành Very High.`,
       cfg ? `<em>Cổng vào Blacklist</em> có ít nhất 1 alert thuộc ${cfg.kbAml.length} kịch bản AML hoặc ${cfg.kbVay.length} kịch bản VAY và điểm lớn hơn ${cfg.nguongVao}.` : '');
   case 'bllCo':
-    return T('Năm biểu đồ, mỗi biểu đồ một bộ lọc',
+    return T('Bảy biểu đồ, mỗi biểu đồ một bộ lọc',
       `Mỗi biểu đồ có bộ lọc <b>ngày hoặc khoảng ngày</b> (và <b>nhóm</b>, <b>mức</b> nếu biểu đồ đó chia theo) của riêng nó.
        Đổi bộ lọc ở biểu đồ nào thì chỉ biểu đồ đó đổi, không ảnh hưởng thẻ số và bảng ở mục ①.`);
   case 'bllL':
@@ -5155,6 +5203,17 @@ function bllTipChu(key, T){
     return T('Cơ cấu theo mức và nhóm',
       `<b>Vòng ngoài</b> chia theo mức (cột IMPACT trong file), <b>vòng trong</b> chia theo nhóm đưa vào (cột CATEGORY: AML, VAY hoặc cả hai).
        Độ dài cung tỉ lệ với số lượt; số ở giữa là tổng lượt. Rê chuột vào một cung thì số ở giữa đổi thành riêng cung đó, các cung khác mờ đi.`);
+  case 'bllA':
+    return T('Tỉ trọng nhận xét AI',
+      `Mỗi lượt (một khách trong một ngày) vào Blacklist được nhánh điều tra tự động gắn <b>một nhãn</b>:
+       <b style="color:${BLL_MAU.red}">Dương tính</b> (đủ căn cứ), <b style="color:${BLL_MAU.yellow}">Âm tính - Vàng</b> (có dấu hiệu nhưng chưa đủ căn cứ, theo dõi thêm),
+       <b style="color:${BLL_MAU.green}">Âm tính - Xanh</b> (bắt nhầm). Độ dài cung và thanh ngang là tỉ trọng trong số lượt <b>đã có nhận xét AI</b>; lượt chưa điều tra chỉ ghi chú bên dưới, không tính vào tỉ trọng.
+       Rê chuột vào cung để xem số lượt; <b>bấm một cung hoặc một dòng</b> để lọc danh sách ③ theo nhận xét đó (mọi ngày).`);
+  case 'bllM':
+    return T('Nhận xét AI theo thời gian',
+      `Biểu đồ chỉ vẽ <b>một đường</b> cho nhãn đang chọn; bấm nút <b>Dương tính</b>, <b>Âm tính - Vàng</b> hoặc <b>Âm tính - Xanh</b> để đổi nhãn. Nút <b>Số lượt</b> cho số lượt mỗi ngày; nút <b>Tỉ trọng %</b> cho phần trăm của nhãn đó trong số lượt đã có nhận xét AI của ngày đó
+       (ngày chưa có nhận xét thì ngắt đường). Đường đậm là trung bình 7 ngày, đường mờ là số thật từng ngày, nét đứt là mức trung bình cả kỳ. Rê chuột để xem số của cả ba nhãn trong ngày đó;
+       <b>bấm một điểm</b> để đổi bộ lọc ở mục ① sang ngày đó. Chọn đúng một ngày thì biểu đồ vẫn hiện 30 ngày gần nhất để có chỗ so.`);
   case 'bllH':
     return T('Các lượt có điểm bao nhiêu',
       `Trục ngang là <b>điểm</b> (SCORE_VDF), trục dọc là <b>số lượt</b>. Mỗi cột là số lượt vào Blacklist có điểm rơi trong khoảng ghi dưới cột;
@@ -5217,12 +5276,14 @@ function bllChonNgay(d){ $('bllNgay').value = d; datBllCach('ngay'); }
 function bllSw(kind, v, nut){
   if(nut){ [...nut.parentElement.children].forEach(x=>x.classList.toggle('on', x === nut)); }
   if(kind === 'kb'){ BLL_KB = v; bllVeMot('T'); return; }
+  if(kind === 'ail'){ BLL_AIL = v; bllVeMot('M'); return; }
+  if(kind === 'ain'){ BLL_AIN = v; bllVeMot('M'); return; }
   bllVeBang();
 }
 /* Bấm một khách / kịch bản trên biểu đồ → lọc bảng danh sách rồi cuộn xuống bảng */
 function bllLocMs(ms){
   $('bllTim').value = ms;
-  $('bllLocMuc').value = ''; $('bllLocNhom').value = '';
+  $('bllLocMuc').value = ''; $('bllLocNhom').value = ''; $('bllLocAi').value = '';
   bllBangDatNgay(false); BLL_TRANG = 0;
   bllVeBang();
   $('bllBangCard').scrollIntoView({behavior: 'smooth', block: 'start'});
@@ -5292,7 +5353,7 @@ function bllFDu(c){
 }
 function bllVeMot(c, khongKeo){
   if(!BLL || CHE_DO !== 'bll') return;
-  try{ ({L: bllVeLine, D: bllVeDonut, H: bllVeHist, T: bllVeTree, B: bllVeBong, G: ()=>{ BLL_TRANG = 0; bllVeBang(); }})[c](bllFDu(c)); }
+  try{ ({L: bllVeLine, D: bllVeDonut, H: bllVeHist, T: bllVeTree, B: bllVeBong, A: bllVeAi, M: bllVeAiLine, G: ()=>{ BLL_TRANG = 0; bllVeBang(); }})[c](bllFDu(c)); }
   catch(e){ console.error('Blacklist ' + c + ': ' + e.message); }
   if(!khongKeo && BLL_KEO[c]) bllVeMot(BLL_KEO[c], true);
 }
@@ -5309,6 +5370,7 @@ function bllKhoiTao(){
   $('bllLocMuc').innerHTML = `<option value="">Mọi mức</option>` + (BLL ? BLL.muc.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('') : '')
     + (D.nguong ? `<option value="vh">Đề xuất Very High (điểm > ${D.nguong[2]})</option>` : '');
   $('bllLocNhom').innerHTML = `<option value="">Mọi nhóm</option>` + (BLL ? BLL.nhom.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('') : '');
+  $('bllLocAi').innerHTML = `<option value="">Mọi nhận xét AI</option>` + BLL_AI_KEYS.map(k=>`<option value="${k}">${esc(BLL_AI[k].t)}</option>`).join('') + `<option value="chua">Chưa điều tra</option>`;
   ganLich('bllTu', 'bllDen', onBllKhoang, bllTruc);
   BLL_CHART.concat(['G']).forEach(c=>{
     $('bllf' + c + 'Box').innerHTML = bllFHtml(c);
@@ -5527,6 +5589,153 @@ function bllVeDonut(fd){
   });
 }
 
+/* ═════ NHẬN XÉT AI (Daicd 16/11): tỉ trọng ba nhãn + diễn biến theo ngày ═════
+   Mỗi lượt (khách × ngày) có tối đa MỘT nhãn: dương tính / âm tính - vàng / âm tính - xanh. Lượt chưa có nhãn chỉ ghi chú, KHÔNG tính vào tỉ trọng. */
+const BLL_AI_KEYS = ['duong', 'vang', 'xanh'];
+const BLL_AI_HEX = {duong: BLL_MAU.red, vang: BLL_MAU.yellow, xanh: BLL_MAU.green};
+let BLL_AIL = 'so', BLL_AIN = 'duong';        // chế độ (số lượt | tỉ trọng) + nhãn đang vẽ ở biểu đồ đường
+function bllAiDem(rows){
+  const o = {duong: 0, vang: 0, xanh: 0, chua: 0, nhanh: 0, cu: 0};
+  rows.forEach(r=>{ if(r.ai){ o[r.ai.k]++; if(r.ai.nhanh) o.nhanh++; if(r.ai.cu) o.cu++; } else o.chua++; });
+  o.co = o.duong + o.vang + o.xanh;
+  return o;
+}
+/* bấm cung / dòng chú giải → lọc bảng ③ theo nhận xét đó (mọi ngày), xóa các lọc khác rồi cuộn xuống bảng */
+function bllLocAiMo(k){
+  $('bllLocAi').value = k;
+  $('bllLocMuc').value = ''; $('bllLocNhom').value = ''; $('bllTim').value = '';
+  bllBangDatNgay(false); BLL_TRANG = 0;
+  bllVeBang();
+  $('bllBangCard').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+function bllVeAi(fd){
+  const el = $('bllAi'), em = $('bllAiEm'), rows = fd.rows, dem = bllAiDem(rows), co = dem.co;
+  if(!rows.length){ el.innerHTML = bllKhong; em.textContent = ''; return; }
+  if(!co){ em.textContent = ''; el.innerHTML = `<div class="sub">${fmt(rows.length)} lượt trong phạm vi này đều chưa có nhận xét AI.</div>`; return; }
+  const ds = BLL_AI_KEYS.map(k=>({k, t: BLL_AI[k].t, n: dem[k], c: BLL_AI_HEX[k]})), hien = ds.filter(x=>x.n);
+  /* cung nhỏ hơn SAN thì vẽ to lên SAN cho nhìn thấy; số lượt và % ghi bên cạnh vẫn là số thật */
+  const SAN = 0.06, nho = hien.filter(x=>x.n / co < SAN), lon = hien.filter(x=>x.n / co >= SAN);
+  const sLon = lon.reduce((a, x)=>a + x.n / co, 0), du = Math.max(0.05, 1 - nho.length * SAN);
+  const ty = hien.map(x=>x.n / co < SAN ? SAN : (sLon ? x.n / co / sLon * du : 0));
+  const S = 260, C = S / 2, R = 94, SW = 32;
+  let g0 = -Math.PI / 2;
+  const cung = hien.map((x, i)=>{
+    const goc = ty[i] * Math.PI * 2, kh = hien.length > 1 ? Math.min(0.05, goc / 3) : 0;
+    const d = hien.length === 1 ? `M${C},${C - R} A${R},${R} 0 1 1 ${C - 0.01},${C - R}` : bllCung(C, C, R, g0 + kh, g0 + goc - kh);
+    g0 += goc;
+    return `<path class="bllseg bllpath" data-k="${x.k}" data-n="${x.n}" data-c="${x.c}" pathLength="1" style="--k:${i}" d="${d}" fill="none" stroke="${x.c}" stroke-width="${SW}"/>`;
+  }).join('');
+  const ghi = [];
+  if(dem.chua) ghi.push(`Chưa điều tra <b>${fmt(dem.chua)}</b> lượt (${pc(dem.chua, rows.length).toFixed(1)}% tổng lượt), không tính vào tỉ trọng`);
+  if(dem.nhanh) ghi.push(`⚡ AI chạy nhanh <b>${fmt(dem.nhanh)}</b> lượt (chỉ có nhãn, chưa có báo cáo chi tiết)`);
+  if(dem.cu) ghi.push(`ca cũ trước mốc rollback <b>${fmt(dem.cu)}</b> lượt`);
+  em.innerHTML = `<b>${fmt(co)}</b> lượt đã có nhận xét AI trên tổng <b>${fmt(rows.length)}</b> lượt vào Blacklist · bấm một cung hoặc một dòng để lọc danh sách ③`;
+  el.innerHTML = `<div class="bllrow"><div class="bllringbox">
+      <svg class="bllsv bllring" viewBox="0 0 ${S} ${S}" role="img" aria-label="Tỉ trọng nhận xét AI">
+        <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="#1c2a47" stroke-opacity=".55" stroke-width="${SW}"/>
+        <circle cx="${C}" cy="${C}" r="${R - SW / 2 - 9}" fill="none" stroke="#2a3f6b" stroke-opacity=".5" stroke-dasharray="2 6"/>
+        ${cung}
+      </svg>
+      <div class="blltam" id="bllAiTam"><div class="bn">${fmt(co)}</div><div class="bl">lượt có nhận xét AI</div></div>
+    </div>
+    <div class="bllaikey">${ds.map(x=>`<div class="ak${x.n ? '' : ' rong'}" style="--c:${x.c}" data-k="${x.k}" title="${x.n ? 'Bấm để lọc danh sách ③ theo nhận xét này' : 'Không có lượt nào'}">
+        <i></i><span class="ten">${esc(x.t)}</span><b>${fmt(x.n)}</b><em>${pc(x.n, co).toFixed(1)}%</em>
+        <div class="bar"><u style="width:${pc(x.n, co).toFixed(2)}%"></u></div></div>`).join('')}</div></div>
+    ${ghi.length ? `<div class="bllainote">${ghi.join(' · ')}</div>` : ''}`;
+  const tam = $('bllAiTam'), goc = tam.innerHTML, ring = el.querySelector('.bllring');
+  const sang = (k, bat)=>{
+    const sg = el.querySelector(`.bllseg[data-k="${k}"]`), ak = el.querySelector(`.ak[data-k="${k}"]`);
+    ring.classList.toggle('hov', bat);
+    if(sg) sg.classList.toggle('on', bat);
+    if(ak) ak.classList.toggle('on', bat);
+    if(bat){
+      const n = dem[k];
+      tam.style.setProperty('--tc', BLL_AI_HEX[k]);
+      tam.innerHTML = `<div class="bn">${fmt(n)}</div><div class="bl">${esc(BLL_AI[k].t)} · ${pc(n, co).toFixed(1)}%</div>`;
+    } else { tam.style.removeProperty('--tc'); tam.innerHTML = goc; }
+  };
+  el.querySelectorAll('.bllseg, .ak:not(.rong)').forEach(x=>{
+    x.addEventListener('mouseenter', ()=>sang(x.dataset.k, true));
+    x.addEventListener('mouseleave', ()=>sang(x.dataset.k, false));
+    x.addEventListener('click', ()=>bllLocAiMo(x.dataset.k));
+  });
+}
+
+/* Đường: nhận xét AI theo ngày — MỘT đường cho nhãn đang chọn (nút Dương tính / Âm tính - Vàng / Âm tính - Xanh).
+   Đường đậm = trung bình 7 ngày (từ 21 ngày trở lên), đường mờ = số thật từng ngày, nét đứt = mức trung bình cả kỳ.
+   Nút "Số lượt" = số lượt mỗi ngày; "Tỉ trọng %" = tỉ trọng nhãn trong số lượt đã có nhận xét của ngày đó (ngày trống thì ngắt đường). */
+function bllVeAiLine(fd){
+  const el = $('bllAiLine'), T = fd.T, pt = BLL_AIL === 'pt', kk = BLL_AIN, c = BLL_AI_HEX[kk];
+  const days = fd.ds.length === 1 ? T.slice(Math.max(0, fd.a - 29), fd.b + 1) : fd.ds, n = days.length;
+  const W = Math.max(300, el.clientWidth), H = W < 520 ? 232 : 284;
+  const P = {l: 40, r: 46, t: 28, b: 28}, iw = W - P.l - P.r, ih = H - P.t - P.b, base = P.t + ih;
+  const rs = days.map(d=>(BLL.theoNgay.get(d) || []).filter(fd.pass)), dm = rs.map(bllAiDem);
+  const tg = {duong: 0, vang: 0, xanh: 0, chua: 0};
+  dm.forEach(o=>Object.keys(tg).forEach(k=>{ tg[k] += o[k]; }));
+  const co = tg.duong + tg.vang + tg.xanh;
+  /* nút nhãn: ghi kèm tổng lượt trong phạm vi của biểu đồ này */
+  const swN = $('swBllAiN');
+  if(swN) [...swN.children].forEach(bt=>{ const k = bt.dataset.k; bt.classList.toggle('on', k === kk); bt.textContent = BLL_AI[k].t + ' ' + fmt(tg[k]); });
+  if(!co){ $('bllAiLEm').textContent = ''; $('bllAiLChu').innerHTML = ''; el.innerHTML = '<div class="sub">Trong phạm vi này chưa lượt nào có nhận xét AI</div>'; return; }
+  const v = dm.map(o=>pt ? (o.co ? o[kk] / o.co * 100 : null) : o[kk]);
+  const lam = n >= 21;
+  const m = lam ? dm.map((_, i)=>{ const w = dm.slice(Math.max(0, i - 6), i + 1);
+    if(pt){ const sc = w.reduce((a, o)=>a + o.co, 0); return sc ? w.reduce((a, o)=>a + o[kk], 0) / sc * 100 : null; }
+    return w.reduce((a, o)=>a + o[kk], 0) / w.length; }) : null;
+  const y = m || v;
+  const tb = pt ? tg[kk] / co * 100 : tg[kk] / Math.max(1, n);
+  const mx = Math.max(1, tb, ...v.filter(x=>x != null));
+  const ty = pt ? bllTrucY(Math.min(100, mx * 1.12)) : bllTrucY(mx), top = Math.min(ty.top, pt ? 100 : ty.top), nt = ty.nt;
+  const X = i => P.l + (n === 1 ? iw / 2 : i * iw / (n - 1)), Y = x => P.t + ih - Math.min(x, top) / top * ih;
+  const fmtV = x => pt ? x.toFixed(0) + '%' : (lam && x % 1 ? x.toFixed(1).replace('.', ',') : String(Math.round(x * 10) / 10).replace('.', ','));
+  const chay = (arr) => { const out = []; let cur = []; arr.forEach((x, i)=>{ if(x == null){ if(cur.length) out.push(cur); cur = []; } else cur.push([X(i), Y(x)]); }); if(cur.length) out.push(cur); return out; };
+  const nhan = [], k = Math.min(n, W < 520 ? 4 : 7);
+  for(let q = 0; q < k; q++) nhan.push(k === 1 ? 0 : Math.round(q * (n - 1) / (k - 1)));
+  const chon = fd.ds.length === 1 ? days.indexOf(fd.ds[0]) : -1;
+  const iMax = v.reduce((bi, x, i)=>x != null && (bi < 0 || x > v[bi]) ? i : bi, -1);
+  let ic = y.length - 1; while(ic >= 0 && y[ic] == null) ic--;
+  $('bllAiLChu').innerHTML = (lam ? `<span style="--c:${c}"><i class="ln"></i>Trung bình 7 ngày</span><span style="--c:${c};opacity:.55"><i class="ln"></i>Số thật từng ngày</span>` : `<span style="--c:${c}"><i class="ln"></i>${esc(BLL_AI[kk].t)}</span>`) +
+    `<span style="--c:${c}"><i class="ln ds"></i>Trung bình cả kỳ ${fmtV(tb)}${pt ? '' : '/ngày'}</span>`;
+  $('bllAiLEm').innerHTML = `${n} ngày · <b style="color:${c}">${esc(BLL_AI[kk].t)}</b> <b>${fmt(tg[kk])}</b> lượt, chiếm <b>${pc(tg[kk], co).toFixed(1)}%</b> trong ${fmt(co)} lượt đã có nhận xét AI${tg.chua ? ` (còn ${fmt(tg.chua)} lượt chưa điều tra)` : ''} · bấm một điểm để xem ngày đó ở mục ①`;
+  el.innerHTML = `<svg class="bllsv" viewBox="0 0 ${W} ${H}" role="img" aria-label="Nhận xét AI ${esc(BLL_AI[kk].t)} theo ngày">
+    <defs><linearGradient id="bllAiG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c}" stop-opacity=".28"/><stop offset="100%" stop-color="${c}" stop-opacity="0"/></linearGradient></defs>
+    ${Array.from({length: nt + 1}, (_, q)=>{ const x = top * q / nt, yy = Y(x);
+      return `<line x1="${P.l}" x2="${W - P.r}" y1="${yy}" y2="${yy}" stroke="#2a3f6b" stroke-opacity="${q ? .38 : .75}" ${q ? 'stroke-dasharray="3 5"' : ''}/>
+        <text class="bllax" x="${P.l - 8}" y="${yy + 3.5}" text-anchor="end">${pt ? (x % 1 ? x.toFixed(1) : x) + '%' : (Number.isInteger(x) ? x : x.toFixed(1))}</text>`; }).join('')}
+    ${chon >= 0 ? `<rect x="${X(chon) - Math.max(6, iw / n / 2)}" y="${P.t}" width="${Math.max(12, iw / n)}" height="${ih}" fill="${c}" opacity=".1" rx="4"/>` : ''}
+    <line x1="${P.l}" x2="${W - P.r}" y1="${Y(tb)}" y2="${Y(tb)}" stroke="${c}" stroke-opacity=".6" stroke-width="1.4" stroke-dasharray="6 5"/>
+    ${lam ? chay(v).map(r=>`<path class="bllfade" d="${bllDuong(r)}" fill="none" stroke="${c}" stroke-opacity=".3" stroke-width="1.3" stroke-linejoin="round"/>`).join('') : ''}
+    ${chay(y).map(r=>r.length > 1 ? `<path class="bllfade" d="${bllDuong(r)} L${r[r.length - 1][0]},${base} L${r[0][0]},${base} Z" fill="url(#bllAiG)"/>` : '').join('')}
+    ${chay(y).map(r=>`<path class="bllpath" pathLength="1" d="${bllDuong(r)}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}
+    ${n <= 45 ? v.map((x, i)=>x == null ? '' : `<circle cx="${X(i)}" cy="${Y(x)}" r="3" fill="#0b1426" stroke="${c}" stroke-width="1.6"/>`).join('') : ''}
+    ${n >= 5 && iMax >= 0 && v[iMax] > 0 ? `<circle cx="${X(iMax)}" cy="${Y(v[iMax])}" r="4.4" fill="${c}"/>
+      <text x="${Math.min(W - P.r - 4, Math.max(P.l + 4, X(iMax)))}" y="${Y(v[iMax]) - 10}" text-anchor="middle" font-size="11" font-weight="700" fill="#eef3fe">${fmtV(v[iMax])}<tspan fill="#7a8cb3" font-weight="400"> · ${dLab(days[iMax])}</tspan></text>` : ''}
+    ${ic >= 0 ? `<circle cx="${X(ic)}" cy="${Y(y[ic])}" r="4.6" fill="${c}" stroke="#0b1426" stroke-width="2"/>
+      <text x="${W - P.r + 8}" y="${Y(y[ic]) + 4}" font-size="12" font-weight="700" fill="${c}">${fmtV(y[ic])}</text>` : ''}
+    ${nhan.map(i=>`<text class="bllax" x="${X(i)}" y="${H - 8}" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${dLab(days[i])}</text>`).join('')}
+    <g class="bllhov" style="display:none">
+      <line x1="0" x2="0" y1="${P.t}" y2="${base}" stroke="#a8b8da" stroke-opacity=".55" stroke-dasharray="3 4"/>
+      <circle class="hn" r="5" fill="${c}" stroke="#0b1426" stroke-width="2"/>
+    </g>
+    <rect class="bllhit" x="${P.l}" y="${P.t - 8}" width="${iw}" height="${ih + 8}"/>
+  </svg>`;
+  const svg = el.querySelector('svg'), hit = el.querySelector('.bllhit'), hov = el.querySelector('.bllhov');
+  const tuIdx = ev => { const r = svg.getBoundingClientRect(), mx2 = (ev.clientX - r.left) * W / r.width;
+    return Math.max(0, Math.min(n - 1, n === 1 ? 0 : Math.round((mx2 - P.l) / iw * (n - 1)))); };
+  hit.addEventListener('mousemove', ev=>{
+    const i = tuIdx(ev), d = days[i], x = X(i), o = dm[i];
+    hov.style.display = '';
+    const ln = hov.querySelector('line'); ln.setAttribute('x1', x); ln.setAttribute('x2', x);
+    const hn = hov.querySelector('.hn'); hn.style.display = v[i] == null ? 'none' : ''; if(v[i] != null){ hn.setAttribute('cx', x); hn.setAttribute('cy', Y(v[i])); }
+    bllTipHien(`<b>${dLab(d)} ${thu(d)}</b><br>` +
+      BLL_AI_KEYS.map(q=>`${bllChamMau(BLL_AI_HEX[q])}${q === kk ? '<b>' : ''}${esc(BLL_AI[q].t)}: ${o[q]}${o.co ? ` (${(o[q] / o.co * 100).toFixed(1)}%)` : ''}${q === kk ? '</b>' : ''}`).join('<br>') +
+      `<br><span style="color:var(--faint)">Tổng có nhận xét: <b style="color:var(--text)">${o.co}</b>${o.chua ? ` · chưa điều tra: ${o.chua}` : ''}</span>` +
+      `<div class="gh">Bấm để xem thẻ số và bảng của ngày này</div>`, ev);
+  });
+  hit.addEventListener('mouseleave', ()=>{ hov.style.display = 'none'; bllTipAn(); });
+  hit.addEventListener('click', ev=>bllChonNgay(days[tuIdx(ev)]));
+}
+
 /* ═════ CỘT: các lượt có điểm bao nhiêu ═════
    Trục ngang = điểm, trục dọc = số lượt; mỗi cột một khoảng điểm, số lượt ghi trên đỉnh cột. Màu theo vạch D.nguong. */
 function bllVeHist(fd){
@@ -5678,11 +5887,12 @@ function bllLocVH(){
 }
 function bllLoc(){
   const q = BLL.khongDau(($('bllTim').value || '').trim());
-  const mu = $('bllLocMuc').value, nh = $('bllLocNhom').value;
+  const mu = $('bllLocMuc').value, nh = $('bllLocNhom').value, ai = $('bllLocAi').value;
   let v = bllFDu('G').rows;                 // theo bộ lọc ngày riêng của bảng (mặc định toàn bộ)
   if(mu === 'vh') v = v.filter(r=>D.nguong && r.diem > D.nguong[2]);
   else if(mu) v = v.filter(r=>r.imp === mu);
   if(nh) v = v.filter(r=>r.cat === nh);
+  if(ai) v = v.filter(r=>ai === 'chua' ? !r.ai : (r.ai && r.ai.k === ai));        // 16/11: lọc theo nhận xét AI
   if(q) v = v.filter(r=>r.hay.includes(q));
   v = v.slice().sort((x, y)=>(y.diem || 0) - (x.diem || 0));
   return sxSap(v, 'sxBLL', k => k === '_tong' ? (r=>r.tong) : k === '_dau' ? (r=>r.dau)
