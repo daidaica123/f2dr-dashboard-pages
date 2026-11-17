@@ -19,6 +19,8 @@ body:hover .bar,.bar:focus-within{opacity:1}
 @media (hover:none){.bar{opacity:.85}}
 .bar button,.bar a{font:600 13px/1 system-ui,Segoe UI,Arial,sans-serif;color:#fff;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:9px 14px;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px)}
 .bar button:hover,.bar a:hover{background:rgba(0,0,0,.75)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:88vw;font:600 14px/1.35 system-ui,Segoe UI,Arial,sans-serif;color:#fff;background:rgba(0,0,0,.78);border-radius:12px;padding:11px 16px;opacity:0;pointer-events:none;transition:opacity .25s;text-align:center}
+.toast.on{opacity:1}
 :fullscreen .bar{opacity:0}
 :fullscreen body:hover .bar{opacity:0}
 </style>
@@ -37,8 +39,13 @@ body:hover .bar,.bar:focus-within{opacity:1}
   function toggle(){
     if(!can) return;
     if(isFs()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);}
-    else{(el.requestFullscreen||el.webkitRequestFullscreen).call(el);}
+    else{
+      var r=(el.requestFullscreen||el.webkitRequestFullscreen).call(el);
+      if(r&&r.catch) r.catch(function(){bao('Trình duyệt này chưa cho bật từ trang. Hãy nhấn F11.');});
+    }
   }
+  var t=document.createElement('div');t.className='toast';document.body.appendChild(t);
+  function bao(m){t.textContent=m;t.classList.add('on');clearTimeout(bao.h);bao.h=setTimeout(function(){t.classList.remove('on');},3500);}
   if(!can) btn.style.display='none';
   btn.addEventListener('click',toggle);
   img.addEventListener('dblclick',toggle);
