@@ -13,3 +13,8 @@
 name = "f2dr-dashboard-pages"
 compatibility_date = "2026-09-08"
 pages_build_output_dir = "public"
+
+# Kho luu xac nhan cua lead (27/11). Phai khai o day: co wrangler.toml thi Cloudflare bo qua binding khai tren giao dien.
+[[kv_namespaces]]
+binding = "XACNHAN"
+id = "cbaae300784c403f92c5976eed14f5a0"
